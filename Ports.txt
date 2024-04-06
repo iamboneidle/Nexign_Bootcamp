@@ -1,0 +1,2 @@
+CDR_DataBase port: 1001
+CDR_Service: 2001

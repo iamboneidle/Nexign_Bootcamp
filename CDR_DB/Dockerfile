@@ -1,0 +1,4 @@
+FROM postgres:latest
+ENV POSTGRES_USER=iamboneidle
+ENV POSTGRES_PASSWORD=Nexign
+ENV POSTGRES_DB=CDR_DataBase
