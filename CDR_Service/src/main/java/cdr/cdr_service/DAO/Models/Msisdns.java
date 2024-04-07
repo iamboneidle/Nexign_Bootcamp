@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Msisdns {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +21,8 @@ public class Msisdns {
 
     @OneToMany(mappedBy = "msisdnId", fetch = FetchType.EAGER)
     private List<Transactions> transactions;
+
+    public Msisdns(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }
