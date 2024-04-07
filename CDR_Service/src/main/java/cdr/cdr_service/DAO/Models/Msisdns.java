@@ -1,26 +1,25 @@
 package cdr.cdr_service.DAO.Models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
+import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Msisdns {
     @Id
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(name="phoneNumber")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    public Msisdns(Long id, String phoneNumber) {
-        this.id = id;
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Msisdns() {
-
-    }
-
+    @OneToMany(mappedBy = "msisdnId", fetch = FetchType.EAGER)
+    private List<Transactions> transactions;
 }

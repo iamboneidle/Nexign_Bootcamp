@@ -1,6 +1,5 @@
 package cdr.cdr_service;
 
-import cdr.cdr_service.Services.MsisdnsService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

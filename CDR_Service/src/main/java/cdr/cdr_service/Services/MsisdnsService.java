@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public class MsisdnsService {
+    @Autowired
     private MsisdnsRepository msisdnsRepository;
 
     public MsisdnsService(MsisdnsRepository msisdnsRepository) {
@@ -16,7 +17,15 @@ public class MsisdnsService {
     }
 
     public List<Msisdns> getMsisdns() {
-        msisdnsRepository.findAll().forEach(System.out::println);
-        return msisdnsRepository.findAll();
+        List<Msisdns> all = msisdnsRepository.findAll();
+        all.forEach(msisdns -> System.out.println(msisdns.getId() + "   " + msisdns.getPhoneNumber()));
+        return all;
     }
+
+    public long getIdByMsisdns(String phoneNumber) {
+        Msisdns byPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
+        return byPhoneNumber.getId();
+    }
+
 }
+
