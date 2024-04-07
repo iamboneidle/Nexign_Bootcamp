@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Этот класс нужен для того, чтобы на старте заполнить БД юзерами
+ */
 @Service
 public class UsersPusherService {
     @Autowired
