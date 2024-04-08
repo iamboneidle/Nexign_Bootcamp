@@ -11,6 +11,8 @@ import java.util.List;
 
 /**
  * Этот класс нужен для того, чтобы на старте заполнить БД юзерами
+ * Пока что в описание его лучше не включать. Запуск сервиса пока что не сделан тем образом, которым он должен быть
+ * можно сказать, что он еще в дебаге.
  */
 @Service
 public class UsersPusherService {
@@ -43,15 +45,3 @@ public class UsersPusherService {
         }
     }
 }
-
-//INSERT INTO msisdns (phone_number) VALUES ('79218476904');
-//INSERT INTO msisdns (phone_number) VALUES ('79214007407');
-//INSERT INTO msisdns (phone_number) VALUES ('79213228791');
-//INSERT INTO msisdns (phone_number) VALUES ('79217404007');
-//INSERT INTO msisdns (phone_number) VALUES ('79215468901');
-//INSERT INTO msisdns (phone_number) VALUES ('79211428315');
-//INSERT INTO msisdns (phone_number) VALUES ('79211687111');
-//INSERT INTO msisdns (phone_number) VALUES ('79218320820');
-//INSERT INTO msisdns (phone_number) VALUES ('79211422108');
-//INSERT INTO msisdns (phone_number) VALUES ('79210138023');
-//INSERT INTO msisdns (phone_number) VALUES ('79212418053');

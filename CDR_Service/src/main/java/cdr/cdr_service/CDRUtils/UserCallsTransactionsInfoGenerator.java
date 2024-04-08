@@ -1,30 +1,59 @@
 package cdr.cdr_service.CDRUtils;
 
-public class UserCallsTransactionsInfoGenerator {
-    private static final String SERVICED_PHONE_NUMBER_CODE = "921";
+import cdr.cdr_service.DAO.Models.Msisdns;
 
+import java.util.List;
+import java.util.Random;
+
+/**
+ * Класс, содержащий методы для генерации информации о звонках пользователей
+ */
+public class UserCallsTransactionsInfoGenerator {
+    /**
+     * Метод возвращает тип звонка:
+     * <br> "01" - исходящий вызов,
+     * <br> "02" - входящий вызов.
+     * Вероятность выпадения любого = 0.5.
+     *
+     * @return строка с типом звонка.
+     */
     public static String generateCallType() {
-        int number = (int) (Math.random() * 2 + 1);
-        return "0" + number;
+        return Math.random() < 0.5 ? "01" : "02";
     }
 
-    public static String generateContactedMsisdn() {
+    /**
+     * Метод генерирует номер телефона вызываемого абонента, делает он это следующим образом:
+     * <br> с вероятностью 50 на 50 выбирается: осуществляется звонок абоненту внутренней сети или внешней,
+     * далее, если внешней, то номер телефона составляется случайным образом, если внутренней, то
+     * случайным образом выбирается номер телефона из базы абонентов сети. Также производится проверка на то,
+     * не собирается и абонент позвонить самому себе.
+     *
+     * @return номер телефона вызываемого абонента.
+     */
+    public static String generateContactedMsisdn(List<Msisdns> msisdnsList, String phoneNumber) {
         StringBuilder contactedMsisdn = new StringBuilder();
-        contactedMsisdn.append("7");
-        boolean isServiced = Math.random() < 0.5;
-        if (!isServiced) {
-            int code = (int) (Math.random() * 100 + 900);
-            contactedMsisdn.append(code == 921 ? code++ : code);
+        if (Math.random() < 0.5) {
+            contactedMsisdn.append("7");
+            contactedMsisdn.append((int) (Math.random() * 100 + 900));
+            contactedMsisdn.append((int) (1000000 + Math.random() * 9000000));
         } else {
-            contactedMsisdn.append(SERVICED_PHONE_NUMBER_CODE);
+            Random rand = new Random();
+            contactedMsisdn.append(msisdnsList.get(rand.nextInt(msisdnsList.size())).getPhoneNumber());
+            while (contactedMsisdn.toString().equals(phoneNumber)) {
+                contactedMsisdn.delete(0, contactedMsisdn.length());
+                contactedMsisdn.append(msisdnsList.get(rand.nextInt(msisdnsList.size())).getPhoneNumber());
+            }
         }
-        contactedMsisdn.append((int) (1000000 + Math.random() * 9000000));
         return contactedMsisdn.toString();
     }
 
+    /**
+     * Метод возвращает время конца звонка, сдвинутое относительно начала на случайное время от 1 до 10 минут.
+     *
+     * @param callStartTime время начала звонка (Unix time seconds).
+     * @return время конца звонка (Unix time seconds).
+     */
     public static long generateCallEndTime(Long callStartTime) {
-        long randomTimeSeconds = (long) (Math.random() * (540) + 60);
-
-        return callStartTime + randomTimeSeconds;
+        return callStartTime + (long) (Math.random() * (540) + 60);
     }
 }

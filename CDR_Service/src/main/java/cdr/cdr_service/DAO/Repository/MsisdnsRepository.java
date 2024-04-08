@@ -4,8 +4,18 @@ import cdr.cdr_service.DAO.Models.Msisdns;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Репозиторий для взаимодействия с сущностью Msisdn в базе данных.
+ * <br>Используется для выполнения операций чтения, записи, обновления и удаления записей Msisdns в базе данных.
+ */
 @Repository
 public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
 
+    /**
+     * Метод, имплементирующий поиск объекта Msisdn в таблице Msisdns по номеру телефона.
+     *
+     * @param phoneNumber номер телефона искомого Msisdn.
+     * @return объект Msisdn с искомым номером телефона или null, если объект не был найден.
+     */
     Msisdns findByPhoneNumber(String phoneNumber);
 }

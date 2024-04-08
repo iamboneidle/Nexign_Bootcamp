@@ -7,24 +7,36 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Сервис для работы с объектами Msisdns.
+ */
 @Service
 public class MsisdnsService {
+    /**
+     * Репозиторий Msisdns.
+     */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
 
-    public MsisdnsService(MsisdnsRepository msisdnsRepository) {
-        this.msisdnsRepository = msisdnsRepository;
-    }
-
+    /**
+     * Метод для получения списка всех объектов Msisdns из базы данных.
+     *
+     * @return список объектов Msisdns.
+     */
     public List<Msisdns> getMsisdns() {
-        List<Msisdns> all = msisdnsRepository.findAll();
-        all.forEach(msisdns -> System.out.println(msisdns.getId() + "   " + msisdns.getPhoneNumber()));
-        return all;
+        List<Msisdns> Msisdns = msisdnsRepository.findAll();
+        return Msisdns;
     }
 
+    /**
+     * Получение идентификатора объекта Msisdns по его номеру телефона.
+     *
+     * @param phoneNumber номер телефона абонента.
+     * @return первичный  ключ объекта Msisdns.
+     */
     public long getIdByMsisdns(String phoneNumber) {
-        Msisdns byPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
-        return byPhoneNumber.getId();
+        Msisdns MsisdnByPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
+        return MsisdnByPhoneNumber.getId();
     }
 
 }
