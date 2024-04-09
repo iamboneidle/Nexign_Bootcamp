@@ -64,7 +64,7 @@ public class CDRService {
             transactionObjectsForMonth.sort(Comparator.comparingLong(TransactionObject::getCallStartTime));
             latch.await();
             futures.clear();
-            writeToDataBase(msisdns, transactionObjectsForMonth);
+//            writeToDataBase(msisdns, transactionObjectsForMonth);
             makeCDRFiles(transactionObjectsForMonth, monthNum);
         }
         executor.shutdown();
@@ -80,15 +80,15 @@ public class CDRService {
         for (TransactionObject transactionObject : transactionObjectsForMonth) {
             Msisdns toPut = null;
             for (Msisdns msisdn : msisdns) {
-                if (msisdn.getPhoneNumber().equals(transactionObject.getServicedMsisdn())) {
+                if (msisdn.getPhoneNumber().equals(transactionObject.getServicedMsisdnPhoneNumber())) {
                     toPut = msisdn;
                 }
             }
             transactions.add(new Transactions(
                     toPut,
-                    msisdnsService.getIdByMsisdns(transactionObject.getServicedMsisdn()),
+                    msisdnsService.getIdByMsisdns(transactionObject.getServicedMsisdnPhoneNumber()),
                     transactionObject.getCallType(),
-                    transactionObject.getContactedMsisdn(),
+                    transactionObject.getServicedMsisdnPhoneNumber(),
                     transactionObject.getCallStartTime(),
                     transactionObject.getCallEndTime()
             ));
