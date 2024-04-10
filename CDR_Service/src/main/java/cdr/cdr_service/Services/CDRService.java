@@ -64,7 +64,7 @@ public class CDRService {
             transactionObjectsForMonth.sort(Comparator.comparingLong(TransactionObject::getCallStartTime));
             latch.await();
             futures.clear();
-//            writeToDataBase(msisdns, transactionObjectsForMonth);
+            writeToDataBase(msisdns, transactionObjectsForMonth);
             makeCDRFiles(transactionObjectsForMonth, monthNum);
         }
         executor.shutdown();
