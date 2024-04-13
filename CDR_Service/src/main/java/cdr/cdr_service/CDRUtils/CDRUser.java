@@ -1,7 +1,6 @@
 package cdr.cdr_service.CDRUtils;
 
 import cdr.cdr_service.DAO.Models.Msisdns;
-import cdr.cdr_service.DAO.Models.Transactions;
 
 import java.time.Instant;
 import java.util.ArrayList;

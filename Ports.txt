@@ -1,2 +1,5 @@
-CDR_DataBase port: 1001
+CDR_DataBase: 1001
 CDR_Service: 2001
+
+BRT_DataBase: 1002
+BRT_Service: 2002
