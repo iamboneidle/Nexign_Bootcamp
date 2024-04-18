@@ -32,11 +32,11 @@ public class MsisdnsService {
      * Получение идентификатора объекта Msisdns по его номеру телефона.
      *
      * @param phoneNumber номер телефона абонента.
-     * @return первичный  ключ объекта Msisdns.
+     * @return первичный ключ объекта Msisdns.
      */
     public long getIdByMsisdns(String phoneNumber) {
-        Msisdns MsisdnByPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
-        return MsisdnByPhoneNumber.getId();
+        Msisdns msisdnByPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
+        return msisdnByPhoneNumber.getId();
     }
 
 }

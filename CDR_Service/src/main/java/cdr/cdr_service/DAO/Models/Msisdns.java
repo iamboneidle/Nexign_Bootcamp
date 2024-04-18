@@ -33,7 +33,7 @@ public class Msisdns {
     /**
      * Список транзакций абонента, использующего определенный номер телефона.
      */
-    @OneToMany(mappedBy = "msisdnId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "msisdnId", fetch = FetchType.LAZY)
     private List<Transactions> transactions;
 
     /**
@@ -43,5 +43,14 @@ public class Msisdns {
      */
     public Msisdns(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Msisdns{");
+        sb.append("id=").append(id);
+        sb.append(", phoneNumber='").append(phoneNumber).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

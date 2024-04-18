@@ -23,7 +23,7 @@ public class CallDataRecords {
     private List<Calls> calls;
 
     @Column(name = "time_formed")
-    private long timeFormed;
+    private Long timeFormed;
 
     public CallDataRecords(List<Calls> calls, long timeFormed) {
         this.calls = calls;

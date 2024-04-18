@@ -15,7 +15,7 @@ public class Calls {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_from_number")
@@ -32,19 +32,19 @@ public class Calls {
     private Long toNumber;
 
     @Column(name = "call_time_start")
-    private long callTimStart;
+    private Long callTimStart;
 
     @Column(name = "call_time_end")
-    private long callTimeEnd;
+    private Long callTimeEnd;
 
     @Column(name = "call_duration")
-    private long callDuration;
+    private Long callDuration;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_cdr")
     private CallDataRecords cdr;
 
-    @Column(name = "id_cdr", insertable = false, updatable = false)
+    @Column(name = "id_Longcdr", insertable = false, updatable = false)
     private Long cdrId;
 
 }

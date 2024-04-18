@@ -1,5 +1,6 @@
 package cdr.cdr_service.Services;
 
+import cdr.cdr_service.CDRUtils.CDRFileSender;
 import cdr.cdr_service.CDRUtils.CDRUser;
 import cdr.cdr_service.CDRUtils.TransactionObject;
 import cdr.cdr_service.DAO.Models.Msisdns;
@@ -7,8 +8,10 @@ import cdr.cdr_service.DAO.Models.Transactions;
 import cdr.cdr_service.DAO.Repository.TransactionsRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,30 +47,38 @@ public class CDRService {
      * @throws InterruptedException Возникает, если поток прерывается во время ожидания.
      */
 //    TODO: в процессе дебага сервис запускается отсюда, потом будет переделано
-    @PostConstruct
-    public void init() throws InterruptedException {
+
+    @Scheduled(initialDelay = 5 * 1000)
+    public void initializer() {
         List<Msisdns> msisdns = msisdnsService.getMsisdns();
         ExecutorService executor = Executors.newFixedThreadPool(msisdns.size());
         List<Future<List<TransactionObject>>> futures = new ArrayList<>();
-        for (int monthNum = 1; monthNum <= 12; monthNum++) {
+
+//        for (int monthNum = 1; monthNum <= 12; monthNum++) {
+        int monthNum = 1;
             CountDownLatch latch = new CountDownLatch(msisdns.size());
             int finalMonthNum = monthNum;
-            msisdns.forEach(msisdn -> futures.add(executor.submit(new CDRUser(msisdn.getPhoneNumber(), finalMonthNum, latch, msisdns))));
-            List<TransactionObject> transactionObjectsForMonth = new ArrayList<>();
-            futures.forEach(future -> {
-                try {
-                    transactionObjectsForMonth.addAll(future.get());
-                } catch (InterruptedException | ExecutionException e) {
-                    System.out.println(e);
-                }
-            });
-            transactionObjectsForMonth.sort(Comparator.comparingLong(TransactionObject::getCallStartTime));
-            latch.await();
-            futures.clear();
-            writeToDataBase(msisdns, transactionObjectsForMonth);
-            makeCDRFiles(transactionObjectsForMonth, monthNum);
-        }
+            try {
+                msisdns.forEach(msisdn -> futures.add(executor.submit(new CDRUser(msisdn.getPhoneNumber(), finalMonthNum, latch, msisdns))));
+                List<TransactionObject> transactionObjectsForMonth = new ArrayList<>();
+                futures.forEach(future -> {
+                    try {
+                        transactionObjectsForMonth.addAll(future.get());
+                    } catch (InterruptedException | ExecutionException e) {
+                        System.out.println(e);
+                    }
+                });
+                transactionObjectsForMonth.sort(Comparator.comparingLong(TransactionObject::getCallStartTime));
+                latch.await();
+                futures.clear();
+                writeToDataBase(msisdns, transactionObjectsForMonth);
+                makeCDRFiles(transactionObjectsForMonth, monthNum);
+            } catch (InterruptedException e) {
+                System.out.println("troubles");
+            }
+//        }
         executor.shutdown();
+        System.out.println("DONE");
     }
 
     /**
@@ -78,20 +89,18 @@ public class CDRService {
     private void writeToDataBase(List<Msisdns> msisdns, List<TransactionObject> transactionObjectsForMonth) {
         List<Transactions> transactions = new ArrayList<>();
         for (TransactionObject transactionObject : transactionObjectsForMonth) {
-            Msisdns toPut = null;
             for (Msisdns msisdn : msisdns) {
                 if (msisdn.getPhoneNumber().equals(transactionObject.getServicedMsisdnPhoneNumber())) {
-                    toPut = msisdn;
+                    transactions.add(new Transactions(
+                            msisdn,
+                            transactionObject.getCallType(),
+                            transactionObject.getServicedMsisdnPhoneNumber(),
+                            transactionObject.getCallStartTime(),
+                            transactionObject.getCallEndTime()
+                    ));
+                    break;
                 }
             }
-            transactions.add(new Transactions(
-                    toPut,
-                    msisdnsService.getIdByMsisdns(transactionObject.getServicedMsisdnPhoneNumber()),
-                    transactionObject.getCallType(),
-                    transactionObject.getServicedMsisdnPhoneNumber(),
-                    transactionObject.getCallStartTime(),
-                    transactionObject.getCallEndTime()
-            ));
         }
         transactionsRepository.saveAll(transactions);
     }
@@ -107,8 +116,8 @@ public class CDRService {
                 if (counter == 10) {
                     int numFile = i / counter + 1;
                     Path filePath = Paths.get(ROOT_PATH + "/" + "CDR" + monthNum + "_" + (numFile) + ".txt");
-
                     writer(objectsToWrite, filePath);
+                    sendCdrFiles(filePath.toFile());
                     objectsToWrite.clear();
                     counter = 1;
                 } else {
@@ -120,6 +129,7 @@ public class CDRService {
             int filesQuantity = transactionObjectsForMonth.size() / 10 + 1;
             Path filePath = Paths.get(ROOT_PATH + "/" + "CDR" + monthNum + "_" + (filesQuantity) + ".txt");
             writer(objectsToWrite, filePath);
+            sendCdrFiles(filePath.toFile());
         }
     }
 
@@ -146,6 +156,9 @@ public class CDRService {
     /**
      * Потом будет отправлять данные в кафку
      */
-    private void sendCdrFiles() {
+    private void sendCdrFiles(File file) {
+        CDRFileSender cdrFileSender = new CDRFileSender();
+        cdrFileSender.sendFile(file);
+        file.delete();
     }
 }

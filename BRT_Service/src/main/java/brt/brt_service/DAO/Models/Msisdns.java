@@ -11,12 +11,13 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@Getter@Setter
+@Getter
+@Setter
 public class Msisdns {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "number")
     private String number;
@@ -26,26 +27,26 @@ public class Msisdns {
     private Rates rates;
 
     @Column(name = "id_rate", insertable = false, updatable = false)
-    private long rateId;
+    private Long rateId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_abonent")
     private Abonents abonents;
 
     @Column(name = "id_abonent", insertable = false, updatable = false)
-    private long abonentId;
+    private Long abonentId;
 
     @Column(name = "balance")
-    private float balance;
+    private Float balance;
 
     @Column(name = "incoming_calls_quantity")
-    private long incomingCallsQuantity;
+    private Long incomingCallsQuantity;
 
     @Column(name = "outcoming_calls_quantity")
-    private long outcomingCallsQuantity;
+    private Long outcomingCallsQuantity;
 
     @Column(name = "minutes_left")
-    private long minutesLeft;
+    private Long minutesLeft;
 
     @OneToMany(mappedBy = "fromNumber", fetch = FetchType.EAGER)
     private List<Calls> outcomingCalls;
@@ -69,5 +70,17 @@ public class Msisdns {
         this.incomingCallsQuantity = incomingCallsQuantity;
         this.outcomingCallsQuantity = outcomingCallsQuantity;
         this.minutesLeft = minutesLeft;
+    }
+
+    @Override
+    public String toString() {
+        return "Msisdns{" +
+                "id=" + id +
+                ", number='" + number + '\'' +
+                ", balance=" + balance +
+                ", incomingCallsQuantity=" + incomingCallsQuantity +
+                ", outcomingCallsQuantity=" + outcomingCallsQuantity +
+                ", minutesLeft=" + minutesLeft +
+                '}';
     }
 }

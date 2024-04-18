@@ -62,7 +62,7 @@ public class CDRUser implements Callable<List<TransactionObject>> {
         List<String> phoneNumbersList = new ArrayList<>();
         msisdnsList.forEach(msisdn -> phoneNumbersList.add(msisdn.getPhoneNumber()));
         long currentTime = Instant.now().getEpochSecond() + (long) (monthNum - 1) * DAYS_IN_MONTH_QUANTITY[monthNum - 1] * 3600 * 24;
-        int callsInMonthQuantity = (int) (Math.random() * 50 + 1);
+        int callsInMonthQuantity = (int) (Math.random() * 10 + 1);
         long periodBetweenCalls = ((long) DAYS_IN_MONTH_QUANTITY[monthNum - 1] * 3600 * 24) / callsInMonthQuantity;
         long endOfMonthTime = Instant.now().getEpochSecond() + (long) (monthNum) * DAYS_IN_MONTH_QUANTITY[monthNum - 1] * 3600 * 24;
 

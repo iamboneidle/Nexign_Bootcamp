@@ -70,9 +70,9 @@ public class Transactions {
      * @param callTimeStart   время начала звонка (Unix time seconds)
      * @param callTimeEnd     время окончания звонка (Unix time seconds)
      */
-    public Transactions(Msisdns msisdns, Long msisdnId, String callType, String contactedMsisdn, long callTimeStart, long callTimeEnd) {
+    public Transactions(Msisdns msisdns, String callType, String contactedMsisdn, long callTimeStart, long callTimeEnd) {
         this.msisdns = msisdns;
-        this.msisdnId = msisdnId;
+        this.msisdnId = msisdns != null ? msisdns.getId() : 1;
         this.callType = callType;
         this.contactedMsisdn = contactedMsisdn;
         this.callTimeStart = callTimeStart;
