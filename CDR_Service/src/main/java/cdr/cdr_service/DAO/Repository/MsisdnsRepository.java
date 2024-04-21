@@ -17,5 +17,7 @@ public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
      * @param phoneNumber номер телефона искомого Msisdn.
      * @return объект Msisdn с искомым номером телефона или null, если объект не был найден.
      */
-    Msisdns findByPhoneNumber(String phoneNumber);
+
+//    TODO: убрать, если не пригодится вдруг
+//    Msisdns findByPhoneNumber(String phoneNumber);
 }

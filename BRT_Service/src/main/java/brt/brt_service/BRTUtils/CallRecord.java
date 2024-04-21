@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class CallRecord {
-    private final String servicedMsisdnNumber;
-    private final String callType;
-    private final long callTimeStart;
-    private final long callTimeEnd;
-    private final long rateId;
+    private String servicedMsisdnNumber;
+    private String callType;
+    private long callTimeStart;
+    private long callTimeEnd;
+    private long rateId;
 
     @Override
     public String toString() {

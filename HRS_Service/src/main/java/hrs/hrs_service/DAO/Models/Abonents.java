@@ -1,4 +1,4 @@
-package brt.brt_service.DAO.Models;
+package hrs.hrs_service.DAO.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;

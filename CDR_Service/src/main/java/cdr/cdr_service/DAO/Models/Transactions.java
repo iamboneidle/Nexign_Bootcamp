@@ -64,7 +64,6 @@ public class Transactions {
      * Конструктор с параметрами для создания объекта Transactions.
      *
      * @param msisdns         объект Msisdns, связанный с транзакцией
-     * @param msisdnId        первичный ключ Msisdn, связанного с данной транзакцией
      * @param callType        тип вызова
      * @param contactedMsisdn номер телефона абонента, с которым осуществлялась связь
      * @param callTimeStart   время начала звонка (Unix time seconds)

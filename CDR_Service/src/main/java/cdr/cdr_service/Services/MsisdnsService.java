@@ -24,8 +24,7 @@ public class MsisdnsService {
      * @return список объектов Msisdns.
      */
     public List<Msisdns> getMsisdns() {
-        List<Msisdns> Msisdns = msisdnsRepository.findAll();
-        return Msisdns;
+        return msisdnsRepository.findAll();
     }
 
     /**
@@ -34,10 +33,11 @@ public class MsisdnsService {
      * @param phoneNumber номер телефона абонента.
      * @return первичный ключ объекта Msisdns.
      */
-    public long getIdByMsisdns(String phoneNumber) {
-        Msisdns msisdnByPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
-        return msisdnByPhoneNumber.getId();
-    }
+//    TODO: убрать, если не пригодится вдруг
+//    public long getIdByMsisdns(String phoneNumber) {
+//        Msisdns msisdnByPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
+//        return msisdnByPhoneNumber.getId();
+//    }
 
 }
 

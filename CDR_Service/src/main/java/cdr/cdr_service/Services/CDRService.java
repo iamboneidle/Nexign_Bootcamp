@@ -1,12 +1,10 @@
 package cdr.cdr_service.Services;
 
-import cdr.cdr_service.CDRUtils.CDRFileSender;
 import cdr.cdr_service.CDRUtils.CDRUser;
 import cdr.cdr_service.CDRUtils.TransactionObject;
 import cdr.cdr_service.DAO.Models.Msisdns;
 import cdr.cdr_service.DAO.Models.Transactions;
 import cdr.cdr_service.DAO.Repository.TransactionsRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,9 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Сервис для формирования CDR-файлов, записи в базу данных (пока что, мб потом декомпозирую)
@@ -33,26 +34,28 @@ public class CDRService {
      */
     @Autowired
     private MsisdnsService msisdnsService;
+    @Autowired
+    private CDRFileSenderService cdrFileSenderService;
     /**
      * Репозиторий для доступа к данным о транзакциях.
      */
     @Autowired
     private TransactionsRepository transactionsRepository;
-//    TODO: почистить надо будет после того как подрубим кафку
     private static final Path ROOT_PATH = Paths.get("src/main/resources/CDRFiles").toAbsolutePath();
+    private static final Logger LOGGER = Logger.getLogger(CDRService.class.getName());
 
     /**
      * Метод, вызываемый после создания экземпляра класса.
      * Инициализирует процесс обработки CDR.
-     * @throws InterruptedException Возникает, если поток прерывается во время ожидания.
      */
-//    TODO: в процессе дебага сервис запускается отсюда, потом будет переделано
-
     @Scheduled(initialDelay = 5 * 1000)
     public void initializer() {
         List<Msisdns> msisdns = msisdnsService.getMsisdns();
         ExecutorService executor = Executors.newFixedThreadPool(msisdns.size());
         List<Future<List<TransactionObject>>> futures = new ArrayList<>();
+
+//TODO: находится в процессе отладки: перенести getMsisdns()
+// ExecutorService и фьючеры в годичный цикл для того чтобы можно было подтянуть ново созданных пользователей
 
 //        for (int monthNum = 1; monthNum <= 12; monthNum++) {
         int monthNum = 1;
@@ -65,7 +68,7 @@ public class CDRService {
                     try {
                         transactionObjectsForMonth.addAll(future.get());
                     } catch (InterruptedException | ExecutionException e) {
-                        System.out.println(e);
+                        LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
                     }
                 });
                 transactionObjectsForMonth.sort(Comparator.comparingLong(TransactionObject::getCallStartTime));
@@ -74,11 +77,11 @@ public class CDRService {
                 writeToDataBase(msisdns, transactionObjectsForMonth);
                 makeCDRFiles(transactionObjectsForMonth, monthNum);
             } catch (InterruptedException e) {
-                System.out.println("troubles");
+                LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
             }
 //        }
         executor.shutdown();
-        System.out.println("DONE");
+        LOGGER.log(Level.INFO, "OK: Files for year were made and sent successfully" + "\n");
     }
 
     /**
@@ -105,7 +108,6 @@ public class CDRService {
         transactionsRepository.saveAll(transactions);
     }
 
-    //    TODO: этот метод нужен для подготовки файлов к отправки в Kafka, в дальнейшем он будет переделан
     private void makeCDRFiles(List<TransactionObject> transactionObjectsForMonth, int monthNum) {
         List<TransactionObject> objectsToWrite = new ArrayList<>();
         int counter = 1;
@@ -117,7 +119,7 @@ public class CDRService {
                     int numFile = i / counter + 1;
                     Path filePath = Paths.get(ROOT_PATH + "/" + "CDR" + monthNum + "_" + (numFile) + ".txt");
                     writer(objectsToWrite, filePath);
-                    sendCdrFiles(filePath.toFile());
+                    sendCDRFiles(filePath.toFile());
                     objectsToWrite.clear();
                     counter = 1;
                 } else {
@@ -129,7 +131,7 @@ public class CDRService {
             int filesQuantity = transactionObjectsForMonth.size() / 10 + 1;
             Path filePath = Paths.get(ROOT_PATH + "/" + "CDR" + monthNum + "_" + (filesQuantity) + ".txt");
             writer(objectsToWrite, filePath);
-            sendCdrFiles(filePath.toFile());
+            sendCDRFiles(filePath.toFile());
         }
     }
 
@@ -149,16 +151,16 @@ public class CDRService {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
         }
     }
 
     /**
      * Потом будет отправлять данные в кафку
      */
-    private void sendCdrFiles(File file) {
-        CDRFileSender cdrFileSender = new CDRFileSender();
-        cdrFileSender.sendFile(file);
+//TODO: добавить логику удаления файла только в случае успешной отправки, иначе занести в мапу ожидания
+    private void sendCDRFiles(File file) {
+        cdrFileSenderService.sendFile(file);
         file.delete();
     }
 }

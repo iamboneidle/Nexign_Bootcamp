@@ -14,12 +14,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class CDRUser implements Callable<List<TransactionObject>> {
     /**
-     * Массив количества дней в каждом месяце.
-     * <br> 0-й элемент - Январь
-     * <br> 11-й элемент - Декабрь
-     */
-    public static final int[] DAYS_IN_MONTH_QUANTITY = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    /**
      * Номер телефона абонента.
      */
     private final String phoneNumber;
@@ -35,6 +29,22 @@ public class CDRUser implements Callable<List<TransactionObject>> {
      * Счетчик, синхронизирующий выполнение потоков.
      */
     private final CountDownLatch latch;
+    /**
+     * Массив количества дней в каждом месяце.
+     * <br> 0-й элемент - Январь
+     * <br> 11-й элемент - Декабрь
+     */
+    private static final int[] DAYS_IN_MONTH_QUANTITY = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    /**
+     * Максимально возможное количество сгенерированных звонков пользователем.
+     */
+    private static final int CALLS_QUANTITY_UPPER_BORDER = 10;
+    /**
+     * Минимальное возможное количество сгенерированных звонков пользователем.
+     */
+    private static final int CALLS_QUANTITY_BOTTOM_BORDER = 1;
+
 
     /**
      * Конструктор.
@@ -62,7 +72,7 @@ public class CDRUser implements Callable<List<TransactionObject>> {
         List<String> phoneNumbersList = new ArrayList<>();
         msisdnsList.forEach(msisdn -> phoneNumbersList.add(msisdn.getPhoneNumber()));
         long currentTime = Instant.now().getEpochSecond() + (long) (monthNum - 1) * DAYS_IN_MONTH_QUANTITY[monthNum - 1] * 3600 * 24;
-        int callsInMonthQuantity = (int) (Math.random() * 10 + 1);
+        int callsInMonthQuantity = (int) (Math.random() * CALLS_QUANTITY_UPPER_BORDER + CALLS_QUANTITY_BOTTOM_BORDER);
         long periodBetweenCalls = ((long) DAYS_IN_MONTH_QUANTITY[monthNum - 1] * 3600 * 24) / callsInMonthQuantity;
         long endOfMonthTime = Instant.now().getEpochSecond() + (long) (monthNum) * DAYS_IN_MONTH_QUANTITY[monthNum - 1] * 3600 * 24;
 

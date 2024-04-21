@@ -13,8 +13,7 @@ public class MsisdnsService {
     MsisdnsRepository msisdnsRepository;
 
     public List<Msisdns> getMsisdns() {
-        List<Msisdns> Msisdns = msisdnsRepository.findAll();
-        return Msisdns;
+        return msisdnsRepository.findAll();
     }
 
     public long getRateIdByPhoneNumber(String phoneNumber) {
