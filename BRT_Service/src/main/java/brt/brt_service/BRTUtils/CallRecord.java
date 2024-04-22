@@ -4,15 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 public class CallRecord {
     private String servicedMsisdnNumber;
     private String callType;
     private long callTimeStart;
     private long callTimeEnd;
     private long rateId;
+    private boolean isOtherMsisdnServiced;
+    private Long minutesLeft;
 
     @Override
     public String toString() {

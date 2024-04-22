@@ -43,6 +43,7 @@ public class Rates {
     @OneToMany(mappedBy = "rateId", fetch = FetchType.EAGER)
     private List<Msisdns> msisdns;
 
+//    TODO: убрать
     public Rates(
             String rateName,
             Float startCost,

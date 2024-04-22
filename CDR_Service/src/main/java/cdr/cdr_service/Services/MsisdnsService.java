@@ -26,18 +26,5 @@ public class MsisdnsService {
     public List<Msisdns> getMsisdns() {
         return msisdnsRepository.findAll();
     }
-
-    /**
-     * Получение идентификатора объекта Msisdns по его номеру телефона.
-     *
-     * @param phoneNumber номер телефона абонента.
-     * @return первичный ключ объекта Msisdns.
-     */
-//    TODO: убрать, если не пригодится вдруг
-//    public long getIdByMsisdns(String phoneNumber) {
-//        Msisdns msisdnByPhoneNumber = msisdnsRepository.findByPhoneNumber(phoneNumber);
-//        return msisdnByPhoneNumber.getId();
-//    }
-
 }
 

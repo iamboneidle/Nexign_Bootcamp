@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
+//    TODO: убрать
     Msisdns findMsisdnsByNumber(String number);
 }

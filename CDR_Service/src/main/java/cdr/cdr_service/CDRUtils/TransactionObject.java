@@ -1,6 +1,8 @@
 package cdr.cdr_service.CDRUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.StringJoiner;
 
@@ -8,6 +10,8 @@ import java.util.StringJoiner;
  * Класс представляющий транзакцию между объектами.
  */
 @Getter
+@Setter
+@AllArgsConstructor
 public class TransactionObject {
     /**
      * Тип звонка абонента
@@ -32,27 +36,6 @@ public class TransactionObject {
      */
     private final long callEndTime;
 
-    /**
-     * Конструктор.
-     *
-     * @param callType                   Тип звонка абонента
-     * @param servicedMsisdnPhoneNumber  Номер телефона обслуживаемого абонента.
-     * @param contactedMsisdnPhoneNumber Номер телефона вызываемого абонента.
-     * @param callStartTime              Время начала звонка (Unix time seconds).
-     * @param callEndTime                Время окончания звонка (Unix time seconds).
-     */
-    TransactionObject(String callType, String servicedMsisdnPhoneNumber, String contactedMsisdnPhoneNumber, long callStartTime, long callEndTime) {
-        this.callType = callType;
-        this.servicedMsisdnPhoneNumber = servicedMsisdnPhoneNumber;
-        this.contactedMsisdnPhoneNumber = contactedMsisdnPhoneNumber;
-        this.callStartTime = callStartTime;
-        this.callEndTime = callEndTime;
-    }
-
-    /**
-     * Перегруженный метод toString().
-     * @return Строку вида "типЗвонка,номерОбсАбонента,номерКонтактАбонента,времяНачЗвонка,ВремяКонцЗвонка"
-     */
     @Override
     public String toString() {
         StringJoiner result = new StringJoiner(",");

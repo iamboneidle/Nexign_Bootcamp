@@ -9,15 +9,4 @@ import org.springframework.stereotype.Repository;
  * <br>Используется для выполнения операций чтения, записи, обновления и удаления записей Msisdns в базе данных.
  */
 @Repository
-public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
-
-    /**
-     * Метод, имплементирующий поиск объекта Msisdn в таблице Msisdns по номеру телефона.
-     *
-     * @param phoneNumber номер телефона искомого Msisdn.
-     * @return объект Msisdn с искомым номером телефона или null, если объект не был найден.
-     */
-
-//    TODO: убрать, если не пригодится вдруг
-//    Msisdns findByPhoneNumber(String phoneNumber);
-}
+public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {}
