@@ -30,6 +30,7 @@ public class DataToPayController {
                             " was accepted successfully"
             );
         } else {
+            LOGGER.log(Level.SEVERE, "ERROR: got request with empty data: " + "\n");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("empty data");
         }
     }
