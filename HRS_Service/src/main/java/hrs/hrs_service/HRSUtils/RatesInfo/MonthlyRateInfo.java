@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component;
 @Getter
 public class MonthlyRateInfo {
     private final int MINUTES_BY_DEFAULT = 50;
-    private final int PRICE_FOR_MONTH = 100;
+    private final Float PRICE_FOR_MONTH = 100f;
 }

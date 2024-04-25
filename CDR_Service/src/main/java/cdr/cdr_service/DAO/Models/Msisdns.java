@@ -1,6 +1,5 @@
 package cdr.cdr_service.DAO.Models;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

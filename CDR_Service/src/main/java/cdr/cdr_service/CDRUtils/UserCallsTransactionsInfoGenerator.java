@@ -2,13 +2,27 @@ package cdr.cdr_service.CDRUtils;
 
 import cdr.cdr_service.DAO.Models.Msisdns;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Класс, содержащий методы для генерации информации о звонках пользователей
  */
 public class UserCallsTransactionsInfoGenerator {
+    private static final Random RANDOM = new Random();
+    private static final Logger LOGGER = Logger.getLogger(UserCallsTransactionsInfoGenerator.class.getName());
+    private static final String DAY_START_TIME = "00:00:00";
+    private static final  String DAY_END_TIME = "23:59:59";
+    private static final float OUTCOMING_CALL_PROBABILITY = 0.5f;
+    private static final int CALL_DURATION_BOTTOM_BORDER = 10;
+    private static final int CALL_DURATION_TOP_BORDER = 590;
+    private static final int MILLISECONDS_TO_SECONDS = 1000;
+
     /**
      * Метод возвращает тип звонка:
      * <br> "01" - исходящий вызов,
@@ -18,7 +32,7 @@ public class UserCallsTransactionsInfoGenerator {
      * @return строка с типом звонка.
      */
     public static String generateCallType() {
-        return Math.random() < 0.5 ? "01" : "02";
+        return Math.random() < OUTCOMING_CALL_PROBABILITY ? "01" : "02";
     }
 
     /**
@@ -37,23 +51,34 @@ public class UserCallsTransactionsInfoGenerator {
             contactedMsisdn.append((int) (Math.random() * 100 + 900));
             contactedMsisdn.append((int) (1000000 + Math.random() * 9000000));
         } else {
-            Random rand = new Random();
-            contactedMsisdn.append(msisdnsList.get(rand.nextInt(msisdnsList.size())).getPhoneNumber());
+            contactedMsisdn.append(msisdnsList.get(RANDOM.nextInt(msisdnsList.size())).getPhoneNumber());
             while (contactedMsisdn.toString().equals(phoneNumber)) {
                 contactedMsisdn.delete(0, contactedMsisdn.length());
-                contactedMsisdn.append(msisdnsList.get(rand.nextInt(msisdnsList.size())).getPhoneNumber());
+                contactedMsisdn.append(msisdnsList.get(RANDOM.nextInt(msisdnsList.size())).getPhoneNumber());
             }
         }
         return contactedMsisdn.toString();
     }
+//    total = 86 400
+//
 
-    /**
-     * Метод возвращает время конца звонка, сдвинутое относительно начала на случайное время от 1 до 10 минут.
-     *
-     * @param callStartTime время начала звонка (Unix time seconds).
-     * @return время конца звонка (Unix time seconds).
-     */
-    public static long generateCallEndTime(Long callStartTime) {
-        return callStartTime + (long) (Math.random() * (540) + 60);
+    public static Long[] generateCallTimeGap(String callDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        Long[] callTimeGap = new Long[2];
+
+        try {
+            long startBorder = sdf.parse(callDate + " " + DAY_START_TIME).getTime() / MILLISECONDS_TO_SECONDS;
+            long endBorder = sdf.parse(callDate + " " + DAY_END_TIME).getTime() / MILLISECONDS_TO_SECONDS;
+            long callTimeStart = (long) (startBorder + (endBorder - startBorder) * Math.random());
+            callTimeGap[0] = callTimeStart;
+            long callTimeEnd = (long) (callTimeStart + Math.random() * CALL_DURATION_TOP_BORDER + CALL_DURATION_BOTTOM_BORDER);
+            callTimeGap[1] = callTimeEnd;
+
+            return callTimeGap;
+        } catch (ParseException e) {
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+        }
+
+        return null;
     }
 }

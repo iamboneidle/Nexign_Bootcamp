@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public class MsisdnsService {
     @Autowired
-    MsisdnsRepository msisdnsRepository;
+    private MsisdnsRepository msisdnsRepository;
 
     public List<Msisdns> getMsisdns() {
         return msisdnsRepository.findAll();

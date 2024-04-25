@@ -2,6 +2,7 @@ package hrs.hrs_service.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hrs.hrs_service.HRSUtils.CallReceipt;
 import hrs.hrs_service.HRSUtils.DataToPay;
 import hrs.hrs_service.HRSUtils.ReceiptMaker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +15,18 @@ import java.util.logging.Logger;
 @Service
 public class HRSService {
     @Autowired
-    CallReceiptSenderService callReceiptSenderService;
+    private CallReceiptSenderService callReceiptSenderService;
     @Autowired
-    ReceiptMaker receiptMaker;
-    private static final Logger LOGGER = Logger.getLogger(HRSService.class.getName());
-
+    private ReceiptMaker receiptMaker;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger LOGGER = Logger.getLogger(HRSService.class.getName());
     public void makeAndSendCallReceipt(DataToPay dataToPay) {
         try {
-            String json = objectMapper.writeValueAsString(receiptMaker.makeCalculation(dataToPay));
-            callReceiptSenderService.sendCallReceipt(json);
+            CallReceipt callReceipt = receiptMaker.makeCalculation(dataToPay);
+            if(callReceipt != null) {
+                String json = objectMapper.writeValueAsString(callReceipt);
+                callReceiptSenderService.sendCallReceipt(json);
+            }
         } catch (JsonProcessingException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
         }

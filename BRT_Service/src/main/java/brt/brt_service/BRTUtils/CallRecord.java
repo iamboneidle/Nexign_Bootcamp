@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CallRecord {
-    private String servicedMsisdnNumber;
     private String callType;
+    private String servicedMsisdnNumber;
     private long callTimeStart;
     private long callTimeEnd;
     private long rateId;

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class CDRFileSenderService {
     private static final String DESTINATION_URL = "http://localhost:2002/catchCDR";
     private static final Logger LOGGER = Logger.getLogger(CDRFileSenderService.class.getName());
+
     public void sendFile(File file) {
         OkHttpClient client = new OkHttpClient();
         String fileName = file.toString().substring(file.toString().lastIndexOf("/") + 1);

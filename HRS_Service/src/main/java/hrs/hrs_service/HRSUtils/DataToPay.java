@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DataToPay {
-    private String servicedMsisdnNumber;
     private String callType;
+    private String servicedMsisdnNumber;
     private Long callTimeStart;
     private Long callTimeEnd;
     private int rateId;

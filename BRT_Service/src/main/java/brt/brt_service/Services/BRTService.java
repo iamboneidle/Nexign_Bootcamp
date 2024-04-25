@@ -30,8 +30,8 @@ public class BRTService {
             long callTimeEnd = Long.parseLong(data[4]);
             if (msisdnsPhoneNumbers.contains(msisdnPhoneNumber)) {
                 send(new CallRecord(
-                                msisdnPhoneNumber,
                                 callType,
+                                msisdnPhoneNumber,
                                 callTimeStart,
                                 callTimeEnd,
                                 msisdnsService.getRateIdByPhoneNumber(msisdnPhoneNumber),
