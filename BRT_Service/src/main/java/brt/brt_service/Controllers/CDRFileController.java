@@ -36,7 +36,7 @@ public class CDRFileController {
                 content.append(line).append("\n");
             }
             reader.close();
-            brtService.makeCallRecords(content.toString());
+            brtService.handleCDRFile(content.toString());
             LOGGER.log(Level.INFO, "OK: " + fileName + " was accepted successfully" + "\n");
 
             return ResponseEntity.ok(fileName + " was uploaded successfully");

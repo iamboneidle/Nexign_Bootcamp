@@ -45,9 +45,6 @@ public class Msisdns {
     @Column(name = "outcoming_calls_quantity")
     private Long outcomingCallsQuantity;
 
-    @Column(name = "minutes_left")
-    private Long minutesLeft;
-
     @OneToMany(mappedBy = "fromNumber", fetch = FetchType.EAGER)
     private List<Calls> outcomingCalls;
 
@@ -69,7 +66,6 @@ public class Msisdns {
         this.balance = balance;
         this.incomingCallsQuantity = incomingCallsQuantity;
         this.outcomingCallsQuantity = outcomingCallsQuantity;
-        this.minutesLeft = minutesLeft;
     }
 
     @Override
@@ -80,7 +76,6 @@ public class Msisdns {
                 ", balance=" + balance +
                 ", incomingCallsQuantity=" + incomingCallsQuantity +
                 ", outcomingCallsQuantity=" + outcomingCallsQuantity +
-                ", minutesLeft=" + minutesLeft +
                 '}';
     }
 }

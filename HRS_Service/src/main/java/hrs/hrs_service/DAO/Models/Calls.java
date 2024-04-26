@@ -32,7 +32,7 @@ public class Calls {
     private Long toNumber;
 
     @Column(name = "call_time_start")
-    private Long callTimStart;
+    private Long callTimeStart;
 
     @Column(name = "call_time_end")
     private Long callTimeEnd;
@@ -44,7 +44,6 @@ public class Calls {
     @JoinColumn(name = "id_cdr")
     private CallDataRecords cdr;
 
-    @Column(name = "id_Longcdr", insertable = false, updatable = false)
+    @Column(name = "id_cdr", insertable = false, updatable = false)
     private Long cdrId;
-
 }

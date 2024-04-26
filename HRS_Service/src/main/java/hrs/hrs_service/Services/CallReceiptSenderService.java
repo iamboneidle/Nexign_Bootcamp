@@ -24,8 +24,9 @@ public class CallReceiptSenderService {
         try(Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string() + "\n");
+            } else {
+                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string() + "\n");
             }
-            LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string() + "\n");
         } catch(IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
         }

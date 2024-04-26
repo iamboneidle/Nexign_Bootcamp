@@ -25,8 +25,7 @@ public class CallDataRecords {
     @Column(name = "time_formed")
     private Long timeFormed;
 
-    public CallDataRecords(List<Calls> calls, long timeFormed) {
-        this.calls = calls;
+    public CallDataRecords(long timeFormed) {
         this.timeFormed = timeFormed;
     }
 }
