@@ -55,13 +55,10 @@ public class Calls {
                  CallDataRecords cdr
     ) {
         this.fromMsisdns = fromMsisdns;
-        this.fromNumber = fromNumber;
         this.toMsisdns = toMsisdns;
-        this.toNumber = toNumber;
         this.callTimeStart = callTimeStart;
         this.callTimeEnd = callTimeEnd;
         this.callDuration = callDuration;
         this.cdr = cdr;
-        this.cdrId = cdrId;
     }
 }

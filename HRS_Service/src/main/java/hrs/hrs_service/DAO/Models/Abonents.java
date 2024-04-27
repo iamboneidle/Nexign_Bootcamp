@@ -37,4 +37,3 @@ public class Abonents {
         this.patronymic = patronymic;
     }
 }
-

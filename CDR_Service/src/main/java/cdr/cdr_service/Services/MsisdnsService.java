@@ -27,4 +27,3 @@ public class MsisdnsService {
         return msisdnsRepository.findAll();
     }
 }
-
