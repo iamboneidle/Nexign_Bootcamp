@@ -57,8 +57,7 @@ public class Msisdns {
             Abonents abonents,
             float balance,
             long incomingCallsQuantity,
-            long outcomingCallsQuantity,
-            long minutesLeft
+            long outcomingCallsQuantity
     ) {
         this.number = number;
         this.rates = rates;

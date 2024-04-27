@@ -31,7 +31,7 @@ public class Abonents {
     @OneToMany(mappedBy = "abonentId", fetch = FetchType.EAGER)
     private List<Msisdns> msisdns;
 
-    public Abonents(String name, String surname, String patronymic, List<Msisdns> msisdns) {
+    public Abonents(String name, String surname, String patronymic) {
         this.name = name;
         this.surname = surname;
         this.patronymic = patronymic;

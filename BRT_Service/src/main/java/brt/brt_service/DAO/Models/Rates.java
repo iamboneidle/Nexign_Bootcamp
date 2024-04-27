@@ -45,15 +45,16 @@ public class Rates {
 
 //    TODO: убрать
     public Rates(
+            Long id,
             String rateName,
             Float startCost,
             Float minLimit,
             Float outcomingCallsCostServiced,
             Float outcomingCallsCostOthers,
             Float incomingCallsCostServiced,
-            Float incomingCallsCostOthers,
-            List<Msisdns> msisdns
+            Float incomingCallsCostOthers
     ) {
+        this.id = id;
         this.rateName = rateName;
         this.startCost = startCost;
         this.minLimit = minLimit;
@@ -61,7 +62,6 @@ public class Rates {
         this.outcomingCallsCostOthers = outcomingCallsCostOthers;
         this.incomingCallsCostServiced = incomingCallsCostServiced;
         this.incomingCallsCostOthers = incomingCallsCostOthers;
-        this.msisdns = msisdns;
     }
 
     @Override
