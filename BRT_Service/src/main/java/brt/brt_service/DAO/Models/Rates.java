@@ -15,7 +15,6 @@ import java.util.List;
 @Setter
 public class Rates {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
