@@ -1,10 +1,10 @@
 package brt.brt_service.Controllers;
 
 import brt.brt_service.BRTUtils.DataToAddNewUser;
-import brt.brt_service.DAO.Models.Abonents;
+import brt.brt_service.DAO.Models.Users;
 import brt.brt_service.DAO.Models.Msisdns;
 import brt.brt_service.DAO.Models.Rates;
-import brt.brt_service.DAO.Repository.AbonentsRepository;
+import brt.brt_service.DAO.Repository.UsersRepository;
 import brt.brt_service.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.DAO.Repository.RatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +23,16 @@ public class NewUserController {
     @Autowired
     private RatesRepository ratesRepository;
     @Autowired
-    private AbonentsRepository abonentsRepository;
+    private UsersRepository usersRepository;
     private static final Logger LOGGER = Logger.getLogger(NewUserController.class.getName());
 
     @PostMapping("post-new-user")
     private ResponseEntity<String> addNewUser(@RequestBody DataToAddNewUser dataToAddNewUserToCDR) {
         if (dataToAddNewUserToCDR != null) {
-            Abonents abonent = new Abonents(dataToAddNewUserToCDR.getName(), dataToAddNewUserToCDR.getSurname(), dataToAddNewUserToCDR.getPatronymic());
+            Users abonent = new Users(dataToAddNewUserToCDR.getName(), dataToAddNewUserToCDR.getSurname(), dataToAddNewUserToCDR.getPatronymic());
             Rates rate = ratesRepository.findRatesById(dataToAddNewUserToCDR.getTariffId());
             Msisdns msisdn = new Msisdns(dataToAddNewUserToCDR.getMsisdn(), rate, abonent, dataToAddNewUserToCDR.getMoney(), 0L, 0L);
-            abonentsRepository.save(abonent);
+            usersRepository.save(abonent);
             msisdnsRepository.save(msisdn);
             LOGGER.log(Level.INFO, "OK: added new user " + dataToAddNewUserToCDR.getMsisdn());
             return ResponseEntity.ok().body("BRT added user " + dataToAddNewUserToCDR.getMsisdn());

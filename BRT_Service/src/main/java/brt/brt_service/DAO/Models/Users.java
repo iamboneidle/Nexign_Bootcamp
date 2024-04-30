@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Abonents {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -28,10 +28,10 @@ public class Abonents {
     @Column(name = "patronymic")
     private String patronymic;
 
-    @OneToMany(mappedBy = "abonentId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER)
     private List<Msisdns> msisdns;
 
-    public Abonents(String name, String surname, String patronymic) {
+    public Users(String name, String surname, String patronymic) {
         this.name = name;
         this.surname = surname;
         this.patronymic = patronymic;

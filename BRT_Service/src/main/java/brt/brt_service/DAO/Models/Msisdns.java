@@ -30,11 +30,11 @@ public class Msisdns {
     private Long rateId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_abonent")
-    private Abonents abonents;
+    @JoinColumn(name = "id_user")
+    private Users users;
 
-    @Column(name = "id_abonent", insertable = false, updatable = false)
-    private Long abonentId;
+    @Column(name = "id_user", insertable = false, updatable = false)
+    private Long userId;
 
     @Column(name = "balance")
     private Float balance;
@@ -54,14 +54,14 @@ public class Msisdns {
     public Msisdns(
             String number,
             Rates rates,
-            Abonents abonents,
+            Users users,
             float balance,
             long incomingCallsQuantity,
             long outcomingCallsQuantity
     ) {
         this.number = number;
         this.rates = rates;
-        this.abonents = abonents;
+        this.users = users;
         this.balance = balance;
         this.incomingCallsQuantity = incomingCallsQuantity;
         this.outcomingCallsQuantity = outcomingCallsQuantity;

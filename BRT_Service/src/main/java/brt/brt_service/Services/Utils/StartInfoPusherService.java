@@ -1,9 +1,9 @@
 package brt.brt_service.Services.Utils;
 
-import brt.brt_service.DAO.Models.Abonents;
+import brt.brt_service.DAO.Models.Users;
 import brt.brt_service.DAO.Models.Msisdns;
 import brt.brt_service.DAO.Models.Rates;
-import brt.brt_service.DAO.Repository.AbonentsRepository;
+import brt.brt_service.DAO.Repository.UsersRepository;
 import brt.brt_service.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.DAO.Repository.RatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,8 @@ public class StartInfoPusherService {
     @Autowired
     private MsisdnsRepository msisdnsRepository;
     @Autowired
-    private AbonentsRepository abonentsRepository;
-    private final List<Abonents> abonents = new ArrayList<>();
+    private UsersRepository usersRepository;
+    private final List<Users> abonents = new ArrayList<>();
     private final List<Rates> rates = new ArrayList<>();
     private final List<Msisdns> msisdns = new ArrayList<>();
     private static final String[] USERS_NUMBERS = {
@@ -38,19 +38,19 @@ public class StartInfoPusherService {
     };
 
     public void pushToDB() {
-        if (abonentsRepository.findAll().isEmpty()) {
-            abonents.add(new Abonents("Федор", "Дмитриевич", "Панфилов"));
-            abonents.add(new Abonents("Мария", "Игоревна", "Кондукова"));
-            abonents.add(new Abonents("Олег", "Игоревич", "Резьбов"));
-            abonents.add(new Abonents("Иосиф", "Виссарионович", "Сталин"));
-            abonents.add(new Abonents("Жан-Клод", "Вандам", "Терминатор"));
-            abonents.add(new Abonents("Игорь", "Евгеньевич", "Карагодин"));
-            abonents.add(new Abonents("Матвей", "Сергеевич", "Соболев"));
-            abonents.add(new Abonents("Галина", "Ивановна", "Виноградова"));
-            abonents.add(new Abonents("Дарья", "Васильевна", "Лукошенко"));
-            abonents.add(new Abonents("Дина", "Азисбековна", "Кожакова"));
-            abonents.add(new Abonents("Александр", "Дмитриевич", "Мартынов"));
-            abonentsRepository.saveAll(abonents);
+        if (usersRepository.findAll().isEmpty()) {
+            abonents.add(new Users("Федор", "Дмитриевич", "Панфилов"));
+            abonents.add(new Users("Мария", "Игоревна", "Кондукова"));
+            abonents.add(new Users("Олег", "Игоревич", "Резьбов"));
+            abonents.add(new Users("Иосиф", "Виссарионович", "Сталин"));
+            abonents.add(new Users("Жан-Клод", "Вандам", "Терминатор"));
+            abonents.add(new Users("Игорь", "Евгеньевич", "Карагодин"));
+            abonents.add(new Users("Матвей", "Сергеевич", "Соболев"));
+            abonents.add(new Users("Галина", "Ивановна", "Виноградова"));
+            abonents.add(new Users("Дарья", "Васильевна", "Лукошенко"));
+            abonents.add(new Users("Дина", "Азисбековна", "Кожакова"));
+            abonents.add(new Users("Александр", "Дмитриевич", "Мартынов"));
+            usersRepository.saveAll(abonents);
         }
         if (ratesRepository.findAll().isEmpty()) {
             rates.add(new Rates(11L, "Классика", null, null, 1.5F, 2.5F, 0F, 0F));
