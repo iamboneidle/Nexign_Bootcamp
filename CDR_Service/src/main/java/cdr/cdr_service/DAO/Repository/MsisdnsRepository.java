@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
  * <br>Используется для выполнения операций чтения, записи, обновления и удаления записей Msisdns в базе данных.
  */
 @Repository
-public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {}
+public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
+}

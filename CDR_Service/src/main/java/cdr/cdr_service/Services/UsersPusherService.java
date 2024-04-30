@@ -19,7 +19,7 @@ public class UsersPusherService {
     @Autowired
     private MsisdnsRepository msisdnsRepository;
     @Autowired
-    private  MsisdnsService msisdnsService;
+    private MsisdnsService msisdnsService;
     private static final String[] USERS_NUMBERS = {
             "79218476904",
             "79214007407",

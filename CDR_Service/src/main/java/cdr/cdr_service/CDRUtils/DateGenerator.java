@@ -18,7 +18,7 @@ public class DateGenerator extends Thread {
             try {
                 sleep(2000);
             } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+                LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
             }
             synchronized (this) {
                 currentDate = increaseDate(currentDate);
@@ -37,7 +37,7 @@ public class DateGenerator extends Thread {
             calendar.setTime(date);
             calendar.add(Calendar.DATE, 1);
         } catch (ParseException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
 
         return sdf.format(calendar.getTime());

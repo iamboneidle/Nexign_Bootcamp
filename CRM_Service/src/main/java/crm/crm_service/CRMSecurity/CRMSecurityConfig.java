@@ -34,9 +34,12 @@ public class CRMSecurityConfig {
                     authConfig.requestMatchers(HttpMethod.GET, "/user").hasAuthority("SUBSCRIBER");
                     authConfig.requestMatchers(HttpMethod.POST, "/user/put-money").hasAuthority("SUBSCRIBER");
                     authConfig.requestMatchers(HttpMethod.GET, "/admin").hasAuthority("MANAGER");
+                    authConfig.requestMatchers(HttpMethod.POST, "/admin/save").hasAuthority("MANAGER");
                     authConfig.requestMatchers(HttpMethod.POST, "/admin/change-tariff").hasAuthority("MANAGER");
-                    authConfig.requestMatchers(HttpMethod.POST, "/admin/post-tariffs").hasAuthority("MANAGER");
+                    authConfig.requestMatchers(HttpMethod.POST, "/admin/change-tariff-monthly").hasAuthority("MANAGER");
                     authConfig.requestMatchers(HttpMethod.POST, "/admin/put-money").hasAuthority("MANAGER");
+                    authConfig.requestMatchers(HttpMethod.POST, "/admin/put-money-monthly").hasAuthority("MANAGER");
+                    authConfig.requestMatchers(HttpMethod.POST, "/admin/post-tariffs").hasAuthority("MANAGER");
                     authConfig.anyRequest().authenticated();
                 })
                 .formLogin(withDefaults())

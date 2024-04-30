@@ -2,7 +2,6 @@ package brt.brt_service.Controllers;
 
 import brt.brt_service.Services.BRTService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -35,13 +34,13 @@ public class CDRFileController {
                 }
                 reader.close();
                 brtService.handleCDRFile(content.toString());
-                LOGGER.log(Level.INFO, "OK: " + fileName + " was accepted successfully" + "\n");
+                LOGGER.log(Level.INFO, "OK: " + fileName + " was accepted successfully");
                 return ResponseEntity.ok().body("BRT accepted " + fileName + " successfully");
             }
 
             return ResponseEntity.badRequest().body("BRT got empty " + fileName);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
             return ResponseEntity.internalServerError().body("BRT failed to process " + fileName);
         }
     }

@@ -1,6 +1,5 @@
 package hrs.hrs_service.HRSUtils;
 
-import hrs.hrs_service.HRSUtils.DataToPay;
 import hrs.hrs_service.Services.HRSService;
 
 public class Calculator implements Runnable {

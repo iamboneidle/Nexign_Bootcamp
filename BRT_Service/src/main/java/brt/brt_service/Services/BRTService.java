@@ -39,7 +39,9 @@ public class BRTService {
         callRecordsHandlerService.makeCallRecords(callDataRecord);
     }
 
-    public void handleCallReceipt(CallReceipt callReceipt) { callReceiptHandlerService.validateCallReceipt(callReceipt); }
+    public void handleCallReceipt(CallReceipt callReceipt) {
+        callReceiptHandlerService.validateCallReceipt(callReceipt);
+    }
 
     private void sendRatesToCacheDB_HRS() {/* TODO: @PostConstruct */ }
 

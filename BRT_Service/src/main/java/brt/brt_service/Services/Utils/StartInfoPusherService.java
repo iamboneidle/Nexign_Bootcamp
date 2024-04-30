@@ -6,7 +6,6 @@ import brt.brt_service.DAO.Models.Rates;
 import brt.brt_service.DAO.Repository.AbonentsRepository;
 import brt.brt_service.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.DAO.Repository.RatesRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,7 @@ public class StartInfoPusherService {
     private MsisdnsRepository msisdnsRepository;
     @Autowired
     private AbonentsRepository abonentsRepository;
-    private final List<Abonents> abonents = new ArrayList<>();;
+    private final List<Abonents> abonents = new ArrayList<>();
     private final List<Rates> rates = new ArrayList<>();
     private final List<Msisdns> msisdns = new ArrayList<>();
     private static final String[] USERS_NUMBERS = {

@@ -5,18 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class DataToPutMoney {
+@AllArgsConstructor
+@NoArgsConstructor
+public class DataToAddNewUserToCDR {
     private String msisdn;
-    private Float money;
 
     @Override
     public String toString() {
-        return "DataToPutMoney{" + "msisdn='" + msisdn + '\'' +
-                ", moneyToPut=" + money +
-                '}';
+        return "DataToAddNewUserToCDR{" + "msisdn='" + msisdn + '\'' + '}';
     }
 }

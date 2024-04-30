@@ -41,13 +41,13 @@ public class ConcurrentQueue {
                 if (queue.size() < CDR_FILE_CAPACITY) {
                     queue.add(obj);
                 } else {
-                    dequeue(transactionsRepository);
+                    dequeue();
                 }
             }
         }
     }
 
-    private void dequeue(TransactionsRepository transactionsRepository) {
+    private void dequeue() {
         Path filePath = Paths.get(ROOT_PATH + "/" + "CDR_File" + "_" + cdrFileCounter + ".txt");
         queue = queue.stream().sorted(Comparator.comparing(TransactionObject::getCallStartTime)).collect(Collectors.toList());
         writeCDRFile(filePath);
@@ -73,7 +73,7 @@ public class ConcurrentQueue {
                 }
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
     }
 

@@ -17,7 +17,7 @@ public class UserCallsTransactionsInfoGenerator {
     private static final Random RANDOM = new Random();
     private static final Logger LOGGER = Logger.getLogger(UserCallsTransactionsInfoGenerator.class.getName());
     private static final String DAY_START_TIME = "00:00:00";
-    private static final  String DAY_END_TIME = "23:59:59";
+    private static final String DAY_END_TIME = "23:59:59";
     private static final float OUTCOMING_CALL_PROBABILITY = 0.5f;
     private static final int CALL_DURATION_BOTTOM_BORDER = 10;
     private static final int CALL_DURATION_TOP_BORDER = 590;
@@ -59,8 +59,6 @@ public class UserCallsTransactionsInfoGenerator {
         }
         return contactedMsisdn.toString();
     }
-//    total = 86 400
-//
 
     public static Long[] generateCallTimeGap(String callDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -76,7 +74,7 @@ public class UserCallsTransactionsInfoGenerator {
 
             return callTimeGap;
         } catch (ParseException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
 
         return null;

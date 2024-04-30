@@ -2,7 +2,6 @@ package brt.brt_service.Controllers;
 
 import brt.brt_service.BRTUtils.DataToPutMoney;
 import brt.brt_service.DAO.Repository.MsisdnsRepository;
-import brt.brt_service.Services.BRTService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,9 @@ public class PutMoneyOnAccountsController {
     @Transactional
     public ResponseEntity<String> putMoney(@RequestBody DataToPutMoney dataToPutMoney) {
         if (dataToPutMoney != null) {
-            msisdnsRepository.putMoneyByNumber(dataToPutMoney.getMsisdn(), dataToPutMoney.getMoneyToPut());
-            LOGGER.log(Level.INFO, "OK: " + dataToPutMoney.getMsisdn() + " got " + dataToPutMoney.getMoneyToPut() + "\n");
-            return ResponseEntity.ok().body("BRT has put " + dataToPutMoney.getMoneyToPut() + " on " +
+            msisdnsRepository.putMoneyByNumber(dataToPutMoney.getMsisdn(), dataToPutMoney.getMoney());
+            LOGGER.log(Level.INFO, "OK: " + dataToPutMoney.getMsisdn() + " got " + dataToPutMoney.getMoney());
+            return ResponseEntity.ok().body("BRT has put " + dataToPutMoney.getMoney() + " on " +
                     dataToPutMoney.getMsisdn() + " account");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data, can't put money");

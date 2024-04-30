@@ -10,9 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Сервис для формирования CDR-файлов, записи в базу данных (пока что, мб потом декомпозирую)
@@ -29,6 +26,9 @@ public class CDRService {
     private CDRFileSenderService cdrFileSenderService;
     @Autowired
     private TransactionsRepository transactionsRepository;
+    private List<Msisdns> msisdns;
+    private DateGenerator daemonThread;
+    private ConcurrentQueue concurrentQueue;
 
     /**
      * Метод, вызываемый после создания экземпляра класса.
@@ -36,16 +36,20 @@ public class CDRService {
      */
     @Scheduled(initialDelay = 5 * 1000)
     public void initializer() {
-        List<Msisdns> msisdns = msisdnsService.getMsisdns();
-        DateGenerator daemonThread = new DateGenerator();
+        msisdns = msisdnsService.getMsisdns();
+        daemonThread = new DateGenerator();
         daemonThread.setDaemon(true);
         daemonThread.start();
-        ConcurrentQueue concurrentQueue = new ConcurrentQueue(msisdns, cdrFileSenderService, transactionsRepository);
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        concurrentQueue = new ConcurrentQueue(msisdns, cdrFileSenderService, transactionsRepository);
         for (Msisdns msisdn : msisdns) {
             Thread clientThread = new Thread(new User(msisdn.getPhoneNumber(), msisdns, daemonThread, concurrentQueue));
             clientThread.start();
         }
+    }
 
+    public void addNewMsisdn(Msisdns msisdn) {
+        this.msisdns.add(msisdn);
+        Thread newClientThread = new Thread(new User(msisdn.getPhoneNumber(), msisdns, daemonThread, concurrentQueue));
+        newClientThread.start();
     }
 }

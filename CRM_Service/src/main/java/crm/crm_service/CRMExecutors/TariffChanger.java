@@ -1,7 +1,8 @@
-package crm.crm_service.CRMUtils;
+package crm.crm_service.CRMExecutors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import crm.crm_service.CRMUtils.DataToChangeTariff;
 import crm.crm_service.Services.CRMService;
 import crm.crm_service.Services.DataToChangeTariffSenderService;
 import org.springframework.stereotype.Service;

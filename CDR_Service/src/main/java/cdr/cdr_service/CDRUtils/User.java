@@ -37,13 +37,18 @@ public class User implements Runnable {
         List<TransactionObject> transactionObjectsForDay = new ArrayList<>();
         List<String> phoneNumbersList = new ArrayList<>();
         msisdnsList.forEach(msisdn -> phoneNumbersList.add(msisdn.getPhoneNumber()));
+        int curMsisdnQuantity = msisdnsList.size();
         while (true) {
             synchronized (daemonThread) {
                 try {
                     daemonThread.wait();
                 } catch (InterruptedException e) {
-                    LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+                    LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
                     throw new RuntimeException(e);
+                }
+                if (curMsisdnQuantity != msisdnsList.size()) {
+                    curMsisdnQuantity = msisdnsList.size();
+                    phoneNumbersList.add(msisdnsList.get(msisdnsList.size() - 1).getPhoneNumber());
                 }
                 if (Math.random() <= USER_MAKES_CALL_TODAY_PROBABILITY) {
                     String curDate = daemonThread.getCurrentDate();

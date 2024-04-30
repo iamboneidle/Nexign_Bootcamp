@@ -45,12 +45,12 @@ public class CDRFileSenderService {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "ERROR:" + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.SEVERE, "ERROR:" + Objects.requireNonNull(response.body()).string());
             } else {
-                LOGGER.log(Level.INFO, "OK: " + fileName + " was sent successfully" + "\n");
+                LOGGER.log(Level.INFO, "OK: " + fileName + " was sent successfully");
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
     }
 }

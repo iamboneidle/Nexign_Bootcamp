@@ -20,15 +20,16 @@ public class HRSService {
     private ReceiptMaker receiptMaker;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOGGER = Logger.getLogger(HRSService.class.getName());
+
     public void makeAndSendCallReceipt(DataToPay dataToPay) {
         try {
             CallReceipt callReceipt = receiptMaker.makeCalculation(dataToPay);
-            if(callReceipt != null) {
+            if (callReceipt != null) {
                 String json = objectMapper.writeValueAsString(callReceipt);
                 callReceiptSenderService.sendCallReceipt(json);
             }
         } catch (JsonProcessingException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
     }
 }

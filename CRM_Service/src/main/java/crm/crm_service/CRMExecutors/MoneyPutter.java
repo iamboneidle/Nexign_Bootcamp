@@ -1,7 +1,8 @@
-package crm.crm_service.CRMUtils;
+package crm.crm_service.CRMExecutors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import crm.crm_service.CRMUtils.DataToPutMoney;
 import crm.crm_service.Services.CRMService;
 import crm.crm_service.Services.DataToPutMoneySenderService;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MoneyPutter implements Runnable{
+public class MoneyPutter implements Runnable {
     private final CRMService crmService;
     private final DataToPutMoneySenderService dataToPutMoneySenderService;
     private final ObjectMapper objectMapper = new ObjectMapper();

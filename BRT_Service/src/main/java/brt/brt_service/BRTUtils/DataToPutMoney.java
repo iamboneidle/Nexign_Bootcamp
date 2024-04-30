@@ -11,12 +11,12 @@ import lombok.Setter;
 @Setter
 public class DataToPutMoney {
     private String msisdn;
-    private Float moneyToPut;
+    private Float money;
 
     @Override
     public String toString() {
         return "DataToPutMoney{" + "msisdn='" + msisdn + '\'' +
-                ", moneyToPut=" + moneyToPut +
+                ", moneyToPut=" + money +
                 '}';
     }
 }

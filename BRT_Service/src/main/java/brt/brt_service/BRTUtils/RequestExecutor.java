@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 @Service
 public class RequestExecutor {
-
     private static final Logger LOGGER = Logger.getLogger(RequestExecutor.class.getName());
     private OkHttpClient client;
 
@@ -26,6 +25,7 @@ public class RequestExecutor {
                 .readTimeout(40000, TimeUnit.MILLISECONDS)
                 .build();
     }
+
     public void executeWithHeaders(String DESTINATION_URL, RequestBody body, String ADMIN_USERNAME, String ADMIN_PASSWORD) {
 
         Request request = new Request.Builder()
@@ -37,12 +37,12 @@ public class RequestExecutor {
         try (Response response = client.newCall(request).execute()) {
 
             if (!response.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string());
             } else {
-                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string());
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -55,9 +55,9 @@ public class RequestExecutor {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string());
             } else {
-                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string());
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));

@@ -15,12 +15,14 @@ public class CallReceiptSenderService {
     private static final String POST_CALL_RECEIPT_URL = "http://localhost:2002/post-call-receipt";
     private static final Logger LOGGER = Logger.getLogger(CallReceiptSenderService.class.getName());
     private OkHttpClient client;
+
     @PostConstruct
     public void init() {
         client = new OkHttpClient.Builder()
                 .connectionPool(new ConnectionPool())
                 .build();
     }
+
     public void sendCallReceipt(String json) {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
         Request request = new Request.Builder()
@@ -28,14 +30,14 @@ public class CallReceiptSenderService {
                 .post(body)
                 .build();
 
-        try(Response response = client.newCall(request).execute()) {
+        try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string());
             } else {
-                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string());
             }
-        } catch(IOException e) {
-            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
     }
 }

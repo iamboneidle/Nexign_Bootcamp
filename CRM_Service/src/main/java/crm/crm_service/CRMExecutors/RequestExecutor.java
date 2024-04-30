@@ -1,4 +1,4 @@
-package crm.crm_service.CRMUtils;
+package crm.crm_service.CRMExecutors;
 
 import okhttp3.*;
 
@@ -21,9 +21,9 @@ public class RequestExecutor {
 
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.INFO, "OK: " + Objects.requireNonNull(response.body()).string());
             } else {
-                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string() + "\n");
+                LOGGER.log(Level.SEVERE, "ERROR: " + Objects.requireNonNull(response.body()).string());
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));

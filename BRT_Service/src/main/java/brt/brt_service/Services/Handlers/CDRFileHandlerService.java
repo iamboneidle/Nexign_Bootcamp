@@ -37,9 +37,9 @@ public class CDRFileHandlerService {
     private int curMonth = 1;
     private int curYear = 2024;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String CHANGE_TARIFF_URL = "http://localhost:2004/admin/change-tariff";
-    private static final String PUT_MONEY_URL = "http://localhost:2004/admin/put-money";
-    private static final String POST_DATA_TO_PAY_URL = "http://localhost:2003/data-to-pay";
+    private static final String CHANGE_TARIFF_URL = "http://localhost:2004/admin/change-tariff-monthly";
+    private static final String PUT_MONEY_URL = "http://localhost:2004/admin/put-money-monthly";
+    private static final String POST_DATA_TO_PAY_URL = "http://localhost:2003/post-data-to-pay";
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
 
@@ -51,7 +51,7 @@ public class CDRFileHandlerService {
         List<Msisdns> msisdnsList = msisdnsService.getMsisdns();
         List<String> msisdnsPhoneNumbers = msisdnsList.stream().map(Msisdns::getNumber).toList();
 
-        for (String call: calls) {
+        for (String call : calls) {
             String[] data = call.split(",");
             String callType = data[0];
             String calledMsisdn = data[1];
@@ -71,6 +71,11 @@ public class CDRFileHandlerService {
                 validateDate(callRecord, msisdnsList);
                 sendCallRecord(callRecord);
                 saveCallsInfo(msisdnsList, cdr, calledMsisdn, contactedMsisdn, callTimeStart, callTimeEnd);
+            }
+            if (callType.equals("01")) {
+                msisdnsRepository.increaseOutcomingCallsQuantity(calledMsisdn);
+            } else {
+                msisdnsRepository.increaseIncomingCallsQuantity(calledMsisdn);
             }
         }
     }
@@ -111,14 +116,14 @@ public class CDRFileHandlerService {
     }
 
     private void putMoneyOnAccounts() {
-        String json = "new month " + curMonth + "." + curYear +" has come";
+        String json = "new month " + curMonth + "." + curYear + " has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
         requestExecutor.executeWithHeaders(PUT_MONEY_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
     private void changeRates() {
-        String json = "new month " + curMonth + "." + curYear +" has come";
+        String json = "new month " + curMonth + "." + curYear + " has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
         requestExecutor.executeWithHeaders(CHANGE_TARIFF_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);

@@ -1,7 +1,7 @@
 package crm.crm_service.CRMSecurity;
 
 import crm.crm_service.DAO.Models.Users;
-import crm.crm_service.DAO.Repository.UserRepository;
+import crm.crm_service.DAO.Repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,13 +11,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class CRMDetailsService implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository userRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users byUsername = userRepository.findByUsername(username);
-        if (byUsername == null) {
+        Users user = userRepository.findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException(username + " not found");
         }
-        return byUsername;
+        return user;
     }
 }

@@ -100,7 +100,7 @@ public class ReceiptMaker {
                 String json = objectMapper.writeValueAsString(callReceipt);
                 callReceiptSenderService.sendCallReceipt(json);
             } catch (JsonProcessingException e) {
-                LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
+                LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
             }
         }
     }

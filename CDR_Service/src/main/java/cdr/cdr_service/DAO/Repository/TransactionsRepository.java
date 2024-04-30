@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
  * Используется для выполнения операций чтения, записи, обновления и удаления записей Transactions в базе данных.
  */
 @Repository
-public interface TransactionsRepository extends JpaRepository<Transactions, Long> {}
+public interface TransactionsRepository extends JpaRepository<Transactions, Long> {
+}
