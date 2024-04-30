@@ -1,5 +1,6 @@
 package hrs.hrs_service.Controllers;
 
+import hrs.hrs_service.HRSUtils.Calculator;
 import hrs.hrs_service.HRSUtils.DataToPay;
 import hrs.hrs_service.Services.HRSService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +19,17 @@ public class DataToPayController {
     @Autowired
     HRSService hrsService;
     private static final Logger LOGGER = Logger.getLogger(DataToPayController.class.getName());
+
     @PostMapping("/data-to-pay")
     public ResponseEntity<String> catchDataToPay(@RequestBody DataToPay dataToPay) {
-
         if (dataToPay != null) {
-            hrsService.makeAndSendCallReceipt(dataToPay);
+            Thread thread = new Thread(new Calculator(hrsService, dataToPay));
+            thread.start();
             LOGGER.log(Level.INFO, "OK: info for " + dataToPay.getServicedMsisdnNumber() + " was accepted" + "\n");
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-                    "Call data for " +
-                            dataToPay.getServicedMsisdnNumber() +
-                            " was accepted successfully"
-            );
+            return ResponseEntity.ok().body("HRS accepted call data for " + dataToPay.getServicedMsisdnNumber() + " successfully");
         } else {
             LOGGER.log(Level.SEVERE, "ERROR: got request with empty data: " + "\n");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("empty data");
+            return ResponseEntity.badRequest().body("HRS got empty data");
         }
     }
 }

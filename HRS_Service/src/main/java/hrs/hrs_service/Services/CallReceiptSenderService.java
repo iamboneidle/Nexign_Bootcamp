@@ -1,5 +1,6 @@
 package hrs.hrs_service.Services;
 
+import jakarta.annotation.PostConstruct;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,15 @@ import java.util.logging.Logger;
 public class CallReceiptSenderService {
     private static final String DESTINATION_URL = "http://localhost:2002/catch-call-receipt";
     private static final Logger LOGGER = Logger.getLogger(CallReceiptSenderService.class.getName());
+    private OkHttpClient client;
+    @PostConstruct
+    public void init() {
+        client = new OkHttpClient.Builder()
+                .connectionPool(new ConnectionPool())
+                .build();
+    }
     public void sendCallReceipt(String json) {
-        OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
         Request request = new Request.Builder()
                 .url(DESTINATION_URL)
                 .post(body)

@@ -42,7 +42,6 @@ public class Rates {
     @OneToMany(mappedBy = "rateId", fetch = FetchType.EAGER)
     private List<Msisdns> msisdns;
 
-//    TODO: убрать
     public Rates(
             Long id,
             String rateName,
@@ -65,8 +64,7 @@ public class Rates {
 
     @Override
     public String toString() {
-        return "Rates{" +
-                "id=" + id +
+        return "Rates{" + "id=" + id +
                 ", rateName='" + rateName + '\'' +
                 ", startCost=" + startCost +
                 ", minLimit=" + minLimit +

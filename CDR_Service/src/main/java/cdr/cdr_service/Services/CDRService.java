@@ -10,6 +10,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Сервис для формирования CDR-файлов, записи в базу данных (пока что, мб потом декомпозирую)
@@ -38,9 +41,11 @@ public class CDRService {
         daemonThread.setDaemon(true);
         daemonThread.start();
         ConcurrentQueue concurrentQueue = new ConcurrentQueue(msisdns, cdrFileSenderService, transactionsRepository);
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
         for (Msisdns msisdn : msisdns) {
             Thread clientThread = new Thread(new User(msisdn.getPhoneNumber(), msisdns, daemonThread, concurrentQueue));
             clientThread.start();
         }
+
     }
 }

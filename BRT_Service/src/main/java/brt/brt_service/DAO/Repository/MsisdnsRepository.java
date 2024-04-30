@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
     Msisdns findMsisdnsByNumber(String number);
@@ -17,7 +19,5 @@ public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
     @Query("UPDATE Msisdns m SET m.balance = m.balance + ?1")
     void increaseAllBalances(float amount);
 
-    @Modifying
-    @Query("UPDATE Msisdns m SET m.rateId = ?2 WHERE m.number = ?1")
-    void updateRateIdByNumber(String number, Long rateId);
+
 }

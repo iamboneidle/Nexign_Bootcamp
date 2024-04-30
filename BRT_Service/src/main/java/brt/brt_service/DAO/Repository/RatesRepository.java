@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RatesRepository extends JpaRepository<Rates, Long> {
+    Rates findRatesById(Long id);
 }

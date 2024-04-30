@@ -49,10 +49,10 @@ public class ConcurrentQueue {
 
     private void dequeue(TransactionsRepository transactionsRepository) {
         Path filePath = Paths.get(ROOT_PATH + "/" + "CDR_File" + "_" + cdrFileCounter + ".txt");
+        queue = queue.stream().sorted(Comparator.comparing(TransactionObject::getCallStartTime)).collect(Collectors.toList());
         writeCDRFile(filePath);
         sendCDRFiles(filePath.toFile());
-        writeToDataBase(msisdns, transactionsRepository);
-        queue = queue.stream().sorted(Comparator.comparing(TransactionObject::getCallStartTime)).collect(Collectors.toList());
+        writeToDataBase(msisdns);
         queue.clear();
         cdrFileCounter++;
     }
@@ -77,7 +77,7 @@ public class ConcurrentQueue {
         }
     }
 
-    private void writeToDataBase(List<Msisdns> msisdns, TransactionsRepository transactionsRepository) {
+    private void writeToDataBase(List<Msisdns> msisdns) {
         List<Transactions> transactions = new ArrayList<>();
         for (TransactionObject transactionObject : queue) {
             for (Msisdns msisdn : msisdns) {

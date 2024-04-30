@@ -1,30 +1,21 @@
 package crm.crm_service.Services;
 
-import crm.crm_service.DAO.Repository.RolesRepository;
-import crm.crm_service.DAO.Repository.UsersRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class CRMService {
-    @Autowired
-    private RolesRepository rolesRepository;
-    @Autowired
-    private UsersRepository usersRepository;
+    @Getter
+    private Map<String, Long> mapNumberToRateId = new HashMap<>();
 
-    public void pay() {
+    public void setMapNumberToRateId(Map<String, Integer> mapNumberToRateIdNew) {
 
-    }
-
-    public void save() {
-
-    }
-
-    public void changeTariff() {
-
-    }
-
-    public void addSubscriber() {
-
+        mapNumberToRateIdNew.forEach((k, v) -> {
+            this.mapNumberToRateId.put(k, v.longValue());
+        });
     }
 }

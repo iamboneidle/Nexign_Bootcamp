@@ -20,7 +20,17 @@ public class Main {
 //            clientThread.start();
 //        }
 
-        System.out.println(generateCallGapTime("01.01.2024"));
+        System.out.println(getBasicAuthenticationHeader("79218476904", "admin"));
+//        System.out.println(generateCallGapTime("01.01.2024"));
+    }
+
+    private static String encoder(String n) {
+        BCrypto
+    }
+
+    private static String getBasicAuthenticationHeader(String username, String password) {
+        String valueToEncode = username + ":" + password;
+        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
     public static List<Long> generateCallGapTime(String call) {

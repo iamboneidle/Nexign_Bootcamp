@@ -24,26 +24,25 @@ public class CDRFileController {
 
     @PostMapping("/catchCDR")
     public ResponseEntity<String> catchCDRFile(@RequestPart("file") MultipartFile file, @RequestPart("fileName") String fileName) {
+
         try {
-            if (file.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(fileName + " is empty");
+            if (!file.isEmpty()) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                reader.close();
+                brtService.handleCDRFile(content.toString());
+                LOGGER.log(Level.INFO, "OK: " + fileName + " was accepted successfully" + "\n");
+                return ResponseEntity.ok().body("BRT accepted " + fileName + " successfully");
             }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            StringBuilder content = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-            reader.close();
-            brtService.handleCDRFile(content.toString());
-            LOGGER.log(Level.INFO, "OK: " + fileName + " was accepted successfully" + "\n");
-
-            return ResponseEntity.ok(fileName + " was uploaded successfully");
+            return ResponseEntity.badRequest().body("BRT got empty " + fileName);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()) + "\n");
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process " + fileName);
+            return ResponseEntity.internalServerError().body("BRT failed to process " + fileName);
         }
     }
 }

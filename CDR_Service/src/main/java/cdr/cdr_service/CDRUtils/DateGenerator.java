@@ -22,7 +22,7 @@ public class DateGenerator extends Thread {
             }
             synchronized (this) {
                 currentDate = increaseDate(currentDate);
-                System.out.println("Generated integer: " + currentDate);
+                LOGGER.log(Level.INFO, currentDate + " new day has come but we're still alive");
                 notifyAll();
             }
         }
