@@ -38,8 +38,7 @@ public class StartInfoPusherService {
             "79212418053",
     };
 
-    @PostConstruct
-    private void pushToDB() {
+    public void pushToDB() {
         if (abonentsRepository.findAll().isEmpty()) {
             abonents.add(new Abonents("Федор", "Дмитриевич", "Панфилов"));
             abonents.add(new Abonents("Мария", "Игоревна", "Кондукова"));

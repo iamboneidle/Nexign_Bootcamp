@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 @Service
 public class CDRFileSenderService {
-    private static final String DESTINATION_URL = "http://localhost:2002/catchCDR";
+    private static final String POST_CDR_URL = "http://localhost:2002/post-CDR";
     private static final Logger LOGGER = Logger.getLogger(CDRFileSenderService.class.getName());
     private OkHttpClient client;
 
@@ -39,7 +39,7 @@ public class CDRFileSenderService {
                 .build();
 
         Request request = new Request.Builder()
-                .url(DESTINATION_URL)
+                .url(POST_CDR_URL)
                 .post(requestBody)
                 .build();
 

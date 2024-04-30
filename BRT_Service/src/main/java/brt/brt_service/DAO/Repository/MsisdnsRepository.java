@@ -19,5 +19,8 @@ public interface MsisdnsRepository extends JpaRepository<Msisdns, Long> {
     @Query("UPDATE Msisdns m SET m.balance = m.balance + ?1")
     void increaseAllBalances(float amount);
 
+    @Modifying
+    @Query("UPDATE Msisdns m SET m.balance = m.balance + ?2 WHERE m.number = ?1")
+    void putMoneyByNumber(String number, float amount);
 
 }

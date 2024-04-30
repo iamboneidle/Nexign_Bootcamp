@@ -10,8 +10,8 @@ import java.util.*;
 
 @Service
 public class TariffChanger implements Runnable {
-    private CRMService crmService;
-    private DataToChangeTariffSenderService dataToChangeTariffSenderService;
+    private final CRMService crmService;
+    private final DataToChangeTariffSenderService dataToChangeTariffSenderService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TariffChanger(CRMService crmService, DataToChangeTariffSenderService dataToChangeTariffSenderService) {
@@ -28,7 +28,7 @@ public class TariffChanger implements Runnable {
         for (int i = 0; i < numbersToPick; i++) {
             String number = keyList.get(i);
             Long rate = mapNumberToRateId.get(keyList.get(i));
-            DataToChangeTariff dataToChangeTariff = new DataToChangeTariff(number, rate);
+            DataToChangeTariff dataToChangeTariff = new DataToChangeTariff(number, rate == 11L ? 12L : 11L);
             crmService.getMapNumberToRateId().replace(number, rate == 11L ? 12L : 11L);
             try {
                 String json = objectMapper.writeValueAsString(dataToChangeTariff);

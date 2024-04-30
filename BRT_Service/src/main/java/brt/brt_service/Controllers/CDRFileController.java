@@ -22,7 +22,7 @@ public class CDRFileController {
     BRTService brtService;
     private static final Logger LOGGER = Logger.getLogger(BRTService.class.getName());
 
-    @PostMapping("/catchCDR")
+    @PostMapping("/post-CDR")
     public ResponseEntity<String> catchCDRFile(@RequestPart("file") MultipartFile file, @RequestPart("fileName") String fileName) {
 
         try {

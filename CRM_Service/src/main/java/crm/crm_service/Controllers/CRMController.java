@@ -1,7 +1,11 @@
 package crm.crm_service.Controllers;
 
+import crm.crm_service.CRMUtils.DataToPutMoney;
+import crm.crm_service.CRMUtils.MoneyPutter;
+import crm.crm_service.CRMUtils.RequestExecutor;
 import crm.crm_service.Services.CRMService;
 import crm.crm_service.CRMUtils.TariffChanger;
+import crm.crm_service.Services.DataToPutMoneySenderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +14,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import crm.crm_service.Services.DataToChangeTariffSenderService;
 
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +26,9 @@ public class CRMController {
     private CRMService crmService;
     @Autowired
     private DataToChangeTariffSenderService dataToChangeTariffSenderService;
+    @Autowired
+    private DataToPutMoneySenderService dataToPutMoneySenderService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger LOGGER = Logger.getLogger(CRMController.class.getName());
     @GetMapping("/")
     public String home() {
@@ -37,11 +46,23 @@ public class CRMController {
     }
 
     @PostMapping("/admin/change-tariff")
-    public ResponseEntity<?> admin(@RequestBody String string) {
+    public ResponseEntity<?> changeTariff(@RequestBody String string) {
         if (!string.isEmpty()) {
-            LOGGER.log(Level.INFO, string);
+            LOGGER.log(Level.INFO, string + " we will change some tariffs");
             Thread tariffChanger = new Thread(new TariffChanger(crmService, dataToChangeTariffSenderService));
             tariffChanger.start();
+            return ResponseEntity.ok().body("CRM will change tariffs");
+        }
+
+        return ResponseEntity.badRequest().body("CRM got empty string and will not change tariffs");
+    }
+
+    @PostMapping("/admin/put-money")
+    public ResponseEntity<?> putMoney(@RequestBody String string) {
+        if (!string.isEmpty()) {
+            LOGGER.log(Level.INFO, string + " we will put some money");
+            Thread moneyPutter = new Thread(new MoneyPutter(crmService, dataToPutMoneySenderService));
+            moneyPutter.start();
             return ResponseEntity.ok().body("CRM will change tariffs");
         }
 
@@ -54,6 +75,7 @@ public class CRMController {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 crmService.setMapNumberToRateId(objectMapper.readValue(string, HashMap.class));
+                System.out.println(crmService.getMapNumberToRateId());
                 LOGGER.log(Level.INFO, "OK: accepted info about msisdns and their tariffs");
                 return ResponseEntity.ok().body("CRM accepted tariffs info");
             } catch (JsonProcessingException e) {
@@ -63,5 +85,26 @@ public class CRMController {
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data");
         return ResponseEntity.badRequest().body("CRM got empty tariffs info");
+    }
+
+    @PostMapping("/user/put-money")
+    public ResponseEntity<String> putMoney(@RequestBody DataToPutMoney dataToPutMoney, @RequestHeader("Authorization") String authorization) {
+        if (dataToPutMoney != null) {
+            if (compareUsernames(authorization, dataToPutMoney.getMsisdn())) {
+                try {
+                    dataToPutMoneySenderService.sendDataToPutMoney(objectMapper.writeValueAsString(dataToPutMoney));
+                } catch (JsonProcessingException e) {
+                    return ResponseEntity.internalServerError().body("JsonProcessingException");
+                }
+                return ResponseEntity.ok().body(dataToPutMoney.toString());
+            }
+            return ResponseEntity.badRequest().body("NOT YOUR NUMBER");
+        }
+        return ResponseEntity.badRequest().body("data is empty");
+    }
+
+    private boolean compareUsernames(String header, String username) {
+        String valueToEncode = username + ":user";
+        return ("Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes())).equals(header);
     }
 }

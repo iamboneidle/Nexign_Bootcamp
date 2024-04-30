@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class DataToChangeTariffSenderService {
-    private static final String CHANGE_TARIFF_URL = "http://localhost:2002/change-tariff";
+public class DataToPutMoneySenderService {
+    private static final String PUT_MONEY_URL = "http://localhost:2002/put-money-on-accounts";
     private OkHttpClient client;
     private final RequestExecutor requestExecutor = new RequestExecutor();
 
@@ -21,7 +21,7 @@ public class DataToChangeTariffSenderService {
                 .readTimeout(40000, TimeUnit.MILLISECONDS)
                 .build();
     }
-    public void sendDataToChangeTariff(String json) {
-        requestExecutor.execute(json, CHANGE_TARIFF_URL, client);
+    public void sendDataToPutMoney(String json) {
+        requestExecutor.execute(json, PUT_MONEY_URL, client);
     }
 }

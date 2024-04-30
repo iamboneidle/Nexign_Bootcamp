@@ -37,10 +37,11 @@ public class CDRFileHandlerService {
     private int curMonth = 1;
     private int curYear = 2024;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String DESTINATION_URL = "http://localhost:2004/admin/change-tariff";
+    private static final String CHANGE_TARIFF_URL = "http://localhost:2004/admin/change-tariff";
+    private static final String PUT_MONEY_URL = "http://localhost:2004/admin/put-money";
+    private static final String POST_DATA_TO_PAY_URL = "http://localhost:2003/data-to-pay";
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
-    private static final String DESTINATION_HRS_URL = "http://localhost:2003/data-to-pay";
 
     @Transactional
     public void makeCallRecords(String cdrFile) {
@@ -68,7 +69,7 @@ public class CDRFileHandlerService {
                         50L
                 );
                 validateDate(callRecord, msisdnsList);
-                send(callRecord);
+                sendCallRecord(callRecord);
                 saveCallsInfo(msisdnsList, cdr, calledMsisdn, contactedMsisdn, callTimeStart, callTimeEnd);
             }
         }
@@ -110,31 +111,27 @@ public class CDRFileHandlerService {
     }
 
     private void putMoneyOnAccounts() {
-        float moneyToPut = (float) (Math.random() * 100 + 100);
-        msisdnsRepository.increaseAllBalances(moneyToPut);
+        String json = "new month " + curMonth + "." + curYear +" has come";
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+
+        requestExecutor.executeWithHeaders(PUT_MONEY_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
     private void changeRates() {
         String json = "new month " + curMonth + "." + curYear +" has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
-        requestExecutor.executeWithHeaders(DESTINATION_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
+        requestExecutor.executeWithHeaders(CHANGE_TARIFF_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
-    private void send(CallRecord callRecord) {
+    private void sendCallRecord(CallRecord callRecord) {
         try {
             String json = objectMapper.writeValueAsString(callRecord);
-            sendDataToPay(json);
+            RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+
+            requestExecutor.execute(POST_DATA_TO_PAY_URL, body);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void sendDataToPay(String json) {
-
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
-
-
-        requestExecutor.execute(DESTINATION_HRS_URL, body);
     }
 }

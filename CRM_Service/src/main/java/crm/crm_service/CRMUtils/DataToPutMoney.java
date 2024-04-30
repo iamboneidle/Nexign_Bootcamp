@@ -1,4 +1,4 @@
-package brt.brt_service.BRTUtils;
+package crm.crm_service.CRMUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

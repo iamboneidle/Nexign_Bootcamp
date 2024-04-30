@@ -6,6 +6,7 @@ import brt.brt_service.DAO.Models.Msisdns;
 import brt.brt_service.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.Services.Handlers.CDRFileHandlerService;
 import brt.brt_service.Services.Handlers.CallReceiptHandlerService;
+import brt.brt_service.Services.Utils.StartInfoPusherService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -28,6 +29,8 @@ public class BRTService {
     private MsisdnsRepository msisdnsRepository;
     @Autowired
     private RequestExecutor requestExecutor;
+    @Autowired
+    private StartInfoPusherService startInfoPusherService;
     private static final String DESTINATION_URL = "http://localhost:2004/admin/post-tariffs";
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
@@ -42,6 +45,7 @@ public class BRTService {
 
     @PostConstruct
     public void sendDataToCRM() throws JsonProcessingException {
+        startInfoPusherService.pushToDB();
         Map<String, Long> mapNumberToRateId = new HashMap<>();
         List<Msisdns> msisdns = msisdnsRepository.findAll();
         for (Msisdns msisdn : msisdns) {
@@ -50,7 +54,6 @@ public class BRTService {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(mapNumberToRateId);
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
-
 
         requestExecutor.executeWithHeaders(DESTINATION_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }

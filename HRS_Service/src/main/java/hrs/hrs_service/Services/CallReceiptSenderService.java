@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 @Service
 public class CallReceiptSenderService {
-    private static final String DESTINATION_URL = "http://localhost:2002/catch-call-receipt";
+    private static final String POST_CALL_RECEIPT_URL = "http://localhost:2002/post-call-receipt";
     private static final Logger LOGGER = Logger.getLogger(CallReceiptSenderService.class.getName());
     private OkHttpClient client;
     @PostConstruct
@@ -24,7 +24,7 @@ public class CallReceiptSenderService {
     public void sendCallReceipt(String json) {
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
         Request request = new Request.Builder()
-                .url(DESTINATION_URL)
+                .url(POST_CALL_RECEIPT_URL)
                 .post(body)
                 .build();
 

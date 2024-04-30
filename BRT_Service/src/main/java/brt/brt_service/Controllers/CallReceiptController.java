@@ -18,7 +18,7 @@ public class CallReceiptController {
     private BRTService brtService;
     private static final Logger LOGGER = Logger.getLogger(CallReceiptController.class.getName());
 
-    @PostMapping("/catch-call-receipt")
+    @PostMapping("/post-call-receipt")
     public ResponseEntity<String> catchCallReceipt(@RequestBody CallReceipt callReceipt) {
         if (callReceipt != null) {
             brtService.handleCallReceipt(callReceipt);
