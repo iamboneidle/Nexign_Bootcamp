@@ -9,10 +9,19 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис, который отвечает за заполнение БД на старте информацией о пользователях.
+ */
 @Service
 public class StartInfoPusherService {
+    /**
+     * Репозиторий пользоватей.
+     */
     @Autowired
     private UsersRepository usersRepository;
+    /**
+     * Имена пользователей в системе.
+     */
     private static final String[] USERNAMES = {
             "admin",
             "79218476904",
@@ -27,6 +36,9 @@ public class StartInfoPusherService {
             "79210138023",
             "79212418053",
     };
+    /**
+     * Пароли пользователей в системе.
+     */
     private static final String[] PASSWORDS = {
             "$2a$10$9OwUZRwfZ/zrggwJ6ZDXreWbbCX1Q8OYHh15lPvGDPUBga.ifJ66G",
             "$2a$10$/KNnNb5iScV/sWinUSV5m.HRh.snnqfNJ3RYBwuEtuM9Pzo2fVhUG",
@@ -41,6 +53,9 @@ public class StartInfoPusherService {
             "$2a$10$/KNnNb5iScV/sWinUSV5m.HRh.snnqfNJ3RYBwuEtuM9Pzo2fVhUG",
             "$2a$10$/KNnNb5iScV/sWinUSV5m.HRh.snnqfNJ3RYBwuEtuM9Pzo2fVhUG",
     };
+    /**
+     * Роли пользователей в системе.
+     */
     private static final String[] ROLES = {
             "MANAGER",
             "SUBSCRIBER",
@@ -56,6 +71,9 @@ public class StartInfoPusherService {
             "SUBSCRIBER",
     };
 
+    /**
+     * Метод, отправляющий данные в БД.
+     */
     @PostConstruct
     public void pushToDB() {
         if (usersRepository.findAll().isEmpty()) {

@@ -8,15 +8,27 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс, отправляющий запрос.
+ */
 public class RequestExecutor {
+    /**
+     * Логгер для вывода уведомлений.
+     */
     private static final Logger LOGGER = Logger.getLogger(RequestExecutor.class.getName());
 
+    /**
+     * Метод для отправки запроса.
+     *
+     * @param json Строка с информацией для отправки.
+     * @param url URL-адрес, на который отправляется запрос.
+     */
     public void execute(String json, String url, OkHttpClient client) {
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+        RequestBody requestBody = RequestBody.create(json, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(url)
-                .post(body)
+                .post(requestBody)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

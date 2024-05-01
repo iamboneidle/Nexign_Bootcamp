@@ -12,12 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллера, принимающий данные о пополнении баланса на счете абонента.
+ */
 @RestController
 public class PutMoneyOnAccountsController {
+    /**
+     * Репозиторий абонентов.
+     */
     @Autowired
     MsisdnsRepository msisdnsRepository;
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(PutMoneyOnAccountsController.class.getName());
 
+    /**
+     * Контроллер, принимающий информацию для пополнения баланса на счете абонента.
+     *
+     * @param dataToPutMoney Объект, в который мапится RequestBody.
+     * @return ResponseEntity со статусом ответа.
+     */
     @PostMapping("/put-money-on-accounts")
     @Transactional
     public ResponseEntity<String> putMoney(@RequestBody DataToPutMoney dataToPutMoney) {

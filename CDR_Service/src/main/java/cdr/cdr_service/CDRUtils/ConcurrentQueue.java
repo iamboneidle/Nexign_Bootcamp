@@ -19,22 +19,72 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * Этот класс представляет собой конкурентную очередь, в которую попадают транзакции абонентов,
+ * затем при заполнении очереди 10-ю транзакциями вызывается метода dequeue, генерируется CDR файл
+ * и отправляется в BRT. В программе объект этого класса представлен в единственном экземпляре в классе
+ * CDRService, так как очередь одна на все потоки.
+ */
 public class ConcurrentQueue {
+    /**
+     * Список, который представляет собой как бы ту самую очередь.
+     */
     private List<TransactionObject> queue = new ArrayList<>();
-    private long cdrFileCounter = 0;
+    /**
+     * Переменная, которая считает количество отправленных CDR файлов, нужна для того, чтобы класть ее в название
+     * каждого CDR файла, чтобы имя последующего было на 1 больше имени предыдущего.
+     */
+    private long cdrFileCounter = 1;
+    /**
+     * Сервис, занимающийся отправкой CDR файлов.
+     */
     private final CDRFileSenderService cdrFileSenderService;
+    /**
+     * Репозиторий транзакций, нужен здесь, чтобы сохранять данные о транзакциях пользователей в базу данных
+     * CDR сервиса.
+     */
     private final TransactionsRepository transactionsRepository;
+    /**
+     * Список всей абонентов, он здесь нужен для того, чтобы сохранять
+     * транзакцию пользователя за самим пользователем.
+     */
     private final List<Msisdns> msisdns;
+    /**
+     * Путь, к папке, в которую каждый новый файл записывается, а затем из нее удаляется после отправки.
+     */
     private final Path ROOT_PATH = Paths.get("src/main/resources/CDRFiles").toAbsolutePath();
+    /**
+     * Логгер для вывода уведомлений в консоль.
+     */
     private static final Logger LOGGER = Logger.getLogger(ConcurrentQueue.class.getName());
+    /**
+     * Переменная, которая содержит параметр, отображающий вместимость CDR файла, именно по ней мы
+     * вызываем метод dequeue и отправляем файл, который должен содержать не более 10 записей в себе.
+     */
     private static final int CDR_FILE_CAPACITY = 10;
 
-    public ConcurrentQueue(List<Msisdns> msisdns, CDRFileSenderService cdrFileSenderService, TransactionsRepository transactionsRepository) {
+    /**
+     * Конструктор класса.
+     *
+     * @param msisdns Список всех абонентов.
+     * @param cdrFileSenderService Сервис по отправке CDR файлов.
+     * @param transactionsRepository Репозиторий транзакций.
+     */
+    public ConcurrentQueue(List<Msisdns> msisdns, CDRFileSenderService cdrFileSenderService,
+                           TransactionsRepository transactionsRepository) {
         this.msisdns = msisdns;
         this.cdrFileSenderService = cdrFileSenderService;
         this.transactionsRepository = transactionsRepository;
     }
 
+    /**
+     * Синхронизированный с потоками метод, который проверяет, не пуст ли список с транзакциями абонента, далее
+     * проходится по этому списку, если тот не пуст, на каждой итерации цикла сравнивает свой размер с
+     * CDR_FILE_CAPACITY (максимально допустимым), если он меньше CDR_FILE_CAPACITY, то мы кладем в очередь
+     * еще одну транзакцию, если условие не выполняется, то вызывается метод dequeue().
+     *
+     * @param transactionObjects Список транзакций абонента за один день.
+     */
     public synchronized void enqueue(List<TransactionObject> transactionObjects) {
         if (!transactionObjects.isEmpty()) {
             for (TransactionObject obj : transactionObjects) {
@@ -47,16 +97,29 @@ public class ConcurrentQueue {
         }
     }
 
+    /**
+     * Метод, который делает очистку конкурентной очереди от транзакций. Сначала он генерирует имя и путь нового
+     * CDR файла, затем сортирует очередь по времени начала звонка, затем вызывается метод writeCDRFile(filePath)
+     * [записать CDR файл], потом sendCDRFiles(filePath.toFile()) [отправить CDR файл в BRT], затем
+     * writeToDataBase(msisdns) [записать транзакцию в базу данный на абонента]. Потом очищается очередь
+     * и инкриминируется cdrFileCounter.
+     */
     private void dequeue() {
         Path filePath = Paths.get(ROOT_PATH + "/" + "CDR_File" + "_" + cdrFileCounter + ".txt");
         queue = queue.stream().sorted(Comparator.comparing(TransactionObject::getCallStartTime)).collect(Collectors.toList());
         writeCDRFile(filePath);
         sendCDRFiles(filePath.toFile());
-        writeToDataBase(msisdns);
+        writeToDataBase();
         queue.clear();
         cdrFileCounter++;
     }
 
+    /**
+     * Метод, который записывает CDR файл, проверяя на всякий случай, существует ли уже какой-то файл с таким
+     * же названием.
+     *
+     * @param filePath Путь по которому записываем файл.
+     */
     private void writeCDRFile(Path filePath) {
         try {
             if (!Files.exists(ROOT_PATH.toAbsolutePath())) {
@@ -77,7 +140,10 @@ public class ConcurrentQueue {
         }
     }
 
-    private void writeToDataBase(List<Msisdns> msisdns) {
+    /**
+     * Метод для записи транзакций абонентов в базу данных, закрепляя транзакцию за конкретным абонентом.
+     */
+    private void writeToDataBase() {
         List<Transactions> transactions = new ArrayList<>();
         for (TransactionObject transactionObject : queue) {
             for (Msisdns msisdn : msisdns) {
@@ -96,6 +162,11 @@ public class ConcurrentQueue {
         transactionsRepository.saveAll(transactions);
     }
 
+    /**
+     * Метод, отправляющий CDR файл в BRT.
+     *
+     * @param file Файл, который отправляем.
+     */
     private void sendCDRFiles(File file) {
         cdrFileSenderService.sendFile(file);
         file.delete();

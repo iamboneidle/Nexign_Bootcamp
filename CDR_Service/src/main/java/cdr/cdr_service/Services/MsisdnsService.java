@@ -21,7 +21,7 @@ public class MsisdnsService {
     /**
      * Метод для получения списка всех объектов Msisdns из базы данных.
      *
-     * @return список объектов Msisdns.
+     * @return Список объектов Msisdns.
      */
     public List<Msisdns> getMsisdns() {
         return msisdnsRepository.findAll();

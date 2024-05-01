@@ -10,16 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Этот класс нужен для того, чтобы на старте заполнить БД юзерами
- * Пока что в описание его лучше не включать. Запуск сервиса пока что не сделан тем образом, которым он должен быть
- * можно сказать, что он еще в дебаге.
+ * Этот класс нужен для того, чтобы на старте заполнить БД пользователями.
  */
 @Service
 public class UsersPusherService {
+    /**
+     * Репозиторий пользователей.
+     */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
+    /**
+     * Сервис пользователей.
+     */
     @Autowired
     private MsisdnsService msisdnsService;
+    /**
+     * Массив с номерами пользователей.
+     */
     private static final String[] USERS_NUMBERS = {
             "79218476904",
             "79214007407",
@@ -34,6 +41,10 @@ public class UsersPusherService {
             "79212418053",
     };
 
+    /**
+     * Метод, который создает пользователей на PostConstruct, если база данных пуста, по массиву
+     * USERS_NUMBERS, добавляет в список phoneNumbers и сохраняет в базу данных.
+     */
     @PostConstruct
     private void pushToDB() {
         if (msisdnsService.getMsisdns().isEmpty()) {

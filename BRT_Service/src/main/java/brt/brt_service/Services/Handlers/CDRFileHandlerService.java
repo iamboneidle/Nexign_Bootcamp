@@ -22,27 +22,74 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
+/**
+ * Класс, обрабатывающий CDR файлы.
+ */
 @Service
 public class CDRFileHandlerService {
+    /**
+     * Репозиторий абонентов.
+     */
     @Autowired
     MsisdnsRepository msisdnsRepository;
+    /**
+     * Репозиторий звонков.
+     */
     @Autowired
     CallsRepository callsRepository;
+    /**
+     * Репозиторий CDR файлов.
+     */
     @Autowired
     CallDataRecordsRepository callDataRecordsRepository;
+    /**
+     * Сервис абонентов.
+     */
     @Autowired
     private MsisdnsService msisdnsService;
+    /**
+     * Класс, отправляющий запросы.
+     */
     @Autowired
     RequestExecutor requestExecutor;
+    /**
+     * Настоящий месяц (сервис запускается 01.01.2024).
+     */
     private int curMonth = 1;
+    /**
+     * Настоящий год (сервис запускается 01.01.2024).
+     */
     private int curYear = 2024;
+    /**
+     * Объект ObjectMapper для преобразования объектов в Json.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * URL-адрес для отправки флажка о смене тарифа на CRM.
+     */
     private static final String CHANGE_TARIFF_URL = "http://localhost:2004/admin/change-tariff-monthly";
+    /**
+     * URL-адрес для отправки флажка о пополнении баланса на счетах всех абонентов на CRM.
+     */
     private static final String PUT_MONEY_URL = "http://localhost:2004/admin/put-money-monthly";
+    /**
+     * URL-адрес для отправки данных по звонку на HRS.
+     */
     private static final String POST_DATA_TO_PAY_URL = "http://localhost:2003/post-data-to-pay";
+    /**
+     * Имя пользователя админа в CRM.
+     */
     private static final String ADMIN_USERNAME = "admin";
+    /**
+     * Пароль админа в CRM.
+     */
     private static final String ADMIN_PASSWORD = "admin";
 
+    /**
+     * Метод, который создает объекты CallRecord из строк поступившего CDR файла.
+     *
+     * @param cdrFile CDR файл.
+     */
     @Transactional
     public void makeCallRecords(String cdrFile) {
         CallDataRecords cdr = new CallDataRecords(Instant.now().getEpochSecond());
@@ -51,6 +98,8 @@ public class CDRFileHandlerService {
         List<Msisdns> msisdnsList = msisdnsService.getMsisdns();
         List<String> msisdnsPhoneNumbers = msisdnsList.stream().map(Msisdns::getNumber).toList();
 
+
+//        TODO:   CallRecord minutesLeft получать из кэш БД
         for (String call : calls) {
             String[] data = call.split(",");
             String callType = data[0];
@@ -68,7 +117,7 @@ public class CDRFileHandlerService {
                         msisdnsPhoneNumbers.contains(contactedMsisdn),
                         50L
                 );
-                validateDate(callRecord, msisdnsList);
+                validateDate(callRecord);
                 sendCallRecord(callRecord);
                 saveCallsInfo(msisdnsList, cdr, calledMsisdn, contactedMsisdn, callTimeStart, callTimeEnd);
             }
@@ -80,10 +129,26 @@ public class CDRFileHandlerService {
         }
     }
 
+    /**
+     * Метод, сохраняющий CDR файлы.
+     *
+     * @param cdrFile  Файл.
+     * @param fileName Имя файла.
+     */
     private void saveCDRFiles(String cdrFile, String fileName) {
 
     }
 
+    /**
+     * Метод, сохраняющий информацию о звонке в базу данных.
+     *
+     * @param msisdnsList Список абонентов.
+     * @param cdr Объект CDR файла.
+     * @param calledMsisdn Звонивший абонент.
+     * @param contactedMsisdn Абонент, которому звонили.
+     * @param callTimeStart Время начала звонка.
+     * @param callTimeEnd Время окончания звонка.
+     */
     private void saveCallsInfo(List<Msisdns> msisdnsList, CallDataRecords cdr, String calledMsisdn, String contactedMsisdn, long callTimeStart, long callTimeEnd) {
         Calls call = new Calls(
                 msisdnsList.stream().filter(msisdns -> msisdns
@@ -100,7 +165,13 @@ public class CDRFileHandlerService {
         callsRepository.save(call);
     }
 
-    private void validateDate(CallRecord callRecord, List<Msisdns> msisdnsList) {
+    /**
+     * Метод, который обновляет дату в сервисе, а также при наступлении нового месяца вызывает методы
+     * putMoneyOnAccounts() и changeRates().
+     *
+     * @param callRecord Данные о звонке.
+     */
+    private void validateDate(CallRecord callRecord) {
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(callRecord.getCallTimeStart()), ZoneId.systemDefault());
 
         if (dateTime.getMonthValue() > curMonth) {
@@ -115,6 +186,9 @@ public class CDRFileHandlerService {
         }
     }
 
+    /**
+     * Метод, отправляющий запрос в CRM, чтобы тот положил деньги на балансы счетов всех абонентов.
+     */
     private void putMoneyOnAccounts() {
         String json = "new month " + curMonth + "." + curYear + " has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
@@ -122,6 +196,9 @@ public class CDRFileHandlerService {
         requestExecutor.executeWithHeaders(PUT_MONEY_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
+    /**
+     * Метод, запрашивающий CRM обновить у нескольких абонентов тарифы.
+     */
     private void changeRates() {
         String json = "new month " + curMonth + "." + curYear + " has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
@@ -129,6 +206,11 @@ public class CDRFileHandlerService {
         requestExecutor.executeWithHeaders(CHANGE_TARIFF_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
+    /**
+     * Метод, отправляющий данные о звонке в HRS.
+     *
+     * @param callRecord Объект с данными о звонке.
+     */
     private void sendCallRecord(CallRecord callRecord) {
         try {
             String json = objectMapper.writeValueAsString(callRecord);

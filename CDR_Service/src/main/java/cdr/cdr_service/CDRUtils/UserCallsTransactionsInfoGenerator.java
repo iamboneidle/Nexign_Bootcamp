@@ -1,6 +1,7 @@
 package cdr.cdr_service.CDRUtils;
 
 import cdr.cdr_service.DAO.Models.Msisdns;
+import jakarta.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,13 +15,37 @@ import java.util.logging.Logger;
  * Класс, содержащий методы для генерации информации о звонках пользователей
  */
 public class UserCallsTransactionsInfoGenerator {
+    /**
+     * Рандом.
+     */
     private static final Random RANDOM = new Random();
+    /**
+     * Логгер, выводящий ошибки.
+     */
     private static final Logger LOGGER = Logger.getLogger(UserCallsTransactionsInfoGenerator.class.getName());
+    /**
+     * Время, когда мы считаем, что новые сутки начались.
+     */
     private static final String DAY_START_TIME = "00:00:00";
+    /**
+     * Время, когда мы считаем, что новые сутки закончились.
+     */
     private static final String DAY_END_TIME = "23:59:59";
+    /**
+     * Вероятность того, что звонок будет исходящим.
+     */
     private static final float OUTCOMING_CALL_PROBABILITY = 0.5f;
+    /**
+     * Минимальное время длительности звонка в секундах.
+     */
     private static final int CALL_DURATION_BOTTOM_BORDER = 10;
+    /**
+     * Максимальное время длительности звонка в секундах.
+     */
     private static final int CALL_DURATION_TOP_BORDER = 590;
+    /**
+     * Множитель, чтобы перевести миллисекунды в секунды.
+     */
     private static final int MILLISECONDS_TO_SECONDS = 1000;
 
     /**
@@ -29,7 +54,7 @@ public class UserCallsTransactionsInfoGenerator {
      * <br> "02" - входящий вызов.
      * Вероятность выпадения любого = 0.5.
      *
-     * @return строка с типом звонка.
+     * @return Строка с типом звонка.
      */
     public static String generateCallType() {
         return Math.random() < OUTCOMING_CALL_PROBABILITY ? "01" : "02";
@@ -42,7 +67,7 @@ public class UserCallsTransactionsInfoGenerator {
      * случайным образом выбирается номер телефона из базы абонентов сети. Также производится проверка на то,
      * не собирается и абонент позвонить самому себе.
      *
-     * @return номер телефона вызываемого абонента.
+     * @return Номер телефона вызываемого абонента.
      */
     public static String generateContactedMsisdn(List<Msisdns> msisdnsList, String phoneNumber) {
         StringBuilder contactedMsisdn = new StringBuilder();
@@ -60,6 +85,15 @@ public class UserCallsTransactionsInfoGenerator {
         return contactedMsisdn.toString();
     }
 
+    /**
+     * Метод, генерирующий промежуток, в который происходит звонок. Сначала получаем время в Unix time seconds
+     * когда день начинается и когда заканчивается, а потом в этом промежутке генерируем время нашего звонка в
+     * Unix time seconds.
+     *
+     * @param callDate Дата, когда делается звонок.
+     * @return Массив из двух значений, когда начинается и заканчивается звонок.
+     */
+    @Nullable
     public static Long[] generateCallTimeGap(String callDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         Long[] callTimeGap = new Long[2];

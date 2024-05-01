@@ -13,22 +13,40 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Класс-конфигуратор системы ролей сервиса.
+ */
 @Configuration
 @EnableWebSecurity
 public class CRMSecurityConfig {
+    /**
+     * Сервис по поиску пользователей в базе данных.
+     */
     @Autowired
-    private CRMDetailsService myUserDetailsService;
+    private CRMDetailsService CRMDetailsService;
 
+    /**
+     * Метод для возвращения кодировщика паролей пользователей и админа.
+     *
+     * @return BCryptPasswordEncoder кодировщик.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Метод для Аутентификации и авторизации пользователей, обращающихся на те или иные URL-адреса.
+     *
+     * @param http http.
+     * @return SecurityFilterChain с подтверждением доступа.
+     * @throws Exception при ошибке валидации.
+     */
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .userDetailsService(myUserDetailsService)
+                .userDetailsService(CRMDetailsService)
                 .authorizeHttpRequests(authConfig -> {
                     authConfig.requestMatchers(HttpMethod.GET, "/").permitAll();
                     authConfig.requestMatchers(HttpMethod.GET, "/user").hasAuthority("SUBSCRIBER");

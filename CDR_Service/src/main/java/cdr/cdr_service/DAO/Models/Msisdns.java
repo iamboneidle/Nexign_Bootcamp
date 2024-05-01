@@ -38,12 +38,17 @@ public class Msisdns {
     /**
      * Конструктор с номером телефона в качестве параметра.
      *
-     * @param phoneNumber номер телефона
+     * @param phoneNumber Номер телефона
      */
     public Msisdns(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
+    /**
+     * Перегруженный метод toString().
+     *
+     * @return Строка объекта
+     */
     @Override
     public String toString() {
         return "Msisdns{" + "id=" + id +

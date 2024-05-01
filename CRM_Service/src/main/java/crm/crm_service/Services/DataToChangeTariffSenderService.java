@@ -7,12 +7,27 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Сервис, отправляющий данные о смене тарифа в BRT.
+ */
 @Service
 public class DataToChangeTariffSenderService {
+    /**
+     * URL-адрес контроллера в BRT для смены тарифа.
+     */
     private static final String CHANGE_TARIFF_URL = "http://localhost:2002/change-tariff";
-    private OkHttpClient client;
+    /**
+     * Класс, который отправляет запросы.
+     */
     private final RequestExecutor requestExecutor = new RequestExecutor();
+    /**
+     * Клиент.
+     */
+    private OkHttpClient client;
 
+    /**
+     * Метод инициализирующий клиента на PostConstruct.
+     */
     @PostConstruct
     private void init() {
         client = new OkHttpClient.Builder()
@@ -22,6 +37,11 @@ public class DataToChangeTariffSenderService {
                 .build();
     }
 
+    /**
+     * Метод отправляющий данные в requestExecutor для отправки в BRT.
+     *
+     * @param json Строка с данными о смене тарифа.
+     */
     public void sendDataToChangeTariff(String json) {
         requestExecutor.execute(json, CHANGE_TARIFF_URL, client);
     }

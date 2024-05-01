@@ -13,12 +13,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+/**
+ * Сервис, который отвечает за отправку CDR файлов на BRT.
+ */
 @Service
 public class CDRFileSenderService {
+    /**
+     * URL-адрес end-point'а BRT, ожидающего нового файла.
+     */
     private static final String POST_CDR_URL = "http://localhost:2002/post-CDR";
+    /**
+     * Логгер для выводы уведомлений.
+     */
     private static final Logger LOGGER = Logger.getLogger(CDRFileSenderService.class.getName());
+    /**
+     * HTTP-клиент.
+     */
     private OkHttpClient client;
 
+    /**
+     * Метод, инициализирующий клиента.
+     */
     @PostConstruct
     public void init() {
         client = new OkHttpClient.Builder()
@@ -28,6 +43,12 @@ public class CDRFileSenderService {
                 .build();
     }
 
+    /**
+     * Метод, отправляющий request в BRT. Создается fileName, requestBody, request, затем идет попытка отправки и логирование
+     * ответа.
+     *
+     * @param file CDR файл, который мы отправляем в BRT.
+     */
     public void sendFile(File file) {
         String fileName = file.toString().substring(file.toString().lastIndexOf("/") + 1);
 

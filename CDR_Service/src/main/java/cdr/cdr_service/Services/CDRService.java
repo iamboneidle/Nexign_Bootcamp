@@ -1,9 +1,11 @@
 package cdr.cdr_service.Services;
 
 import cdr.cdr_service.CDRUtils.ConcurrentQueue;
+import cdr.cdr_service.CDRUtils.DataToAddNewUserToCDR;
 import cdr.cdr_service.CDRUtils.DateGenerator;
 import cdr.cdr_service.CDRUtils.User;
 import cdr.cdr_service.DAO.Models.Msisdns;
+import cdr.cdr_service.DAO.Repository.MsisdnsRepository;
 import cdr.cdr_service.DAO.Repository.TransactionsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,8 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Сервис для формирования CDR-файлов, записи в базу данных (пока что, мб потом декомпозирую)
- * и для отправки в кафку (опять же пока что)
+ * Сервис, отвечающий за создание потоков, выступающих в роли пользователей, создание
+ * демон потока, генерирующего даты, создание конкурентной очереди и добавление новых пользователей.
  */
 @Service
 public class CDRService {
@@ -22,19 +24,44 @@ public class CDRService {
      */
     @Autowired
     private MsisdnsService msisdnsService;
+    /**
+     * Сервис для отправки CDR файлов в BRT7
+     */
     @Autowired
     private CDRFileSenderService cdrFileSenderService;
+    /**
+     * Репозиторий транзакций.
+     */
     @Autowired
     private TransactionsRepository transactionsRepository;
+    /**
+     * Репозиторий пользователей.
+     */
+    @Autowired
+    private MsisdnsRepository msisdnsRepository;
+    /**
+     * Список пользователей.
+     */
     private List<Msisdns> msisdns;
+    /**
+     * Демон поток, генерирующий даты.
+     */
     private DateGenerator daemonThread;
+    /**
+     * Конкурентная очередь.
+     */
     private ConcurrentQueue concurrentQueue;
+    /**
+     * Время до старта генерации звонков в секундах.
+     */
+    private static final int TIME_BEFORE_START = 5;
 
     /**
-     * Метод, вызываемый после создания экземпляра класса.
-     * Инициализирует процесс обработки CDR.
+     * Метод, который вызывается через TIME_BEFORE_START секунд, получает список пользователей из базы данных,
+     * создает демон поток, генерирующий новые даты, создает конкурентную очередь, для каждого пользователя создает
+     * отдельный поток и запускает его.
      */
-    @Scheduled(initialDelay = 5 * 1000)
+    @Scheduled(initialDelay = TIME_BEFORE_START * 1000)
     public void initializer() {
         msisdns = msisdnsService.getMsisdns();
         daemonThread = new DateGenerator();
@@ -47,7 +74,16 @@ public class CDRService {
         }
     }
 
-    public void addNewMsisdn(Msisdns msisdn) {
+    /**
+     * Метод, который добавляет нового пользователя. Он создает нового Msisdns, сохраняет его,
+     * добавляет в список msisdns, чтобы о добавлении узнали все потоки, создает новый поток для
+     * нового пользователя, запускает его.
+     *
+     * @param dataToAddNewUserToCDR Данные о новом пользователе.
+     */
+    public void addNewMsisdn(DataToAddNewUserToCDR dataToAddNewUserToCDR) {
+        Msisdns msisdn = new Msisdns(dataToAddNewUserToCDR.getMsisdn());
+        msisdnsRepository.save(msisdn);
         this.msisdns.add(msisdn);
         Thread newClientThread = new Thread(new User(msisdn.getPhoneNumber(), msisdns, daemonThread, concurrentQueue));
         newClientThread.start();

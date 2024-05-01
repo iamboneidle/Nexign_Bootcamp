@@ -21,30 +21,73 @@ import java.util.Map;
 
 @Service
 public class BRTService {
+    /**
+     * Сервис, обрабатывающий информацию о звонках.
+     */
     @Autowired
     private CDRFileHandlerService callRecordsHandlerService;
+    /**
+     * Сервис, обрабатывающий информацию о чеках по звонкам.
+     */
     @Autowired
     private CallReceiptHandlerService callReceiptHandlerService;
+    /**
+     * Репозиторий абонентов.
+     */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
+    /**
+     * Класс, отправляющий запросы.
+     */
     @Autowired
     private RequestExecutor requestExecutor;
+    /**
+     * Сервис, который заполняет базу данных сервиса на старте, если та пуста.
+     */
     @Autowired
     private StartInfoPusherService startInfoPusherService;
-    private static final String DESTINATION_URL = "http://localhost:2004/admin/post-tariffs";
+    /**
+     * URL-адрес контроллера CRM, который при запуске ждет информацию по абонентам и их тарифам.
+     */
+    private static final String POST_TARIFFS_TO_CRM_URL = "http://localhost:2004/admin/post-tariffs";
+    /**
+     * Имя админа в сервисе CRM.
+     */
     private static final String ADMIN_USERNAME = "admin";
+    /**
+     * Пароль админа в сервисе CRM.
+     */
     private static final String ADMIN_PASSWORD = "admin";
 
+    /**
+     * Метод, который передает с контроллера CDR файл на обработку в CallRecordsHandlerService.
+     *
+     * @param callDataRecord Содержание CDR файла.
+     */
     public void handleCDRFile(String callDataRecord) {
         callRecordsHandlerService.makeCallRecords(callDataRecord);
     }
 
+    /**
+     * Метод, который передает с контроллера чек по звонку в CallReceiptHandlerService.
+     *
+     * @param callReceipt Объект с данными чека по звонку.
+     */
     public void handleCallReceipt(CallReceipt callReceipt) {
         callReceiptHandlerService.validateCallReceipt(callReceipt);
     }
 
-    private void sendRatesToCacheDB_HRS() {/* TODO: @PostConstruct */ }
+    /**
+     * Метод, который на старте отправляет данные по тарифам в HRS кэш базу данных.
+     */
+    private void sendRatesToHRSCacheDB() {/* TODO: @PostConstruct */ }
 
+    /**
+     * Метод, который вызывает startInfoPusherService.pushToDB() на старте сервиса и отправляет
+     * данные по абонентам и их тарифам в CRM.
+     *
+     * @throws JsonProcessingException В случае ошибки преобразования объекта в Json.
+     */
     @PostConstruct
     public void sendDataToCRM() throws JsonProcessingException {
         startInfoPusherService.pushToDB();
@@ -57,6 +100,6 @@ public class BRTService {
         String json = objectMapper.writeValueAsString(mapNumberToRateId);
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
-        requestExecutor.executeWithHeaders(DESTINATION_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
+        requestExecutor.executeWithHeaders(POST_TARIFFS_TO_CRM_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 }

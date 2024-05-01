@@ -15,15 +15,30 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллера, отвечающий за прием CDR файлов из CDR сервиса.
+ */
 @RestController
 public class CDRFileController {
+    /**
+     * BRTService.
+     */
     @Autowired
     BRTService brtService;
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(BRTService.class.getName());
 
+    /**
+     * Контроллер принимающий CDR файлы из CDR сервиса.
+     *
+     * @param file Файл.
+     * @param fileName Имя файла.
+     * @return ResponseEntity со статусом ответа.
+     */
     @PostMapping("/post-CDR")
     public ResponseEntity<String> catchCDRFile(@RequestPart("file") MultipartFile file, @RequestPart("fileName") String fileName) {
-
         try {
             if (!file.isEmpty()) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));

@@ -9,13 +9,27 @@ import java.util.List;
 
 @Service
 public class MsisdnsService {
+    /**
+     * Репозиторий абонентов.
+     */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
 
+    /**
+     * Метод, возвращающий всех имеющихся абонентов.
+     *
+     * @return Список всех абонентов.
+     */
     public List<Msisdns> getMsisdns() {
         return msisdnsRepository.findAll();
     }
 
+    /**
+     * Метод для возвращения ID тарифа абонента по его номеру телефона.
+     *
+     * @param phoneNumber номер телефона.
+     * @return ID абонента.
+     */
     public long getRateIdByPhoneNumber(String phoneNumber) {
         Msisdns msisdns = msisdnsRepository.findMsisdnsByNumber(phoneNumber);
         return msisdns.getRateId();

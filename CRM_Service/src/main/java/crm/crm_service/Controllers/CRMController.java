@@ -19,35 +19,84 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллеров CRM сервиса.
+ */
 @RestController
 public class CRMController {
+    /**
+     * CRMService.
+     */
     @Autowired
     private CRMService crmService;
+    /**
+     * Сервис по отправке данных на смену тарифа в BRT.
+     */
     @Autowired
     private DataToChangeTariffSenderService dataToChangeTariffSenderService;
+    /**
+     * Сервис по отправке данных на пополнение счета в BRT.
+     */
     @Autowired
     private DataToPutMoneySenderService dataToPutMoneySenderService;
+    /**
+     * Сревис по добавлению нового пользователя.
+     */
     @Autowired
     private NewUserAdderService newUserAdderService;
+    /**
+     * Объект ObjectMapper для создания Json из объекта.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Пароль для всех пользователей.
+     */
     private static final String USER_PASSWORD = "user";
+    /**
+     * Логгер для выводы уведомлений.
+     */
     private static final Logger LOGGER = Logger.getLogger(CRMController.class.getName());
 
+    /**
+     * Контроллер домашней страницы, доступной всем.
+     *
+     * @return Приветствие (html).
+     */
     @GetMapping("/")
     public String home() {
         return "<h1>Welcome home!</h1>";
     }
 
+    /**
+     * Контроллер домашней страницы, доступной пользователям.
+     *
+     * @param authentication Объект аутентификации, нужен для приветствия.
+     * @return Приветствие (html).
+     */
     @GetMapping("/user")
     public String user(Authentication authentication) {
         return "<h1>Welcome User!</h1><h2>" + authentication.getName() + "</h2>";
     }
 
+    /**
+     * Контроллер домашней страницы, доступной админу.
+     *
+     * @param authentication Объект аутентификации, нужен для приветствия.
+     * @return Приветствие (html).
+     */
     @GetMapping("/admin")
     public String admin(Authentication authentication) {
         return "<h1>Welcome Admin!</h1><h2>" + authentication.getName() + " " + authentication.getAuthorities() + "</h2>";
     }
 
+    /**
+     * Контроллер, на который поступает запрос из BRT сервиса о том, что настал новый месяц и нужно
+     * поменять тарифы от 1 до 3 случайным пользователям. После запроса на контроллер
+     * создается новый поток, который генерирует нужную информацию и отправляет ее в BRT.
+     *
+     * @param string Строка с новым месяцем.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/admin/change-tariff-monthly")
     public ResponseEntity<String> changeTariffMonthly(@RequestBody String string) {
         if (!string.isEmpty()) {
@@ -60,6 +109,12 @@ public class CRMController {
         return ResponseEntity.badRequest().body("CRM got empty string and will not change tariffs");
     }
 
+    /**
+     * Контроллер, который использует админ для смены тарифа конкретному пользователю.
+     *
+     * @param dataToChangeTariff Объект в который мапится RequestBody.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/admin/change-tariff")
     public ResponseEntity<String> changeTariff(@RequestBody DataToChangeTariff dataToChangeTariff) {
         if (dataToChangeTariff != null) {
@@ -78,6 +133,12 @@ public class CRMController {
         return ResponseEntity.badRequest().body("CRM: empty data, can't change tariff");
     }
 
+    /**
+     * Контроллер, который использует админ для добавления нового пользователя.
+     *
+     * @param dataToAddNewUser Объект в который мапится RequestBody.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/admin/save")
     public ResponseEntity<String> save(@RequestBody DataToAddNewUser dataToAddNewUser) {
         if (dataToAddNewUser != null) {
@@ -102,6 +163,14 @@ public class CRMController {
         return ResponseEntity.badRequest().body("CRM: empty data, can't save new user");
     }
 
+    /**
+     * Контроллер, на который поступает запрос из BRT на пополнение баланса каждого абонента на случайную
+     * величину. После того как пришел запрос, создается новый поток,
+     * который генерирует нужную информацию и посылает ее в BRT.
+     *
+     * @param string Строка с новым месяцем.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/admin/put-money-monthly")
     public ResponseEntity<?> putMoneyMonthly(@RequestBody String string) {
         if (!string.isEmpty()) {
@@ -114,6 +183,14 @@ public class CRMController {
         return ResponseEntity.badRequest().body("CRM got empty string and will not put money");
     }
 
+    /**
+     * Контроллер, на который "проливается" информация о пользователях и их тарифах при запуске BRT
+     * сервиса, чтобы CRM знал информацию, по которой будут формироваться данные о
+     * ежемесячной смене тарифов пользователями и пополнении их балансов.
+     *
+     * @param string Строка с ХэшМап внутри с информацией о пользователе и его тарифе.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/admin/post-tariffs")
     public ResponseEntity<String> postTariffs(@RequestBody String string) {
         if (!string.isEmpty()) {
@@ -135,6 +212,14 @@ public class CRMController {
         return ResponseEntity.badRequest().body("CRM got empty tariffs info");
     }
 
+    /**
+     * Контроллер, который использует пользователь для того, чтобы положить себе деньги на счет.
+     * Объект авторизации нужен для того, чтобы проверить, кладет пользователь деньги себе на счет или нет.
+     *
+     * @param dataToPutMoney Объект в который мапится RequestBody.
+     * @param authorization Объект с данными авторизации пользователей.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/user/put-money")
     public ResponseEntity<String> putMoney(@RequestBody DataToPutMoney dataToPutMoney, @RequestHeader("Authorization") String authorization) {
         if (dataToPutMoney != null) {
@@ -156,6 +241,13 @@ public class CRMController {
         return ResponseEntity.badRequest().body("CRM: data is empty");
     }
 
+    /**
+     * Метод, который сверяет данные авторизации.
+     *
+     * @param header То, как данные авторизации выглядят.
+     * @param username Имя пользователя, чтобы понять, как данные авторизации должны выглядеть на самом деле.
+     * @return true или false значение в зависимости от успешности проверки.
+     */
     private boolean compareUsernames(String header, String username) {
         String valueToEncode = username + ":" + USER_PASSWORD;
         return ("Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes())).equals(header);

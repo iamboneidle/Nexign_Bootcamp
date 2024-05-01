@@ -12,12 +12,29 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллер, принимающий на вход информацию о звонке, чтобы далее произвести расчет.
+ */
 @RestController
 public class DataToPayController {
+    /**
+     * HRSService, производящий расчет.
+     */
     @Autowired
     HRSService hrsService;
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(DataToPayController.class.getName());
 
+    /**
+     * Сам контроллер, который на вход принимает запрос и мапит его в объект DataToPay.
+     * Затем создается новый поток, в котором производится расчет по звонку, и возвращается положительный ответ.
+     * Все это происходит, если DataToPay не null.
+     *
+     * @param dataToPay Объект в который мапится RequestBody.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
     @PostMapping("/post-data-to-pay")
     public ResponseEntity<String> catchDataToPay(@RequestBody DataToPay dataToPay) {
         if (dataToPay != null) {

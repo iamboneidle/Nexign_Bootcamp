@@ -63,11 +63,11 @@ public class Transactions {
     /**
      * Конструктор с параметрами для создания объекта Transactions.
      *
-     * @param msisdns         объект Msisdns, связанный с транзакцией
-     * @param callType        тип вызова
-     * @param contactedMsisdn номер телефона абонента, с которым осуществлялась связь
-     * @param callTimeStart   время начала звонка (Unix time seconds)
-     * @param callTimeEnd     время окончания звонка (Unix time seconds)
+     * @param msisdns         Объект Msisdns, связанный с транзакцией
+     * @param callType        Тип вызова
+     * @param contactedMsisdn Номер телефона абонента, с которым осуществлялась связь
+     * @param callTimeStart   Время начала звонка (Unix time seconds)
+     * @param callTimeEnd     Время окончания звонка (Unix time seconds)
      */
     public Transactions(Msisdns msisdns, String callType, String contactedMsisdn, long callTimeStart, long callTimeEnd) {
         this.msisdns = msisdns;

@@ -12,17 +12,41 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис, который заполняет базу данных сервиса на старте, если та пуста.
+ */
 @Service
 public class StartInfoPusherService {
+    /**
+     * Репозиторий тарифов.
+     */
     @Autowired
     private RatesRepository ratesRepository;
+    /**
+     * Репозиторий абонентов.
+     */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
+    /**
+     * Репозиторий пользователей.
+     */
     @Autowired
     private UsersRepository usersRepository;
-    private final List<Users> abonents = new ArrayList<>();
+    /**
+     * Список пользователей.
+     */
+    private final List<Users> users = new ArrayList<>();
+    /**
+     * Список тарифов.
+     */
     private final List<Rates> rates = new ArrayList<>();
+    /**
+     * Список абнентов.
+     */
     private final List<Msisdns> msisdns = new ArrayList<>();
+    /**
+     * Массив с номерами телефонов абонентов.
+     */
     private static final String[] USERS_NUMBERS = {
             "79218476904",
             "79214007407",
@@ -37,20 +61,23 @@ public class StartInfoPusherService {
             "79212418053",
     };
 
+    /**
+     * Метод, который загружает информацию в базу данных, если та пуста.
+     */
     public void pushToDB() {
         if (usersRepository.findAll().isEmpty()) {
-            abonents.add(new Users("Федор", "Дмитриевич", "Панфилов"));
-            abonents.add(new Users("Мария", "Игоревна", "Кондукова"));
-            abonents.add(new Users("Олег", "Игоревич", "Резьбов"));
-            abonents.add(new Users("Иосиф", "Виссарионович", "Сталин"));
-            abonents.add(new Users("Жан-Клод", "Вандам", "Терминатор"));
-            abonents.add(new Users("Игорь", "Евгеньевич", "Карагодин"));
-            abonents.add(new Users("Матвей", "Сергеевич", "Соболев"));
-            abonents.add(new Users("Галина", "Ивановна", "Виноградова"));
-            abonents.add(new Users("Дарья", "Васильевна", "Лукошенко"));
-            abonents.add(new Users("Дина", "Азисбековна", "Кожакова"));
-            abonents.add(new Users("Александр", "Дмитриевич", "Мартынов"));
-            usersRepository.saveAll(abonents);
+            users.add(new Users("Федор", "Дмитриевич", "Панфилов"));
+            users.add(new Users("Мария", "Игоревна", "Кондукова"));
+            users.add(new Users("Олег", "Игоревич", "Резьбов"));
+            users.add(new Users("Иосиф", "Виссарионович", "Сталин"));
+            users.add(new Users("Жан-Клод", "Вандам", "Терминатор"));
+            users.add(new Users("Игорь", "Евгеньевич", "Карагодин"));
+            users.add(new Users("Матвей", "Сергеевич", "Соболев"));
+            users.add(new Users("Галина", "Ивановна", "Виноградова"));
+            users.add(new Users("Дарья", "Васильевна", "Лукошенко"));
+            users.add(new Users("Дина", "Азисбековна", "Кожакова"));
+            users.add(new Users("Александр", "Дмитриевич", "Мартынов"));
+            usersRepository.saveAll(users);
         }
         if (ratesRepository.findAll().isEmpty()) {
             rates.add(new Rates(11L, "Классика", null, null, 1.5F, 2.5F, 0F, 0F));
@@ -58,17 +85,17 @@ public class StartInfoPusherService {
             ratesRepository.saveAll(rates);
         }
         if (msisdnsRepository.findAll().isEmpty()) {
-            msisdns.add(new Msisdns(USERS_NUMBERS[0], rates.get(1), abonents.get(0), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[1], rates.get(1), abonents.get(1), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[2], rates.get(1), abonents.get(2), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[3], rates.get(1), abonents.get(3), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[4], rates.get(0), abonents.get(4), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[5], rates.get(0), abonents.get(5), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[6], rates.get(0), abonents.get(6), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[7], rates.get(0), abonents.get(7), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[8], rates.get(0), abonents.get(8), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[9], rates.get(0), abonents.get(9), 100F, 0L, 0L));
-            msisdns.add(new Msisdns(USERS_NUMBERS[10], rates.get(0), abonents.get(10), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[0], rates.get(1), users.get(0), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[1], rates.get(1), users.get(1), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[2], rates.get(1), users.get(2), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[3], rates.get(1), users.get(3), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[4], rates.get(0), users.get(4), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[5], rates.get(0), users.get(5), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[6], rates.get(0), users.get(6), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[7], rates.get(0), users.get(7), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[8], rates.get(0), users.get(8), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[9], rates.get(0), users.get(9), 100F, 0L, 0L));
+            msisdns.add(new Msisdns(USERS_NUMBERS[10], rates.get(0), users.get(10), 100F, 0L, 0L));
             msisdnsRepository.saveAll(msisdns);
         }
     }

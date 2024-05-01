@@ -36,6 +36,11 @@ public class TransactionObject {
      */
     private final long callEndTime;
 
+    /**
+     * Перегруженный метод toString().
+     *
+     * @return Строка объекта.
+     */
     @Override
     public String toString() {
         StringJoiner result = new StringJoiner(",");

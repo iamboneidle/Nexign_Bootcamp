@@ -3,6 +3,11 @@ package hrs.hrs_service.HRSUtils.RatesInfo;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+/**
+ * Информация о классическом тарифе.
+ *
+ */
+//TODO: брать информацию из кэш БД
 @Component
 @Getter
 public class ClassicRateInfo {

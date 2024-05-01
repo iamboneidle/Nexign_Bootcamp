@@ -10,12 +10,27 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Сервис, занимающийся отправкой чеков в BRT.
+ */
 @Service
 public class CallReceiptSenderService {
+    /**
+     * URL end-point'а в BRT, принимающего чеки.
+     */
     private static final String POST_CALL_RECEIPT_URL = "http://localhost:2002/post-call-receipt";
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(CallReceiptSenderService.class.getName());
+    /**
+     * Клиент, осуществляющий отправку.
+     */
     private OkHttpClient client;
 
+    /**
+     * Метод, инициализирующий клиента на PostConstruct.
+     */
     @PostConstruct
     public void init() {
         client = new OkHttpClient.Builder()
@@ -23,11 +38,17 @@ public class CallReceiptSenderService {
                 .build();
     }
 
+    /**
+     * Метод, отправляющий Json с чеком в BRT. Создает requestBody, request, отправляет, получает response и выводит
+     * уведомление.
+     *
+     * @param json Чек по звонку.
+     */
     public void sendCallReceipt(String json) {
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+        RequestBody requestBody = RequestBody.create(json, MediaType.parse("application/json"));
         Request request = new Request.Builder()
                 .url(POST_CALL_RECEIPT_URL)
-                .post(body)
+                .post(requestBody)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

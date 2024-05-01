@@ -13,14 +13,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллера, отвечающий за прием информации о смене тарифа с CRM.
+ */
 @RestController
 public class DataToChangeTariffController {
+    /**
+     * Репозиторий пользователей.
+     */
     @Autowired
     MsisdnsRepository msisdnsRepository;
+    /**
+     * Репозиторий тарифов.
+     */
     @Autowired
     RatesRepository ratesRepository;
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(DataToChangeTariffController.class.getName());
 
+    /**
+     * Контроллер, принимающий информацию о смене тарифов.
+     *
+     * @param dataToChangeTariff Объект, в который мапится RequestBody.
+     * @return ResponseEntity со статусом ответа.
+     */
     @PostMapping("/change-tariff")
     @Transactional
     public ResponseEntity<String> catchData(@RequestBody DataToChangeTariff dataToChangeTariff) {

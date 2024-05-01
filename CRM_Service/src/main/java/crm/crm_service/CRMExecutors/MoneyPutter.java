@@ -10,16 +10,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Поток, который кладет деньги на счета абонентов.
+ */
 public class MoneyPutter implements Runnable {
+    /**
+     * CRMService.
+     */
     private final CRMService crmService;
+    /**
+     * Сервис, который отправляет данные о пополнении счета абонента в BRT.
+     */
     private final DataToPutMoneySenderService dataToPutMoneySenderService;
+    /**
+     * Объект ObjectMapper для преобразования объекта в Json.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Конструктор класса.
+     *
+     * @param crmService CRMService.
+     * @param dataToPutMoneySenderService Сервис по отправке данных о пополнении счетов абонентов на BRT.
+     */
     public MoneyPutter(CRMService crmService, DataToPutMoneySenderService dataToPutMoneySenderService) {
         this.crmService = crmService;
         this.dataToPutMoneySenderService = dataToPutMoneySenderService;
     }
 
+    /**
+     * Задача потоку, в которой он получает Map с абонентами, берет оттуда номера, и генерирует
+     * количество денег для пополнения счета, затем передает в DataToPutMoneySenderService.
+     */
     @Override
     public void run() {
         Map<String, Long> mapNumberToRateId = crmService.getMapNumberToRateId();

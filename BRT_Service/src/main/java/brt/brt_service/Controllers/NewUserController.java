@@ -16,16 +16,37 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллера, принимающий данные о добавлении нового пользователя.
+ */
 @RestController
 public class NewUserController {
+    /**
+     * Репозиторий абонентов.
+     */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
+    /**
+     * Репозиторий тарифов.
+     */
     @Autowired
     private RatesRepository ratesRepository;
+    /**
+     * Репозиторий пользователей.
+     */
     @Autowired
     private UsersRepository usersRepository;
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(NewUserController.class.getName());
 
+    /**
+     * Контроллер, принимающий информацию о добавлении нового тарифа.
+     *
+     * @param dataToAddNewUserToCDR Объект, в который мапится RequestBody.
+     * @return ResponseEntity со статусом ответа.
+     */
     @PostMapping("post-new-user")
     private ResponseEntity<String> addNewUser(@RequestBody DataToAddNewUser dataToAddNewUserToCDR) {
         if (dataToAddNewUserToCDR != null) {

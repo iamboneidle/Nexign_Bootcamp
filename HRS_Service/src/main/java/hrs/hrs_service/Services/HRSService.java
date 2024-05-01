@@ -12,15 +12,36 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Сервис отправляющий данный на расчет и чек по данным звонка в BRT.
+ */
 @Service
 public class HRSService {
+    /**
+     * Сервис по отправке чеков в BRT.
+     */
     @Autowired
     private CallReceiptSenderService callReceiptSenderService;
+    /**
+     * Класс, составляющий чеки.
+     */
     @Autowired
     private ReceiptMaker receiptMaker;
+    /**
+     * Объект ObjectMapper для преобразования в Json объекта.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Логгер для выводы уведомлений.
+     */
     private static final Logger LOGGER = Logger.getLogger(HRSService.class.getName());
 
+    /**
+     * Метод, который отправляет данные на расчет, получает чека и передает его на отправку.
+     * Проверяет, не равен ли объект CallReceipt null.
+     *
+     * @param dataToPay Объект с данными о звонке.
+     */
     public void makeAndSendCallReceipt(DataToPay dataToPay) {
         try {
             CallReceipt callReceipt = receiptMaker.makeCalculation(dataToPay);

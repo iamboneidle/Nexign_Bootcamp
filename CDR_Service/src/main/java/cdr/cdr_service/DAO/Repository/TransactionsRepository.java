@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Репозиторий для взаимодействия с сущностью Transactions в базе данных.
- * Используется для выполнения операций чтения, записи, обновления и удаления записей Transactions в базе данных.
+ * <br>Используется для выполнения операций чтения, записи, обновления и удаления записей Transactions в базе данных.
  */
 @Repository
 public interface TransactionsRepository extends JpaRepository<Transactions, Long> {

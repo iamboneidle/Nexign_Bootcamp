@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hrs.hrs_service.HRSUtils.RatesInfo.ClassicRateInfo;
 import hrs.hrs_service.HRSUtils.RatesInfo.MonthlyRateInfo;
 import hrs.hrs_service.Services.CallReceiptSenderService;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,20 +18,55 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс, отвечающий за подготовку чека по звонку.
+ */
 @Component
 public class ReceiptMaker {
+    /**
+     * Информация по классическому тарифу.
+     */
     @Autowired
     private ClassicRateInfo classicRateInfo;
+    /**
+     * Информация по месячному тарифу.
+     */
     @Autowired
     private MonthlyRateInfo monthlyRateInfo;
+    /**
+     * Сервис по отправке чеков.
+     */
     @Autowired
     private CallReceiptSenderService callReceiptSenderService;
+    /**
+     * Месяц, с которого начинает работать сервис. У нас он начинает работать с 01.01.2024.
+     */
     private int curMonth = 1;
+    /**
+     * Год, с которого начинает работать сервис. У нас он начинает работать с 01.01.2024.
+     */
     private int curYear = 2024;
+    /**
+     * Объект ObjectMapper для преобразования объектов в Json.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Список с абонентами месячного тарифа, который заполняется и в конце каждого месяца отправляется чек
+     * по каждому на списание средств со счета.
+     */
     private final List<String> monthlyRateUsers = new ArrayList<>();
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(ReceiptMaker.class.getName());
 
+    /**
+     * Метод, который вызывает rateSwitch() и обновляет дату в сервисе, а при наступлении нового месяца
+     * вызывает sendMonthlyRateUsersReceipts().
+     *
+     * @param dataToPay Информация по звонку.
+     * @return Чек по звонку.
+     */
     public CallReceipt makeCalculation(DataToPay dataToPay) {
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(dataToPay.getCallTimeStart()), ZoneId.systemDefault());
 
@@ -48,6 +84,12 @@ public class ReceiptMaker {
         }
     }
 
+    /**
+     * Метод, который выбирает, по какому тарифу производить расчет.
+     *
+     * @param dataToPay Информация по звонку.
+     * @return Чек по звонку.
+     */
     private CallReceipt rateSwitch(DataToPay dataToPay) {
         return switch (dataToPay.getRateId()) {
             case 11 -> calculateByClassicRate(dataToPay);
@@ -59,6 +101,14 @@ public class ReceiptMaker {
         };
     }
 
+    /**
+     * Метод, который производит расчет по классическому тарифу. Он считает продолжительность звонка,
+     * переводит ее в минуты и округляет в большую сторону, затем производит расчет, смотря на то,
+     * исходящий или входящий был звонок, а также звонили ли обслуживаемому абоненту или нет.
+     *
+     * @param dataToPay Информация по звонку.
+     * @return Чек по звонку.
+     */
     private CallReceipt calculateByClassicRate(DataToPay dataToPay) {
         long callDuration = (dataToPay.getCallTimeEnd() - dataToPay.getCallTimeStart()) / 60 + 1;
         if (dataToPay.getCallType().equals("02")) {
@@ -82,17 +132,73 @@ public class ReceiptMaker {
         }
     }
 
-    private CallReceipt calculateByMonthlyRate(DataToPay dataToPay) {
-        if (dataToPay.getMinutesLeft() > 0) {
-            if (!monthlyRateUsers.contains(dataToPay.getServicedMsisdnNumber())) {
-                monthlyRateUsers.add(dataToPay.getServicedMsisdnNumber());
-            }
-            return null;
+    /**
+     * Метод, который производит расчет по классическому тарифу. Он считает продолжительность звонка,
+     * переводит ее в минуты и округляет в большую сторону, затем производит расчет, смотря на то,
+     * исходящий или входящий был звонок, а также звонили ли обслуживаемому абоненту или нет.
+     *
+     * @param dataToPay Объект с информацией о звонке.
+     * @param minutesToWriteOff Минуты, количество которых нужно списать в кэш базе дынных в BRT.
+     * @return Чек по звонку.
+     */
+    private CallReceipt calculateByClassicRate(DataToPay dataToPay, Long minutesToWriteOff) {
+        long callDuration = (dataToPay.getCallTimeEnd() - dataToPay.getCallTimeStart()) / 60 + 1;
+        if (dataToPay.getCallType().equals("02")) {
+            return new CallReceipt(
+                    dataToPay.getServicedMsisdnNumber(),
+                    minutesToWriteOff,
+                    callDuration * (dataToPay.isOtherMsisdnServiced()
+                            ? classicRateInfo.getINCOMING_FROM_SERVICED()
+                            : classicRateInfo.getINCOMING_FROM_OTHERS()
+                    )
+            );
         } else {
-            return calculateByClassicRate(dataToPay);
+            return new CallReceipt(
+                    dataToPay.getServicedMsisdnNumber(),
+                    minutesToWriteOff,
+                    callDuration * (dataToPay.isOtherMsisdnServiced()
+                            ? classicRateInfo.getOUTCOMING_TO_SERVICED()
+                            : classicRateInfo.getOUTCOMING_TO_OTHERS()
+                    )
+            );
         }
     }
 
+    /**
+     * Метод считает продолжительность звонка, если абонент не "перелимитил" количество своих минут, то он
+     * сохраняется в список monthlyRateUsers, по нему возвращается чек в BRT с нулевой суммой списания и количеством
+     * минут на списание, которое заносится в кэш базу данных BRT, этот чек BRT не обрабатывает в
+     * основную базу данных. В обратном случае рассчитывается, сколько времени абонент наговорил
+     * сверх лимита, это количество вычитается из времени окончания звонка и обновленный объект уходит
+     * в метод расчета классического тарифа со списанием и денег и минут.
+     * DataToPay
+     *
+     * @param dataToPay Информация по звонку.
+     * @return Чек по звонку.
+     */
+    @Nullable
+    private CallReceipt calculateByMonthlyRate(DataToPay dataToPay) {
+        long callDuration = (dataToPay.getCallTimeEnd() - dataToPay.getCallTimeStart()) / 60 + 1;
+        if (dataToPay.getMinutesLeft() - callDuration >= 0) {
+            if (!monthlyRateUsers.contains(dataToPay.getServicedMsisdnNumber())) {
+                monthlyRateUsers.add(dataToPay.getServicedMsisdnNumber());
+            }
+            return new CallReceipt (
+                    dataToPay.getServicedMsisdnNumber(),
+                    callDuration,
+                    0F
+            );
+        } else {
+            long difference = callDuration - dataToPay.getMinutesLeft();
+            long toMinus = dataToPay.getCallTimeEnd() - difference * 60;
+            dataToPay.setCallTimeEnd(toMinus);
+            return calculateByClassicRate(dataToPay, difference);
+        }
+    }
+
+    /**
+     * Метод, который каждый месяц производит подготовку чека по абонентам месячного тарифа и отправляет в BRT.
+     */
     private void sendMonthlyRateUsersReceipts() {
         for (String phoneNumber : monthlyRateUsers) {
             CallReceipt callReceipt = new CallReceipt(phoneNumber, null, monthlyRateInfo.getPRICE_FOR_MONTH());

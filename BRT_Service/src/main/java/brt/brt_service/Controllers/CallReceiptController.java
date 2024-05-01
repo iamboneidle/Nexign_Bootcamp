@@ -11,12 +11,27 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Класс контроллера, принимающий на вход чек по звонку.
+ */
 @RestController
 public class CallReceiptController {
+    /**
+     * BRTService.
+     */
     @Autowired
     private BRTService brtService;
+    /**
+     * Логгер, выводящий уведомления.
+     */
     private static final Logger LOGGER = Logger.getLogger(CallReceiptController.class.getName());
 
+    /**
+     * Контроллер, принимающий на вход данные чека по звонку.
+     *
+     * @param callReceipt Объект, в который мапится RequestBody.
+     * @return ResponseEntity с информацией о статусе ответа.
+     */
     @PostMapping("/post-call-receipt")
     public ResponseEntity<String> catchCallReceipt(@RequestBody CallReceipt callReceipt) {
         if (callReceipt != null) {
