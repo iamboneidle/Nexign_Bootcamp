@@ -24,7 +24,7 @@ public class CDRFileController {
      * BRTService.
      */
     @Autowired
-    BRTService brtService;
+    private BRTService brtService;
     /**
      * Логгер, выводящий уведомления.
      */

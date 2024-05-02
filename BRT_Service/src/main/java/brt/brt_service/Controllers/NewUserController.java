@@ -1,12 +1,14 @@
 package brt.brt_service.Controllers;
 
 import brt.brt_service.BRTUtils.DataToAddNewUser;
-import brt.brt_service.DAO.Models.Users;
-import brt.brt_service.DAO.Models.Msisdns;
-import brt.brt_service.DAO.Models.Rates;
-import brt.brt_service.DAO.Repository.UsersRepository;
-import brt.brt_service.DAO.Repository.MsisdnsRepository;
-import brt.brt_service.DAO.Repository.RatesRepository;
+import brt.brt_service.Postgres.DAO.Models.Users;
+import brt.brt_service.Postgres.DAO.Models.Msisdns;
+import brt.brt_service.Postgres.DAO.Models.Rates;
+import brt.brt_service.Postgres.DAO.Repository.UsersRepository;
+import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Postgres.DAO.Repository.RatesRepository;
+import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
+import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +39,11 @@ public class NewUserController {
     @Autowired
     private UsersRepository usersRepository;
     /**
+     * Репозиторий абонентов и остатка их минут в Redis.
+     */
+    @Autowired
+    private MsisdnToMinutesLeftRepository msisdnToMinutesLeftRepository;
+    /**
      * Логгер, выводящий уведомления.
      */
     private static final Logger LOGGER = Logger.getLogger(NewUserController.class.getName());
@@ -55,6 +62,7 @@ public class NewUserController {
             Msisdns msisdn = new Msisdns(dataToAddNewUserToCDR.getMsisdn(), rate, abonent, dataToAddNewUserToCDR.getMoney(), 0L, 0L);
             usersRepository.save(abonent);
             msisdnsRepository.save(msisdn);
+            msisdnToMinutesLeftRepository.save(new MsisdnToMinutesLeft(dataToAddNewUserToCDR.getMsisdn(), rate.getMinLimit()));
             LOGGER.log(Level.INFO, "OK: added new user " + dataToAddNewUserToCDR.getMsisdn());
             return ResponseEntity.ok().body("BRT added user " + dataToAddNewUserToCDR.getMsisdn());
         }

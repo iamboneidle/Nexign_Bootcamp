@@ -1,7 +1,7 @@
 package brt.brt_service.Services.Utils;
 
-import brt.brt_service.DAO.Models.Msisdns;
-import brt.brt_service.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Postgres.DAO.Models.Msisdns;
+import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

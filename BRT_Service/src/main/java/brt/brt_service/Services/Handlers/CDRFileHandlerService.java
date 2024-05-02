@@ -2,12 +2,14 @@ package brt.brt_service.Services.Handlers;
 
 import brt.brt_service.BRTUtils.CallRecord;
 import brt.brt_service.BRTUtils.RequestExecutor;
-import brt.brt_service.DAO.Models.CallDataRecords;
-import brt.brt_service.DAO.Models.Calls;
-import brt.brt_service.DAO.Models.Msisdns;
-import brt.brt_service.DAO.Repository.CallDataRecordsRepository;
-import brt.brt_service.DAO.Repository.CallsRepository;
-import brt.brt_service.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Postgres.DAO.Models.CallDataRecords;
+import brt.brt_service.Postgres.DAO.Models.Calls;
+import brt.brt_service.Postgres.DAO.Models.Msisdns;
+import brt.brt_service.Postgres.DAO.Repository.CallDataRecordsRepository;
+import brt.brt_service.Postgres.DAO.Repository.CallsRepository;
+import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
+import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import brt.brt_service.Services.Utils.MsisdnsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,17 +34,22 @@ public class CDRFileHandlerService {
      * Репозиторий абонентов.
      */
     @Autowired
-    MsisdnsRepository msisdnsRepository;
+    private MsisdnsRepository msisdnsRepository;
     /**
      * Репозиторий звонков.
      */
     @Autowired
-    CallsRepository callsRepository;
+    private CallsRepository callsRepository;
     /**
      * Репозиторий CDR файлов.
      */
     @Autowired
-    CallDataRecordsRepository callDataRecordsRepository;
+    private CallDataRecordsRepository callDataRecordsRepository;
+    /**
+     * Репозиторий абонентов и остатка их минут в Redis.
+     */
+    @Autowired
+    private MsisdnToMinutesLeftRepository msisdnToMinutesLeftRepository;
     /**
      * Сервис абонентов.
      */
@@ -51,7 +59,7 @@ public class CDRFileHandlerService {
      * Класс, отправляющий запросы.
      */
     @Autowired
-    RequestExecutor requestExecutor;
+    private RequestExecutor requestExecutor;
     /**
      * Настоящий месяц (сервис запускается 01.01.2024).
      */
@@ -97,9 +105,6 @@ public class CDRFileHandlerService {
         String[] calls = cdrFile.split("\n");
         List<Msisdns> msisdnsList = msisdnsService.getMsisdns();
         List<String> msisdnsPhoneNumbers = msisdnsList.stream().map(Msisdns::getNumber).toList();
-
-
-//        TODO:   CallRecord minutesLeft получать из кэш БД
         for (String call : calls) {
             String[] data = call.split(",");
             String callType = data[0];
@@ -115,7 +120,7 @@ public class CDRFileHandlerService {
                         callTimeEnd,
                         msisdnsService.getRateIdByPhoneNumber(calledMsisdn),
                         msisdnsPhoneNumbers.contains(contactedMsisdn),
-                        50L
+                        msisdnToMinutesLeftRepository.findById(calledMsisdn).get().getMinutesLeft()
                 );
                 validateDate(callRecord);
                 sendCallRecord(callRecord);
@@ -176,14 +181,30 @@ public class CDRFileHandlerService {
 
         if (dateTime.getMonthValue() > curMonth) {
             curMonth++;
+            putMinutesOnAccounts();
             putMoneyOnAccounts();
             changeRates();
         } else if (curMonth == 12 && dateTime.getMonthValue() == 1 && dateTime.getYear() > curYear) {
             curMonth = 1;
             curYear++;
+            putMinutesOnAccounts();
             putMoneyOnAccounts();
             changeRates();
         }
+    }
+
+    /**
+     * Метод кладет 50 минут всем абонентам помесячного тарифа.
+     */
+    private void putMinutesOnAccounts() {
+        List<MsisdnToMinutesLeft> msisdnsToPutMinutes = new ArrayList<>();
+        msisdnToMinutesLeftRepository.findAll().forEach(msisdnToMinutesLeft -> {
+            if (msisdnToMinutesLeft.getMinutesLeft() != null) {
+                msisdnToMinutesLeft.setMinutesLeft(50L);
+                msisdnsToPutMinutes.add(msisdnToMinutesLeft);
+            }
+        });
+        msisdnToMinutesLeftRepository.saveAll(msisdnsToPutMinutes);
     }
 
     /**

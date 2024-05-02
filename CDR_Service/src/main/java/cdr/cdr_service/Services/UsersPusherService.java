@@ -2,6 +2,7 @@ package cdr.cdr_service.Services;
 
 import cdr.cdr_service.DAO.Models.Msisdns;
 import cdr.cdr_service.DAO.Repository.MsisdnsRepository;
+import cdr.cdr_service.DAO.Repository.TransactionsRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,11 @@ public class UsersPusherService {
     @Autowired
     private MsisdnsRepository msisdnsRepository;
     /**
-     * Сервис пользователей.
+     * TODO: add javadoc
      */
     @Autowired
-    private MsisdnsService msisdnsService;
+    private TransactionsRepository transactionsRepository;
+
     /**
      * Массив с номерами пользователей.
      */
@@ -47,12 +49,12 @@ public class UsersPusherService {
      */
     @PostConstruct
     private void pushToDB() {
-        if (msisdnsService.getMsisdns().isEmpty()) {
-            List<Msisdns> phoneNumbers = new ArrayList<>();
-            for (String num : USERS_NUMBERS) {
-                phoneNumbers.add(new Msisdns(num));
-            }
-            msisdnsRepository.saveAll(phoneNumbers);
+        transactionsRepository.deleteAll();
+        msisdnsRepository.deleteAll();
+        List<Msisdns> phoneNumbers = new ArrayList<>();
+        for (String num : USERS_NUMBERS) {
+            phoneNumbers.add(new Msisdns(num));
         }
+        msisdnsRepository.saveAll(phoneNumbers);
     }
 }

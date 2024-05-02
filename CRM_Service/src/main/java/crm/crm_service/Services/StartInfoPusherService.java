@@ -72,16 +72,15 @@ public class StartInfoPusherService {
     };
 
     /**
-     * Метод, отправляющий данные в БД.
+     * Метод, отправляющий данные в БД на старте.
      */
     @PostConstruct
     public void pushToDB() {
-        if (usersRepository.findAll().isEmpty()) {
-            List<Users> usersToPush = new ArrayList<>();
-            for (int i = 0; i < USERNAMES.length; i++) {
-                usersToPush.add(new Users(USERNAMES[i], PASSWORDS[i], ROLES[i]));
-            }
-            usersRepository.saveAll(usersToPush);
+        usersRepository.deleteAll();
+        List<Users> usersToPush = new ArrayList<>();
+        for (int i = 0; i < USERNAMES.length; i++) {
+            usersToPush.add(new Users(USERNAMES[i], PASSWORDS[i], ROLES[i]));
         }
+        usersRepository.saveAll(usersToPush);
     }
 }

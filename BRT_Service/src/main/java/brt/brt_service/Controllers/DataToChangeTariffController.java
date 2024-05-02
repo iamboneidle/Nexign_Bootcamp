@@ -1,10 +1,12 @@
 package brt.brt_service.Controllers;
 
 import brt.brt_service.BRTUtils.DataToChangeTariff;
-import brt.brt_service.DAO.Models.Msisdns;
-import brt.brt_service.DAO.Models.Rates;
-import brt.brt_service.DAO.Repository.MsisdnsRepository;
-import brt.brt_service.DAO.Repository.RatesRepository;
+import brt.brt_service.Postgres.DAO.Models.Msisdns;
+import brt.brt_service.Postgres.DAO.Models.Rates;
+import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Postgres.DAO.Repository.RatesRepository;
+import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
+import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,17 @@ public class DataToChangeTariffController {
      * Репозиторий пользователей.
      */
     @Autowired
-    MsisdnsRepository msisdnsRepository;
+    private MsisdnsRepository msisdnsRepository;
     /**
      * Репозиторий тарифов.
      */
     @Autowired
-    RatesRepository ratesRepository;
+    private RatesRepository ratesRepository;
+    /**
+     * Репозиторий абонентов и остатка их минут в Redis.
+     */
+    @Autowired
+    private MsisdnToMinutesLeftRepository msisdnToMinutesLeftRepository;
     /**
      * Логгер, выводящий уведомления.
      */
@@ -47,6 +54,11 @@ public class DataToChangeTariffController {
             Rates rate = ratesRepository.findRatesById(dataToChangeTariff.getTariffId());
             msisdnsByNumber.setRates(rate);
             msisdnsRepository.save(msisdnsByNumber);
+            MsisdnToMinutesLeft msisdnToMinutesLeft = msisdnToMinutesLeftRepository.findById(dataToChangeTariff.getMsisdn()).orElse(null);
+            if (msisdnToMinutesLeft != null) {
+                msisdnToMinutesLeft.setMinutesLeft(rate.getMinLimit());
+                msisdnToMinutesLeftRepository.save(msisdnToMinutesLeft);
+            }
             LOGGER.log(Level.INFO, "OK: here is " + dataToChangeTariff.getMsisdn() + " new tariff id: " + dataToChangeTariff.getTariffId());
             return ResponseEntity.ok("BRT accepted new tariff info '" + dataToChangeTariff.getTariffId() + "' for " + dataToChangeTariff.getMsisdn() + " successfully");
         }

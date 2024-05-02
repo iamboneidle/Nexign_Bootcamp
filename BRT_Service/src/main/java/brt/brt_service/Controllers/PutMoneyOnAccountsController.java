@@ -1,7 +1,7 @@
 package brt.brt_service.Controllers;
 
 import brt.brt_service.BRTUtils.DataToPutMoney;
-import brt.brt_service.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class PutMoneyOnAccountsController {
      * Репозиторий абонентов.
      */
     @Autowired
-    MsisdnsRepository msisdnsRepository;
+    private MsisdnsRepository msisdnsRepository;
     /**
      * Логгер, выводящий уведомления.
      */

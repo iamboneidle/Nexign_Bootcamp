@@ -1,4 +1,4 @@
-package brt.brt_service.DAO.Models;
+package brt.brt_service.Postgres.DAO.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -40,7 +40,7 @@ public class Rates {
      * Лимит минут (для помесячного тарифа).
      */
     @Column(name = "min_limit")
-    private Float minLimit;
+    private Long minLimit;
 
     /**
      * Цена для исходящих звонков обслуживаемому абоненту (для классического тарифа).
@@ -88,7 +88,7 @@ public class Rates {
             Long id,
             String rateName,
             Float startCost,
-            Float minLimit,
+            Long minLimit,
             Float outcomingCallsCostServiced,
             Float outcomingCallsCostOthers,
             Float incomingCallsCostServiced,

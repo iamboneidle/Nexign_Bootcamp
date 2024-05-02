@@ -138,15 +138,14 @@ public class ReceiptMaker {
      * исходящий или входящий был звонок, а также звонили ли обслуживаемому абоненту или нет.
      *
      * @param dataToPay Объект с информацией о звонке.
-     * @param minutesToWriteOff Минуты, количество которых нужно списать в кэш базе дынных в BRT.
+     * @param callDuration Минуты, количество которых нужно списать в кэш базе данных в BRT.
      * @return Чек по звонку.
      */
-    private CallReceipt calculateByClassicRate(DataToPay dataToPay, Long minutesToWriteOff) {
-        long callDuration = (dataToPay.getCallTimeEnd() - dataToPay.getCallTimeStart()) / 60 + 1;
+    private CallReceipt calculateByClassicRate(DataToPay dataToPay, Long callDuration) {
         if (dataToPay.getCallType().equals("02")) {
             return new CallReceipt(
                     dataToPay.getServicedMsisdnNumber(),
-                    minutesToWriteOff,
+                    callDuration,
                     callDuration * (dataToPay.isOtherMsisdnServiced()
                             ? classicRateInfo.getINCOMING_FROM_SERVICED()
                             : classicRateInfo.getINCOMING_FROM_OTHERS()
@@ -155,7 +154,7 @@ public class ReceiptMaker {
         } else {
             return new CallReceipt(
                     dataToPay.getServicedMsisdnNumber(),
-                    minutesToWriteOff,
+                    callDuration,
                     callDuration * (dataToPay.isOtherMsisdnServiced()
                             ? classicRateInfo.getOUTCOMING_TO_SERVICED()
                             : classicRateInfo.getOUTCOMING_TO_OTHERS()
@@ -176,7 +175,6 @@ public class ReceiptMaker {
      * @param dataToPay Информация по звонку.
      * @return Чек по звонку.
      */
-    @Nullable
     private CallReceipt calculateByMonthlyRate(DataToPay dataToPay) {
         long callDuration = (dataToPay.getCallTimeEnd() - dataToPay.getCallTimeStart()) / 60 + 1;
         if (dataToPay.getMinutesLeft() - callDuration >= 0) {
@@ -189,10 +187,10 @@ public class ReceiptMaker {
                     0F
             );
         } else {
-            long difference = callDuration - dataToPay.getMinutesLeft();
-            long toMinus = dataToPay.getCallTimeEnd() - difference * 60;
-            dataToPay.setCallTimeEnd(toMinus);
-            return calculateByClassicRate(dataToPay, difference);
+            long newCallDuration = callDuration - dataToPay.getMinutesLeft();
+            long newCallTimeEnd = dataToPay.getCallTimeStart() + newCallDuration * 60;
+            dataToPay.setCallTimeEnd(newCallTimeEnd);
+            return calculateByClassicRate(dataToPay, newCallDuration);
         }
     }
 

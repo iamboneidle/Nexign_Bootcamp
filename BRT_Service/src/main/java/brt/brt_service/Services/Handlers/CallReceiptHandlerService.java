@@ -1,7 +1,9 @@
 package brt.brt_service.Services.Handlers;
 
 import brt.brt_service.BRTUtils.CallReceipt;
-import brt.brt_service.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
+import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
+import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,19 +18,31 @@ public class CallReceiptHandlerService {
      */
     @Autowired
     private MsisdnsRepository msisdnsRepository;
+    /**
+     * Репозиторий абонентов и остатка их минут в Redis.
+     */
+    @Autowired
+    private MsisdnToMinutesLeftRepository msisdnToMinutesLeftRepository;
 
     /**
      * Метод валидирующий чеки звонкам.
      *
      * @param callReceipt чек по звонку.
      */
-//    TODO: обновлять minutesLeft в кэш БД
-//      добавить логику на то, присутствует ли значение минут на списание, если да, то списывать его
-//      в кэш БД.
     @Transactional
     public void validateCallReceipt(CallReceipt callReceipt) {
         if (callReceipt.getMoneyToWriteOff() > 0) {
             updateBalance(callReceipt.getServicedMsisdnNumber(), callReceipt.getMoneyToWriteOff());
+        }
+        if (callReceipt.getMinutesToWriteOff() != null) {
+            MsisdnToMinutesLeft msisdnToMinutesLeft = msisdnToMinutesLeftRepository.findById(callReceipt.getServicedMsisdnNumber()).orElse(null);
+            if (msisdnToMinutesLeft != null) {
+                System.out.println(msisdnToMinutesLeft);
+                long newMinutes = msisdnToMinutesLeft.getMinutesLeft() - callReceipt.getMinutesToWriteOff();
+                msisdnToMinutesLeft.setMinutesLeft(Math.max(newMinutes, 0L)
+                );
+                msisdnToMinutesLeftRepository.save(msisdnToMinutesLeft);
+            }
         }
     }
 

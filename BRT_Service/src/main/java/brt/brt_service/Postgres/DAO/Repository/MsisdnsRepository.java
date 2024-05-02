@@ -1,6 +1,6 @@
-package brt.brt_service.DAO.Repository;
+package brt.brt_service.Postgres.DAO.Repository;
 
-import brt.brt_service.DAO.Models.Msisdns;
+import brt.brt_service.Postgres.DAO.Models.Msisdns;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
