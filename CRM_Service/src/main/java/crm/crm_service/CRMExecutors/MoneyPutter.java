@@ -26,6 +26,15 @@ public class MoneyPutter implements Runnable {
      * Объект ObjectMapper для преобразования объекта в Json.
      */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Минимум средств, сколько абонент может положить себе на счет.
+     */
+    private static final float MONEY_TO_PUT_BOTTOM_BORDER = 100F;
+    /**
+     * Число, которое прибавляется к MONEY_TO_PUT_BOTTOM_BORDER, чтобы получить максимум средств, которые абонент
+     * может положить себе на счет.
+     */
+    private static final float MONEY_TO_PUT_TOP_BORDER = 100F;
 
     /**
      * Конструктор класса.
@@ -47,7 +56,7 @@ public class MoneyPutter implements Runnable {
         Map<String, Long> mapNumberToRateId = crmService.getMapNumberToRateId();
         List<String> msisdns = new ArrayList<>(mapNumberToRateId.keySet());
         for (String msisdn : msisdns) {
-            float moneyToPut = (float) (Math.random() * 100 + 100);
+            float moneyToPut = (float) (Math.random() * MONEY_TO_PUT_BOTTOM_BORDER + MONEY_TO_PUT_TOP_BORDER);
             DataToPutMoney dataToPutMoney = new DataToPutMoney(msisdn, moneyToPut);
             try {
                 String json = objectMapper.writeValueAsString(dataToPutMoney);

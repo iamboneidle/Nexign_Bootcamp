@@ -26,6 +26,11 @@ public class MsisdnToMinutesLeft {
      */
     private Long minutesLeft;
 
+    /**
+     * Перегруженный метод toString().
+     *
+     * @return Строка объекта.
+     */
     @Override
     public String toString() {
         return "MsisdnToMinutesLeft{" + "msisdn='" + msisdn + '\'' +

@@ -37,7 +37,6 @@ public class CallReceiptHandlerService {
         if (callReceipt.getMinutesToWriteOff() != null) {
             MsisdnToMinutesLeft msisdnToMinutesLeft = msisdnToMinutesLeftRepository.findById(callReceipt.getServicedMsisdnNumber()).orElse(null);
             if (msisdnToMinutesLeft != null) {
-                System.out.println(msisdnToMinutesLeft);
                 long newMinutes = msisdnToMinutesLeft.getMinutesLeft() - callReceipt.getMinutesToWriteOff();
                 msisdnToMinutesLeft.setMinutesLeft(Math.max(newMinutes, 0L)
                 );

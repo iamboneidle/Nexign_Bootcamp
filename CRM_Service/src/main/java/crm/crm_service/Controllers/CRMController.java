@@ -198,7 +198,7 @@ public class CRMController {
             try {
                 crmService.setMapNumberToRateId(objectMapper.readValue(string, HashMap.class));
                 if (!crmService.getMapNumberToRateId().isEmpty()) {
-                    LOGGER.log(Level.INFO, "OK: accepted info about msisdn and their and it is not empty");
+                    LOGGER.log(Level.INFO, "OK: accepted info about msisdns and their tariffs, and it is not empty");
                     return ResponseEntity.ok().body("CRM accepted info about msisdns and their tariffs");
                 }
                 LOGGER.log(Level.SEVERE, "ERROR: accepted empty data and gonna crash in a month");

@@ -2,10 +2,9 @@ package hrs.hrs_service.HRSUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hrs.hrs_service.HRSUtils.RatesInfo.ClassicRateInfo;
-import hrs.hrs_service.HRSUtils.RatesInfo.MonthlyRateInfo;
+import hrs.hrs_service.DAO.Models.Rates;
 import hrs.hrs_service.Services.CallReceiptSenderService;
-import org.jetbrains.annotations.Nullable;
+import hrs.hrs_service.Services.RatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,20 +23,15 @@ import java.util.logging.Logger;
 @Component
 public class ReceiptMaker {
     /**
-     * Информация по классическому тарифу.
-     */
-    @Autowired
-    private ClassicRateInfo classicRateInfo;
-    /**
-     * Информация по месячному тарифу.
-     */
-    @Autowired
-    private MonthlyRateInfo monthlyRateInfo;
-    /**
      * Сервис по отправке чеков.
      */
     @Autowired
     private CallReceiptSenderService callReceiptSenderService;
+    /**
+     * Сервис для сущности Rates.
+     */
+    @Autowired
+    private RatesService ratesService;
     /**
      * Месяц, с которого начинает работать сервис. У нас он начинает работать с 01.01.2024.
      */
@@ -110,14 +104,15 @@ public class ReceiptMaker {
      * @return Чек по звонку.
      */
     private CallReceipt calculateByClassicRate(DataToPay dataToPay) {
+        Rates classicRate = ratesService.getClassicRate();
         long callDuration = (dataToPay.getCallTimeEnd() - dataToPay.getCallTimeStart()) / 60 + 1;
         if (dataToPay.getCallType().equals("02")) {
             return new CallReceipt(
                     dataToPay.getServicedMsisdnNumber(),
                     null,
                     callDuration * (dataToPay.isOtherMsisdnServiced()
-                            ? classicRateInfo.getINCOMING_FROM_SERVICED()
-                            : classicRateInfo.getINCOMING_FROM_OTHERS()
+                            ? classicRate.getIncomingCallsCostServiced()
+                            : classicRate.getIncomingCallsCostOthers()
                     )
             );
         } else {
@@ -125,8 +120,8 @@ public class ReceiptMaker {
                     dataToPay.getServicedMsisdnNumber(),
                     null,
                     callDuration * (dataToPay.isOtherMsisdnServiced()
-                            ? classicRateInfo.getOUTCOMING_TO_SERVICED()
-                            : classicRateInfo.getOUTCOMING_TO_OTHERS()
+                            ? classicRate.getOutcomingCallsCostServiced()
+                            : classicRate.getOutcomingCallsCostOthers()
                     )
             );
         }
@@ -142,13 +137,14 @@ public class ReceiptMaker {
      * @return Чек по звонку.
      */
     private CallReceipt calculateByClassicRate(DataToPay dataToPay, Long callDuration) {
+        Rates classicRate = ratesService.getClassicRate();
         if (dataToPay.getCallType().equals("02")) {
             return new CallReceipt(
                     dataToPay.getServicedMsisdnNumber(),
                     callDuration,
                     callDuration * (dataToPay.isOtherMsisdnServiced()
-                            ? classicRateInfo.getINCOMING_FROM_SERVICED()
-                            : classicRateInfo.getINCOMING_FROM_OTHERS()
+                            ? classicRate.getIncomingCallsCostServiced()
+                            : classicRate.getIncomingCallsCostOthers()
                     )
             );
         } else {
@@ -156,8 +152,8 @@ public class ReceiptMaker {
                     dataToPay.getServicedMsisdnNumber(),
                     callDuration,
                     callDuration * (dataToPay.isOtherMsisdnServiced()
-                            ? classicRateInfo.getOUTCOMING_TO_SERVICED()
-                            : classicRateInfo.getOUTCOMING_TO_OTHERS()
+                            ? classicRate.getOutcomingCallsCostServiced()
+                            : classicRate.getOutcomingCallsCostOthers()
                     )
             );
         }
@@ -199,7 +195,7 @@ public class ReceiptMaker {
      */
     private void sendMonthlyRateUsersReceipts() {
         for (String phoneNumber : monthlyRateUsers) {
-            CallReceipt callReceipt = new CallReceipt(phoneNumber, null, monthlyRateInfo.getPRICE_FOR_MONTH());
+            CallReceipt callReceipt = new CallReceipt(phoneNumber, null, ratesService.getMonthlyRate().getStartCost());
             try {
                 String json = objectMapper.writeValueAsString(callReceipt);
                 callReceiptSenderService.sendCallReceipt(json);

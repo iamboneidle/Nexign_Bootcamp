@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Сервис, который заполняет базу данных сервиса на старте, если та пуста.
+ * Сервис, который заполняет базу данных сервиса на старте.
  */
 @Service
 public class StartInfoPusherToPostgresService {

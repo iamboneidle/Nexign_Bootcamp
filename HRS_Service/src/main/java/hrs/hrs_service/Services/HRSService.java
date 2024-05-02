@@ -2,9 +2,11 @@ package hrs.hrs_service.Services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hrs.hrs_service.DAO.Repository.RatesRepository;
 import hrs.hrs_service.HRSUtils.CallReceipt;
 import hrs.hrs_service.HRSUtils.DataToPay;
 import hrs.hrs_service.HRSUtils.ReceiptMaker;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,11 @@ import java.util.logging.Logger;
  */
 @Service
 public class HRSService {
+    /**
+     * Репозиторий для сущности Rates в Redis.
+     */
+    @Autowired
+    private RatesRepository ratesRepository;
     /**
      * Сервис по отправке чеков в BRT.
      */
@@ -52,5 +59,9 @@ public class HRSService {
         } catch (JsonProcessingException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
+    }
+    @PostConstruct
+    private void clearRedis() {
+        ratesRepository.deleteAll();
     }
 }

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис, который отправляет данные о пользователях и остатках их минут в Redis на старте.
+ */
 @Service
 public class StartInfoPusherToRedisService {
     /**
