@@ -2,6 +2,7 @@ package brt.brt_service.Services.Handlers;
 
 import brt.brt_service.BRTUtils.CallRecord;
 import brt.brt_service.BRTUtils.RequestExecutor;
+import brt.brt_service.Controllers.CallReceiptController;
 import brt.brt_service.Postgres.DAO.Models.CallDataRecords;
 import brt.brt_service.Postgres.DAO.Models.Calls;
 import brt.brt_service.Postgres.DAO.Models.Msisdns;
@@ -11,6 +12,7 @@ import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
 import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import brt.brt_service.Services.Utils.MsisdnsService;
+import brt.brt_service.TGBot.CDRFileStorageBot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -19,11 +21,19 @@ import okhttp3.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Класс, обрабатывающий CDR файлы.
@@ -60,6 +70,8 @@ public class CDRFileHandlerService {
      */
     @Autowired
     private RequestExecutor requestExecutor;
+    @Autowired
+    private CDRFileStorageBot cdrFileStorageBot;
     /**
      * Настоящий месяц (сервис запускается 01.01.2024).
      */
@@ -92,6 +104,14 @@ public class CDRFileHandlerService {
      * Пароль админа в CRM.
      */
     private static final String ADMIN_PASSWORD = "admin";
+    /**
+     * Путь, к папке, в которую каждый новый файл записывается, а затем из нее удаляется после отправки.
+     */
+    private final Path ROOT_PATH = Paths.get("BRT_Service/src/main/resources/CDR_Files").toAbsolutePath();
+    /**
+     * Логгер, выводящий уведомления.
+     */
+    private static final Logger LOGGER = Logger.getLogger(CDRFileHandlerService.class.getName());
 
     /**
      * Метод, который создает объекты CallRecord из строк поступившего CDR файла.
@@ -99,10 +119,11 @@ public class CDRFileHandlerService {
      * @param cdrFile CDR файл.
      */
     @Transactional
-    public void makeCallRecords(String cdrFile) {
+    public void makeCallRecords(String cdrFile, String fileName) {
         CallDataRecords cdr = new CallDataRecords(Instant.now().getEpochSecond());
         callDataRecordsRepository.save(cdr);
         String[] calls = cdrFile.split("\n");
+        saveCDRFile(fileName, calls);
         List<Msisdns> msisdnsList = msisdnsService.getMsisdns();
         List<String> msisdnsPhoneNumbers = msisdnsList.stream().map(Msisdns::getNumber).toList();
         for (String call : calls) {
@@ -135,13 +156,34 @@ public class CDRFileHandlerService {
     }
 
     /**
-     * Метод, сохраняющий CDR файлы.
+     * Метод, отправляющий CDR файлы в телеграм бота.
      *
      * @param cdrFile  Файл.
-     * @param fileName Имя файла.
      */
-    private void saveCDRFiles(String cdrFile, String fileName) {
+    private void senCDRFileToTG(String cdrFile, String fileName) {
+        cdrFileStorageBot.sendMessage(fileName + "\n\n" + cdrFile);
+    }
 
+    private void saveCDRFile(String fileName, String[] calls) {
+        Path filePath = Paths.get(ROOT_PATH + "/" + fileName + ".txt");
+        try {
+            if (!Files.exists(ROOT_PATH.toAbsolutePath())) {
+                Files.createDirectory(ROOT_PATH.toAbsolutePath());
+            }
+            Files.deleteIfExists(filePath);
+            Path file = Files.createFile(filePath);
+
+            try (FileOutputStream outputStream = new FileOutputStream(file.toFile())) {
+
+                for (String call : calls) {
+                    outputStream.write((call + "\n").getBytes());
+                    outputStream.flush();
+                }
+            }
+            cdrFileStorageBot.sendDocument(file.toFile(), fileName);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
+        }
     }
 
     /**

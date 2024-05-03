@@ -24,8 +24,8 @@ public class BRTService {
      *
      * @param callDataRecord Содержание CDR файла.
      */
-    public void handleCDRFile(String callDataRecord) {
-        callRecordsHandlerService.makeCallRecords(callDataRecord);
+    public void handleCDRFile(String callDataRecord, String fileName) {
+        callRecordsHandlerService.makeCallRecords(callDataRecord, fileName);
     }
 
     /**
