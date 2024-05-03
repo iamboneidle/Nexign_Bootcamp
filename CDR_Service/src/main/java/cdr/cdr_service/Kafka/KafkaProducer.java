@@ -1,0 +1,21 @@
+package cdr.cdr_service.Kafka;
+
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+/**
+ * Кафка продюсер.
+ */
+@Service
+public class KafkaProducer {
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    public void sendMessage(String message) {
+        kafkaTemplate.send("CDR-files", message);
+    }
+
+}

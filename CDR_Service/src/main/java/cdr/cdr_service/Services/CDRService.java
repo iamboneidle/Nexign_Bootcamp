@@ -7,6 +7,7 @@ import cdr.cdr_service.CDRUtils.User;
 import cdr.cdr_service.DAO.Models.Msisdns;
 import cdr.cdr_service.DAO.Repository.MsisdnsRepository;
 import cdr.cdr_service.DAO.Repository.TransactionsRepository;
+import cdr.cdr_service.Kafka.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,15 +26,15 @@ public class CDRService {
     @Autowired
     private MsisdnsService msisdnsService;
     /**
-     * Сервис для отправки CDR файлов в BRT7
-     */
-    @Autowired
-    private CDRFileSenderService cdrFileSenderService;
-    /**
      * Репозиторий транзакций.
      */
     @Autowired
     private TransactionsRepository transactionsRepository;
+    /**
+     * Кафка продюсер.
+     */
+    @Autowired
+    private KafkaProducer kafkaProducer;
     /**
      * Репозиторий пользователей.
      */
@@ -67,7 +68,7 @@ public class CDRService {
         daemonThread = new DateGenerator();
         daemonThread.setDaemon(true);
         daemonThread.start();
-        concurrentQueue = new ConcurrentQueue(msisdns, cdrFileSenderService, transactionsRepository);
+        concurrentQueue = new ConcurrentQueue(msisdns, transactionsRepository, kafkaProducer);
         for (Msisdns msisdn : msisdns) {
             Thread clientThread = new Thread(new User(msisdn.getPhoneNumber(), msisdns, daemonThread, concurrentQueue));
             clientThread.start();

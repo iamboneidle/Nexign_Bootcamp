@@ -3,11 +3,10 @@ package cdr.cdr_service.CDRUtils;
 import cdr.cdr_service.DAO.Models.Msisdns;
 import cdr.cdr_service.DAO.Models.Transactions;
 import cdr.cdr_service.DAO.Repository.TransactionsRepository;
-import cdr.cdr_service.Services.CDRFileSenderService;
+import cdr.cdr_service.Kafka.KafkaProducer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,14 +35,18 @@ public class ConcurrentQueue {
      */
     private long cdrFileCounter = 1;
     /**
-     * Сервис, занимающийся отправкой CDR файлов.
-     */
-    private final CDRFileSenderService cdrFileSenderService;
-    /**
      * Репозиторий транзакций, нужен здесь, чтобы сохранять данные о транзакциях пользователей в базу данных
      * CDR сервиса.
      */
     private final TransactionsRepository transactionsRepository;
+    /**
+     * Кафка продюсер.
+     */
+    private final KafkaProducer kafkaProducer;
+    /**
+     * Объект ObjectMapper для преобразования объекта в Json.
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper();
     /**
      * Список всей абонентов, он здесь нужен для того, чтобы сохранять
      * транзакцию пользователя за самим пользователем.
@@ -66,15 +69,17 @@ public class ConcurrentQueue {
     /**
      * Конструктор класса.
      *
-     * @param msisdns Список всех абонентов.
-     * @param cdrFileSenderService Сервис по отправке CDR файлов.
+     * @param msisdns                Список всех абонентов.
+     * @param kafkaProducer          Кафка продюсер.
      * @param transactionsRepository Репозиторий транзакций.
      */
-    public ConcurrentQueue(List<Msisdns> msisdns, CDRFileSenderService cdrFileSenderService,
-                           TransactionsRepository transactionsRepository) {
+    public ConcurrentQueue(List<Msisdns> msisdns,
+                           TransactionsRepository transactionsRepository,
+                           KafkaProducer kafkaProducer
+    ) {
         this.msisdns = msisdns;
-        this.cdrFileSenderService = cdrFileSenderService;
         this.transactionsRepository = transactionsRepository;
+        this.kafkaProducer = kafkaProducer;
     }
 
     /**
@@ -163,12 +168,26 @@ public class ConcurrentQueue {
     }
 
     /**
-     * Метод, отправляющий CDR файл в BRT.
+     * Метод, отправляющий CDR файл в Kafka.
      *
      * @param file Файл, который отправляем.
      */
     private void sendCDRFiles(File file) {
-        cdrFileSenderService.sendFile(file);
-        file.delete();
+        String fileName = file.toString().substring(file.toString().lastIndexOf("/") + 1);
+        try (FileReader fileReader = new FileReader(file);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            StringBuilder content = new StringBuilder();
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            String fileContent = content.toString();
+            String json = objectMapper.writeValueAsString(new CDRFileToKafka(fileName, fileContent));
+            kafkaProducer.sendMessage(json);
+            LOGGER.log(Level.INFO, "OK: sent " + fileName + " to Kafka");
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
+        }
     }
 }
