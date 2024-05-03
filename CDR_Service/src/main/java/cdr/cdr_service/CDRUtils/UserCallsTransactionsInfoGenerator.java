@@ -72,17 +72,26 @@ public class UserCallsTransactionsInfoGenerator {
     public static String generateContactedMsisdn(List<Msisdns> msisdnsList, String phoneNumber) {
         StringBuilder contactedMsisdn = new StringBuilder();
         if (Math.random() < 0.5) {
-            contactedMsisdn.append("7");
-            contactedMsisdn.append((int) (Math.random() * 100 + 900));
-            contactedMsisdn.append((int) (1000000 + Math.random() * 9000000));
+            return generateNotServicedMsisdn();
         } else {
             contactedMsisdn.append(msisdnsList.get(RANDOM.nextInt(msisdnsList.size())).getPhoneNumber());
             while (contactedMsisdn.toString().equals(phoneNumber)) {
                 contactedMsisdn.delete(0, contactedMsisdn.length());
                 contactedMsisdn.append(msisdnsList.get(RANDOM.nextInt(msisdnsList.size())).getPhoneNumber());
             }
+            return contactedMsisdn.toString();
         }
-        return contactedMsisdn.toString();
+    }
+
+    /**
+     * Метод генерирует номера телефонов необслуживаемых абонентов.
+     *
+     * @return Номер телефона необслуживаемого абонента.
+     */
+    public static String generateNotServicedMsisdn() {
+        return "7" +
+                (int) (Math.random() * 100 + 900) +
+                (int) (1000000 + Math.random() * 9000000);
     }
 
     /**

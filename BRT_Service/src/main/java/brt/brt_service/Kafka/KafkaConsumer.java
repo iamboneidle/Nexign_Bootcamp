@@ -38,6 +38,6 @@ public class KafkaConsumer {
     public void flightEventConsumer(String message) {
         DataFromKafka dataFromKafka = gson.fromJson(message, DataFromKafka.class);
         LOGGER.log(Level.INFO, "OK: received " + dataFromKafka.getFileName() + " from Kafka");
-        brtService.handleCDRFile(dataFromKafka.getFileContent());
+        brtService.handleCDRFile(dataFromKafka.getFileContent(), dataFromKafka.getFileName());
     }
 }

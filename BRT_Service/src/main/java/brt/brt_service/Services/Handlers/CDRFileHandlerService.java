@@ -19,11 +19,20 @@ import okhttp3.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Класс, обрабатывающий CDR файлы.
@@ -92,27 +101,41 @@ public class CDRFileHandlerService {
      * Пароль админа в CRM.
      */
     private static final String ADMIN_PASSWORD = "admin";
+    /**
+     * Путь, к папке, в которую каждый новый файл записывается.
+     */
+    private final Path ROOT_PATH = Paths.get("BRT_Service/src/main/resources/CDR_Files").toAbsolutePath();
+    /**
+     * Логгер, выводящий уведомления.
+     */
+    private static final Logger LOGGER = Logger.getLogger(CDRFileHandlerService.class.getName());
 
     /**
      * Метод, который создает объекты CallRecord из строк поступившего CDR файла.
+     * Перед созданием он проверяет, является ли звонивший абонент обслуживаемым,
+     * если нет, то просто его не обрабатывает. Вызывает метод, следящий за актуальной
+     * датой, метод сохраняющий CDR файл, метод записывающий в БД звонки.
      *
      * @param cdrFile CDR файл.
+     * @param fileName Имя CDR файла.
      */
     @Transactional
-    public void makeCallRecords(String cdrFile) {
+    public void makeCallRecords(String cdrFile, String fileName) {
         CallDataRecords cdr = new CallDataRecords(Instant.now().getEpochSecond());
         callDataRecordsRepository.save(cdr);
         String[] calls = cdrFile.split("\n");
+        saveCDRFile(fileName, calls);
         List<Msisdns> msisdnsList = msisdnsService.getMsisdns();
         List<String> msisdnsPhoneNumbers = msisdnsList.stream().map(Msisdns::getNumber).toList();
         for (String call : calls) {
             String[] data = call.split(",");
-            String callType = data[0];
             String calledMsisdn = data[1];
-            String contactedMsisdn = data[2];
-            long callTimeStart = Long.parseLong(data[3]);
-            long callTimeEnd = Long.parseLong(data[4]);
-            if (msisdnsPhoneNumbers.contains(calledMsisdn)) {
+            Optional<MsisdnToMinutesLeft> optionalMsisdn = msisdnToMinutesLeftRepository.findById(calledMsisdn);
+            if (msisdnsPhoneNumbers.contains(calledMsisdn) && optionalMsisdn.isPresent()) {
+                String callType = data[0];
+                String contactedMsisdn = data[2];
+                long callTimeStart = Long.parseLong(data[3]);
+                long callTimeEnd = Long.parseLong(data[4]);
                 CallRecord callRecord = new CallRecord(
                         callType,
                         calledMsisdn,
@@ -120,16 +143,16 @@ public class CDRFileHandlerService {
                         callTimeEnd,
                         msisdnsService.getRateIdByPhoneNumber(calledMsisdn),
                         msisdnsPhoneNumbers.contains(contactedMsisdn),
-                        msisdnToMinutesLeftRepository.findById(calledMsisdn).get().getMinutesLeft()
+                        optionalMsisdn.get().getMinutesLeft()
                 );
                 validateDate(callRecord);
                 sendCallRecord(callRecord);
                 saveCallsInfo(msisdnsList, cdr, calledMsisdn, contactedMsisdn, callTimeStart, callTimeEnd);
-            }
-            if (callType.equals("01")) {
-                msisdnsRepository.increaseOutcomingCallsQuantity(calledMsisdn);
-            } else {
-                msisdnsRepository.increaseIncomingCallsQuantity(calledMsisdn);
+                if (callType.equals("01")) {
+                    msisdnsRepository.increaseOutcomingCallsQuantity(calledMsisdn);
+                } else {
+                    msisdnsRepository.increaseIncomingCallsQuantity(calledMsisdn);
+                }
             }
         }
     }
@@ -137,22 +160,39 @@ public class CDRFileHandlerService {
     /**
      * Метод, сохраняющий CDR файлы.
      *
-     * @param cdrFile  Файл.
      * @param fileName Имя файла.
+     * @param calls звонки в файле.
      */
-    private void saveCDRFiles(String cdrFile, String fileName) {
+    private void saveCDRFile(String fileName, String[] calls) {
+        Path filePath = Paths.get(ROOT_PATH + "/" + fileName + ".txt");
+        try {
+            if (!Files.exists(ROOT_PATH.toAbsolutePath())) {
+                Files.createDirectory(ROOT_PATH.toAbsolutePath());
+            }
+            Files.deleteIfExists(filePath);
+            Path file = Files.createFile(filePath);
 
+            try (FileOutputStream outputStream = new FileOutputStream(file.toFile())) {
+
+                for (String call : calls) {
+                    outputStream.write((call + "\n").getBytes());
+                    outputStream.flush();
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
+        }
     }
 
     /**
      * Метод, сохраняющий информацию о звонке в базу данных.
      *
-     * @param msisdnsList Список абонентов.
-     * @param cdr Объект CDR файла.
-     * @param calledMsisdn Звонивший абонент.
+     * @param msisdnsList     Список абонентов.
+     * @param cdr             Объект CDR файла.
+     * @param calledMsisdn    Звонивший абонент.
      * @param contactedMsisdn Абонент, которому звонили.
-     * @param callTimeStart Время начала звонка.
-     * @param callTimeEnd Время окончания звонка.
+     * @param callTimeStart   Время начала звонка.
+     * @param callTimeEnd     Время окончания звонка.
      */
     private void saveCallsInfo(List<Msisdns> msisdnsList, CallDataRecords cdr, String calledMsisdn, String contactedMsisdn, long callTimeStart, long callTimeEnd) {
         Calls call = new Calls(
