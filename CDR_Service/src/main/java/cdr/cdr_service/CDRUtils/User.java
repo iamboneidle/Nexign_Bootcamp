@@ -36,7 +36,7 @@ public class User implements Runnable {
     /**
      * Вероятность того, что в конкретный день пользователь совершит звонок.
      */
-    private static final float USER_MAKES_CALL_TODAY_PROBABILITY = 0.999f;
+    private static final float USER_MAKES_CALL_TODAY_PROBABILITY = 0.3f;
 
     /**
      * Конструктор класса.
@@ -79,7 +79,7 @@ public class User implements Runnable {
                 }
                 if (Math.random() <= USER_MAKES_CALL_TODAY_PROBABILITY) {
                     String curDate = daemonThread.getCurrentDate();
-                    transactionMaker(phoneNumbersList, transactionObjectsForDay, curDate);
+                    transactionMaker(transactionObjectsForDay, curDate);
                     concurrentQueue.enqueue(transactionObjectsForDay);
                     transactionObjectsForDay.clear();
                 }
@@ -100,11 +100,10 @@ public class User implements Runnable {
      * которому звоним, если номер этого абонента является обслуживаемым, то генерируем транзакцию для него тоже, если нет, то просто
      * генерируем транзакцию для звонившего.
      *
-     * @param phoneNumbersList Список обслуживаемых номеров.
      * @param transactionObjectsForDay Список транзакций на день.
      * @param curDate Сегодняшняя дата.
      */
-    private void transactionMaker(List<String> phoneNumbersList, List<TransactionObject> transactionObjectsForDay, String curDate) {
+    private void transactionMaker(List<TransactionObject> transactionObjectsForDay, String curDate) {
         Long[] callTimeGap = UserCallsTransactionsInfoGenerator.generateCallTimeGap(curDate);
         if (callTimeGap != null) {
             String contactedPhoneNumber = UserCallsTransactionsInfoGenerator.generateContactedMsisdn(msisdnsList, phoneNumber);

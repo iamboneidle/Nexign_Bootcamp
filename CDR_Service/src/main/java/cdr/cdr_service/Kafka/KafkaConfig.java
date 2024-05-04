@@ -12,15 +12,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Конфигурация Кафки.
+ * Конфигурация для работы с Apache Kafka.
  */
 @Configuration
 public class KafkaConfig {
-
+    /**
+     * Список серверов Kafka для подключения.
+     */
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-
+    /**
+     * Конфигурация для настройки параметров продюсера Kafka.
+     *
+     * @return Настройки продюсера Kafka.
+     */
     @Bean
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -28,6 +34,11 @@ public class KafkaConfig {
         return props;
     }
 
+    /**
+     * Создает новую тему Kafka для обработки CDR-файлов.
+     *
+     * @return Новый топик Kafka.
+     */
     @Bean
     public NewTopic newTopic() {
         return new NewTopic("CDR-files", 1, (short) 1);

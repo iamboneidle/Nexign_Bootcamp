@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class StartInfoPusherService {
     /**
-     * Репозиторий пользоватей.
+     * Репозиторий пользователей.
      */
     @Autowired
     private UsersRepository usersRepository;

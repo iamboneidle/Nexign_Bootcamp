@@ -16,6 +16,12 @@ public class PostgresConfig {
     @Autowired
     private Environment env;
 
+    /**
+     * Создает и настраивает бин DataSource для подключения к базе данных PostgreSQL.
+     * Получает свойства подключения к базе данных, такие как имя класса драйвера, URL, имя пользователя и пароль, из окружения.
+     *
+     * @return Бин DataSource, настроенный для подключения к базе данных PostgreSQL.
+     */
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
