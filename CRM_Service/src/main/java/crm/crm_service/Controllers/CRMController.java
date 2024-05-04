@@ -6,6 +6,10 @@ import crm.crm_service.CRMUtils.*;
 import crm.crm_service.Services.CRMService;
 import crm.crm_service.Services.DataToPutMoneySenderService;
 import crm.crm_service.Services.NewUserAdderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,6 +67,8 @@ public class CRMController {
      * @return Приветствие (html).
      */
     @GetMapping("/")
+    @Tag(name = "Everyone")
+    @Operation(summary = "This method is used to see welcome page.")
     public String home() {
         return "<h1>Welcome home!</h1>";
     }
@@ -74,6 +80,8 @@ public class CRMController {
      * @return Приветствие (html).
      */
     @GetMapping("/user")
+    @Tag(name = "Subscriber")
+    @Operation(summary = "This method is used to see user page.")
     public String user(Authentication authentication) {
         return "<h1>Welcome User!</h1><h2>" + authentication.getName() + "</h2>";
     }
@@ -85,6 +93,8 @@ public class CRMController {
      * @return Приветствие (html).
      */
     @GetMapping("/admin")
+    @Tag(name = "Manager")
+    @Operation(summary = "This method is used to see admin page.")
     public String admin(Authentication authentication) {
         return "<h1>Welcome Admin!</h1><h2>" + authentication.getName() + " " + authentication.getAuthorities() + "</h2>";
     }
@@ -98,7 +108,9 @@ public class CRMController {
      * @return ResponseEntity с информацией об успешности запроса.
      */
     @PostMapping("/admin/change-tariff-monthly")
-    public ResponseEntity<String> changeTariffMonthly(@RequestBody String string) {
+    @Tag(name = "Manager")
+    @Operation(summary = "This method is used to change tariffs every month, BRT uses it.")
+    public ResponseEntity<String> changeTariffMonthly(@RequestBody String string, @RequestHeader("Authorization") String authorization) {
         if (!string.isEmpty()) {
             LOGGER.log(Level.INFO, string + " we will change some tariffs");
             Thread tariffChanger = new Thread(new TariffChanger(crmService, dataToChangeTariffSenderService));
@@ -106,7 +118,29 @@ public class CRMController {
             return ResponseEntity.ok().body("CRM will change tariffs");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty string, won't change tariffs");
-        return ResponseEntity.badRequest().body("CRM got empty string and will not change tariffs");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM got empty string and will not change tariffs");
+    }
+
+    /**
+     * Контроллер, на который поступает запрос из BRT на пополнение баланса каждого абонента на случайную
+     * величину. После того как пришел запрос, создается новый поток,
+     * который генерирует нужную информацию и посылает ее в BRT.
+     *
+     * @param string Строка с новым месяцем.
+     * @return ResponseEntity с информацией об успешности запроса.
+     */
+    @PostMapping("/admin/put-money-monthly")
+    @Tag(name = "Manager")
+    @Operation(summary = "This method is used to put money every month, BRT uses it.")
+    public ResponseEntity<?> putMoneyMonthly(@RequestBody String string, @RequestHeader("Authorization") String authorization) {
+        if (!string.isEmpty()) {
+            LOGGER.log(Level.INFO, string + " we will put some money");
+            Thread moneyPutter = new Thread(new MoneyPutter(crmService, dataToPutMoneySenderService));
+            moneyPutter.start();
+            return ResponseEntity.ok().body("CRM will put money");
+        }
+        LOGGER.log(Level.SEVERE, "ERROR: got empty string, won't put money");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM got empty string and will not put money");
     }
 
     /**
@@ -116,8 +150,10 @@ public class CRMController {
      * @return ResponseEntity с информацией об успешности запроса.
      */
     @PostMapping("/admin/change-tariff")
-    public ResponseEntity<String> changeTariff(@RequestBody DataToChangeTariff dataToChangeTariff) {
-        if (dataToChangeTariff != null) {
+    @Tag(name = "Manager")
+    @Operation(summary = "This method is used by admin to change certain msisdn's tariff.")
+    public ResponseEntity<String> changeTariff(@RequestBody DataToChangeTariff dataToChangeTariff, @RequestHeader("Authorization") String authorization) {
+        if (ObjectUtils.allNotNull(dataToChangeTariff.getTariffId(), dataToChangeTariff.getMsisdn())) {
             try {
                 dataToChangeTariffSenderService.sendDataToChangeTariff(objectMapper.writeValueAsString(dataToChangeTariff));
                 LOGGER.log(Level.INFO, "OK: Tariff for " + dataToChangeTariff.getMsisdn() +
@@ -130,7 +166,7 @@ public class CRMController {
             }
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data, can't change tariff");
-        return ResponseEntity.badRequest().body("CRM: empty data, can't change tariff");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM: empty data, can't change tariff");
     }
 
     /**
@@ -140,8 +176,12 @@ public class CRMController {
      * @return ResponseEntity с информацией об успешности запроса.
      */
     @PostMapping("/admin/save")
-    public ResponseEntity<String> save(@RequestBody DataToAddNewUser dataToAddNewUser) {
-        if (dataToAddNewUser != null) {
+    @Tag(name = "Manager")
+    @Operation(summary = "This method is used by admin to add new user.")
+    public ResponseEntity<String> save(@RequestBody DataToAddNewUser dataToAddNewUser, @RequestHeader("Authorization") String authorization) {
+        if (ObjectUtils.allNotNull(dataToAddNewUser.getMoney(), dataToAddNewUser.getTariffId(),
+                dataToAddNewUser.getSurname(), dataToAddNewUser.getName(),
+                dataToAddNewUser.getPatronymic(), dataToAddNewUser.getMsisdn())) {
             if (!crmService.getMapNumberToRateId().containsKey(dataToAddNewUser.getMsisdn())) {
                 newUserAdderService.add(dataToAddNewUser);
                 LOGGER.log(Level.INFO, "OK: \nnew user: \n" +
@@ -160,27 +200,7 @@ public class CRMController {
                     " already exists");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data, can't add new user");
-        return ResponseEntity.badRequest().body("CRM: empty data, can't save new user");
-    }
-
-    /**
-     * Контроллер, на который поступает запрос из BRT на пополнение баланса каждого абонента на случайную
-     * величину. После того как пришел запрос, создается новый поток,
-     * который генерирует нужную информацию и посылает ее в BRT.
-     *
-     * @param string Строка с новым месяцем.
-     * @return ResponseEntity с информацией об успешности запроса.
-     */
-    @PostMapping("/admin/put-money-monthly")
-    public ResponseEntity<?> putMoneyMonthly(@RequestBody String string) {
-        if (!string.isEmpty()) {
-            LOGGER.log(Level.INFO, string + " we will put some money");
-            Thread moneyPutter = new Thread(new MoneyPutter(crmService, dataToPutMoneySenderService));
-            moneyPutter.start();
-            return ResponseEntity.ok().body("CRM will put money");
-        }
-        LOGGER.log(Level.SEVERE, "ERROR: got empty string, won't put money");
-        return ResponseEntity.badRequest().body("CRM got empty string and will not put money");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM: empty data, can't save new user");
     }
 
     /**
@@ -192,7 +212,9 @@ public class CRMController {
      * @return ResponseEntity с информацией об успешности запроса.
      */
     @PostMapping("/admin/post-tariffs")
-    public ResponseEntity<String> postTariffs(@RequestBody String string) {
+    @Tag(name = "Manager")
+    @Operation(summary = "This method is used to acknowledge CRM about msisdns and their tariff, BRT uses it.")
+    public ResponseEntity<String> postTariffs(@RequestBody String string, @RequestHeader("Authorization") String authorization) {
         if (!string.isEmpty()) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
@@ -202,14 +224,14 @@ public class CRMController {
                     return ResponseEntity.ok().body("CRM accepted info about msisdns and their tariffs");
                 }
                 LOGGER.log(Level.SEVERE, "ERROR: accepted empty data and gonna crash in a month");
-                return ResponseEntity.badRequest().body("CRM accepted empty data about tariffs");
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM accepted empty data about tariffs");
             } catch (JsonProcessingException e) {
                 LOGGER.log(Level.SEVERE, "EXCEPTION: JsonProcessingException");
                 return ResponseEntity.internalServerError().body("CRM got JsonProcessingException");
             }
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data");
-        return ResponseEntity.badRequest().body("CRM got empty tariffs info");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM got empty tariffs info");
     }
 
     /**
@@ -221,8 +243,10 @@ public class CRMController {
      * @return ResponseEntity с информацией об успешности запроса.
      */
     @PostMapping("/user/put-money")
+    @Tag(name = "Subscriber")
+    @Operation(summary = "This method is by msisdn to put money on account.")
     public ResponseEntity<String> putMoney(@RequestBody DataToPutMoney dataToPutMoney, @RequestHeader("Authorization") String authorization) {
-        if (dataToPutMoney != null) {
+        if (ObjectUtils.allNotNull(dataToPutMoney.getMoney(), dataToPutMoney.getMsisdn())) {
             if (compareUsernames(authorization, dataToPutMoney.getMsisdn())) {
                 try {
                     dataToPutMoneySenderService.sendDataToPutMoney(objectMapper.writeValueAsString(dataToPutMoney));
@@ -234,11 +258,11 @@ public class CRMController {
                         " put " + dataToPutMoney.getMoney() + " on his account");
                 return ResponseEntity.ok().body("CRM: You put " + dataToPutMoney.getMoney() + " on your account");
             }
-            LOGGER.log(Level.SEVERE, "ERROR: User put not his number");
-            return ResponseEntity.badRequest().body("CRM: NOT YOUR NUMBER");
+            LOGGER.log(Level.SEVERE, "ERROR: User puts not on his number");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("CRM: NOT YOUR NUMBER");
         }
         LOGGER.log(Level.SEVERE, "ERROR: User put empty data");
-        return ResponseEntity.badRequest().body("CRM: data is empty");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM: data is empty");
     }
 
     /**

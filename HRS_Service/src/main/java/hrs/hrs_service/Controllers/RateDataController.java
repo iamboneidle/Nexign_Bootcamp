@@ -5,6 +5,7 @@ import hrs.hrs_service.DAO.Repository.RatesRepository;
 import hrs.hrs_service.HRSUtils.RateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ public class RateDataController {
      */
     @PostMapping("/post-rate-data")
     public ResponseEntity<String> catchRateData(@RequestBody RateData rateData) {
-        if (rateData != null) {
+        if (rateData.getRateName() != null) {
             Rates rate = new Rates(
                     String.valueOf(rateData.getId()),
                     rateData.getRateName(),

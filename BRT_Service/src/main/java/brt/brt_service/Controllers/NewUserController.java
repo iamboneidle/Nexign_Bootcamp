@@ -9,7 +9,9 @@ import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.Postgres.DAO.Repository.RatesRepository;
 import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
 import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,22 +53,24 @@ public class NewUserController {
     /**
      * Контроллер, принимающий информацию о добавлении нового тарифа.
      *
-     * @param dataToAddNewUserToCDR Объект, в который мапится RequestBody.
+     * @param dataToAddNewUser Объект, в который мапится RequestBody.
      * @return ResponseEntity со статусом ответа.
      */
-    @PostMapping("post-new-user")
-    private ResponseEntity<String> addNewUser(@RequestBody DataToAddNewUser dataToAddNewUserToCDR) {
-        if (dataToAddNewUserToCDR != null) {
-            Users abonent = new Users(dataToAddNewUserToCDR.getName(), dataToAddNewUserToCDR.getSurname(), dataToAddNewUserToCDR.getPatronymic());
-            Rates rate = ratesRepository.findRatesById(dataToAddNewUserToCDR.getTariffId());
-            Msisdns msisdn = new Msisdns(dataToAddNewUserToCDR.getMsisdn(), rate, abonent, dataToAddNewUserToCDR.getMoney(), 0L, 0L);
+    @PostMapping("/post-new-user")
+    private ResponseEntity<String> addNewUser(@RequestBody DataToAddNewUser dataToAddNewUser) {
+        if (ObjectUtils.allNotNull(dataToAddNewUser.getMoney(), dataToAddNewUser.getTariffId(),
+                dataToAddNewUser.getSurname(), dataToAddNewUser.getName(),
+                dataToAddNewUser.getPatronymic(), dataToAddNewUser.getMsisdn())) {
+            Users abonent = new Users(dataToAddNewUser.getName(), dataToAddNewUser.getSurname(), dataToAddNewUser.getPatronymic());
+            Rates rate = ratesRepository.findRatesById(dataToAddNewUser.getTariffId());
+            Msisdns msisdn = new Msisdns(dataToAddNewUser.getMsisdn(), rate, abonent, dataToAddNewUser.getMoney(), 0L, 0L);
             usersRepository.save(abonent);
             msisdnsRepository.save(msisdn);
-            msisdnToMinutesLeftRepository.save(new MsisdnToMinutesLeft(dataToAddNewUserToCDR.getMsisdn(), rate.getMinLimit()));
-            LOGGER.log(Level.INFO, "OK: added new user " + dataToAddNewUserToCDR.getMsisdn());
-            return ResponseEntity.ok().body("BRT added user " + dataToAddNewUserToCDR.getMsisdn());
+            msisdnToMinutesLeftRepository.save(new MsisdnToMinutesLeft(dataToAddNewUser.getMsisdn(), rate.getMinLimit()));
+            LOGGER.log(Level.INFO, "OK: added new user " + dataToAddNewUser.getMsisdn());
+            return ResponseEntity.ok().body("BRT added user " + dataToAddNewUser.getMsisdn());
         }
         LOGGER.log(Level.SEVERE, "got empty data, can't add new user");
-        return ResponseEntity.badRequest().body("BRT got empty data, can't add new user");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("BRT got empty data, can't add new user");
     }
 }

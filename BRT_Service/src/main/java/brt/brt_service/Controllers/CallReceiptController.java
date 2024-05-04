@@ -34,12 +34,12 @@ public class CallReceiptController {
      */
     @PostMapping("/post-call-receipt")
     public ResponseEntity<String> catchCallReceipt(@RequestBody CallReceipt callReceipt) {
-        if (callReceipt != null) {
+        if (callReceipt.getServicedMsisdnNumber() != null) {
             brtService.handleCallReceipt(callReceipt);
             LOGGER.log(Level.INFO, "OK: call receipt for " + callReceipt.getServicedMsisdnNumber() + " accepted");
             return ResponseEntity.ok().body("BRT accepted call receipt for " + callReceipt.getServicedMsisdnNumber() + " successfully");
         }
-        LOGGER.log(Level.INFO, "ERROR: got empty call receipt");
-        return ResponseEntity.badRequest().body("BRT got empty call receipt");
+        LOGGER.log(Level.INFO, "ERROR: got empty msisdn");
+        return ResponseEntity.badRequest().body("BRT got empty msisdn");
     }
 }
