@@ -3,6 +3,7 @@ package brt.brt_service.BRTUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Класс, представляющий собой данные из чека.
@@ -10,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CallReceipt {
     /**
      * Номер телефона обслуживаемого абонента.
@@ -23,17 +25,4 @@ public class CallReceipt {
      * Деньги, которые нужно списать.
      */
     private Float moneyToWriteOff;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строку объекта.
-     */
-    @Override
-    public String toString() {
-        return "CallReceipt{" + "servicedMsisdnNumber='" + servicedMsisdnNumber + '\'' +
-                ", minutesToWriteOff=" + minutesToWriteOff +
-                ", moneyToWriteOff=" + moneyToWriteOff +
-                '}';
-    }
 }

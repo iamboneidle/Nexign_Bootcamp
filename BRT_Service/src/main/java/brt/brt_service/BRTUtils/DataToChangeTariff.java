@@ -1,9 +1,6 @@
 package brt.brt_service.BRTUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Класс, представляющий собой данные для изменения тарифа.
@@ -12,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class DataToChangeTariff {
     /**
      * Номе телефона абонента.
@@ -21,16 +19,4 @@ public class DataToChangeTariff {
      * ID тарифа.
      */
     private Long tariffId;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "DataToChangeRate{" + "msisdn='" + msisdn + '\'' +
-                ", tariffId=" + tariffId +
-                '}';
-    }
 }

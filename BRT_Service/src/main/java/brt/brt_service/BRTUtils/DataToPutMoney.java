@@ -1,9 +1,6 @@
 package brt.brt_service.BRTUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Класс, представляющий собой данные для пополнения баланса счета абонента.
@@ -12,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class DataToPutMoney {
     /**
      * Номер телефона абонента.
@@ -21,16 +19,4 @@ public class DataToPutMoney {
      * Количество денег для пополнения баланса.
      */
     private Float money;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "DataToPutMoney{" + "msisdn='" + msisdn + '\'' +
-                ", moneyToPut=" + money +
-                '}';
-    }
 }

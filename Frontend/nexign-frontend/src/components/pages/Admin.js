@@ -1,6 +1,5 @@
 import { Button, Flex } from "antd";
 import React from "react";
-// import "./../../App.css";
 
 
 export default function Admin() {

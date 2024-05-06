@@ -1,9 +1,6 @@
 package hrs.hrs_service.HRSUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 
 /**
@@ -13,6 +10,7 @@ import org.springframework.data.annotation.Id;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class RateData {
     /**
      * ID тарифа.
@@ -46,22 +44,4 @@ public class RateData {
      * Стоимость входящий звонков не обслуживаемому абоненту.
      */
     private Float incomingCallsCostOthers;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "RateData{" + "id=" + id +
-                ", rateName='" + rateName + '\'' +
-                ", startCost=" + startCost +
-                ", minLimit=" + minLimit +
-                ", outcomingCallsCostServiced=" + outcomingCallsCostServiced +
-                ", outcomingCallsCostOthers=" + outcomingCallsCostOthers +
-                ", incomingCallsCostServiced=" + incomingCallsCostServiced +
-                ", incomingCallsCostOthers=" + incomingCallsCostOthers +
-                '}';
-    }
 }

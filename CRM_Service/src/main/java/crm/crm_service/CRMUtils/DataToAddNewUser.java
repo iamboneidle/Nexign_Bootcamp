@@ -1,9 +1,6 @@
 package crm.crm_service.CRMUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Класс, представляющий собой данные для добавления нового пользователя.
@@ -12,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class DataToAddNewUser {
     /**
      * Номер телефона пользователя.
@@ -38,20 +36,4 @@ public class DataToAddNewUser {
      * Отчество абонента.
      */
     private String patronymic;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "DataToAddNewUser{" + "msisdn='" + msisdn + '\'' +
-                ", tariffId=" + tariffId +
-                ", money=" + money +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                '}';
-    }
 }

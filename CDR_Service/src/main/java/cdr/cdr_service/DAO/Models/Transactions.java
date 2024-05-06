@@ -3,6 +3,7 @@ package cdr.cdr_service.DAO.Models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 /**
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
+@ToString
 public class Transactions {
     /**
      * Первичный ключ транзакции.

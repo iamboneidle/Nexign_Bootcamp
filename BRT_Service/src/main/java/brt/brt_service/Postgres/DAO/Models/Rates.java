@@ -1,10 +1,7 @@
 package brt.brt_service.Postgres.DAO.Models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Rates {
     /**
      * Первичный ключ.
@@ -102,23 +100,5 @@ public class Rates {
         this.outcomingCallsCostOthers = outcomingCallsCostOthers;
         this.incomingCallsCostServiced = incomingCallsCostServiced;
         this.incomingCallsCostOthers = incomingCallsCostOthers;
-    }
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "Rates{" + "id=" + id +
-                ", rateName='" + rateName + '\'' +
-                ", startCost=" + startCost +
-                ", minLimit=" + minLimit +
-                ", outcomingCallsCostServiced=" + outcomingCallsCostServiced +
-                ", outcomingCallsCostOthers=" + outcomingCallsCostOthers +
-                ", incomingCallsCostServiced=" + incomingCallsCostServiced +
-                ", incomingCallsCostOthers=" + incomingCallsCostOthers +
-                '}';
     }
 }

@@ -1,9 +1,6 @@
 package brt.brt_service.BRTUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Класс, представляющий собой данные о тарифе.
@@ -12,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class RateData {
     /**
      * ID тарифа.
@@ -45,22 +43,4 @@ public class RateData {
      * Стоимость входящий звонков не обслуживаемому абоненту.
      */
     private Float incomingCallsCostOthers;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "RateData{" + "id=" + id +
-                ", rateName='" + rateName + '\'' +
-                ", startCost=" + startCost +
-                ", minLimit=" + minLimit +
-                ", outcomingCallsCostServiced=" + outcomingCallsCostServiced +
-                ", outcomingCallsCostOthers=" + outcomingCallsCostOthers +
-                ", incomingCallsCostServiced=" + incomingCallsCostServiced +
-                ", incomingCallsCostOthers=" + incomingCallsCostOthers +
-                '}';
-    }
 }

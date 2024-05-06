@@ -1,9 +1,6 @@
 package hrs.hrs_service.DAO.Models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -14,6 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @RedisHash("Rates")
 public class Rates {
     /**
@@ -49,22 +47,4 @@ public class Rates {
      * Стоимость входящий звонков не обслуживаемому абоненту.
      */
     private Float incomingCallsCostOthers;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "Rates{" + "id=" + id +
-                ", rateName='" + rateName + '\'' +
-                ", startCost=" + startCost +
-                ", minLimit=" + minLimit +
-                ", outcomingCallsCostServiced=" + outcomingCallsCostServiced +
-                ", outcomingCallsCostOthers=" + outcomingCallsCostOthers +
-                ", incomingCallsCostServiced=" + incomingCallsCostServiced +
-                ", incomingCallsCostOthers=" + incomingCallsCostOthers +
-                '}';
-    }
 }

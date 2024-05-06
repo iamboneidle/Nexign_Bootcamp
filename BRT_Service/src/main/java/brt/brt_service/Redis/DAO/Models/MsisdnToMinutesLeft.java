@@ -1,9 +1,6 @@
 package brt.brt_service.Redis.DAO.Models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -14,6 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @RedisHash("MsisdnToMinutesLeft")
 public class MsisdnToMinutesLeft {
     /**
@@ -25,16 +23,4 @@ public class MsisdnToMinutesLeft {
      * Остаток минут.
      */
     private Long minutesLeft;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "MsisdnToMinutesLeft{" + "msisdn='" + msisdn + '\'' +
-                ", minutesLeft=" + minutesLeft +
-                '}';
-    }
 }

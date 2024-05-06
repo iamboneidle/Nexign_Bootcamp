@@ -1,10 +1,7 @@
 package brt.brt_service.Postgres.DAO.Models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Msisdns {
     /**
      * Первичный ключ.
@@ -111,21 +109,5 @@ public class Msisdns {
         this.balance = balance;
         this.incomingCallsQuantity = incomingCallsQuantity;
         this.outcomingCallsQuantity = outcomingCallsQuantity;
-    }
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "Msisdns{" +
-                "id=" + id +
-                ", number='" + number + '\'' +
-                ", balance=" + balance +
-                ", incomingCallsQuantity=" + incomingCallsQuantity +
-                ", outcomingCallsQuantity=" + outcomingCallsQuantity +
-                '}';
     }
 }

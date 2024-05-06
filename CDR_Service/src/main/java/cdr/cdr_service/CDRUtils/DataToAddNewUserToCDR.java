@@ -1,9 +1,6 @@
 package cdr.cdr_service.CDRUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Этот класс используется на контроллере, на который поступает запрос из CRM на добавление нового пользователя.
@@ -13,19 +10,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class DataToAddNewUserToCDR {
     /**
      * Номер телефона абонента.
      */
     private String msisdn;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "DataToAddNewUserToCDR{" + "msisdn='" + msisdn + '\'' + '}';
-    }
 }

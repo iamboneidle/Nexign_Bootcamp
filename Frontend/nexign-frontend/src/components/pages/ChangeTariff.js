@@ -16,7 +16,7 @@ export default function ChangeTariff() {
     }
 
     const handleNum = (e) => {
-        const newUser = { ... user };
+        const newUser = { ...user };
         newUser[e.target.id] = +e.target.value;
         setUser(newUser);
     }

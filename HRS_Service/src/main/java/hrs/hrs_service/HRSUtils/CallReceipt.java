@@ -3,6 +3,7 @@ package hrs.hrs_service.HRSUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Класс, представляющий собой чек для оплаты звонка.
@@ -10,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CallReceipt {
     /**
      * Номер абонента.

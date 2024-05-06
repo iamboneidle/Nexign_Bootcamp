@@ -1,6 +1,5 @@
 package brt.brt_service.Tests;
 
-import brt.brt_service.BRTUtils.CallReceipt;
 import brt.brt_service.BRTUtils.DataToChangeTariff;
 import brt.brt_service.Controllers.DataToChangeTariffController;
 import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 

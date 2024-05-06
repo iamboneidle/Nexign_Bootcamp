@@ -3,6 +3,7 @@ package cdr.cdr_service.DAO.Models;
 import lombok.Data;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@ToString
 public class Msisdns {
     /**
      * Первичный ключ для сущности Msisdns.
@@ -42,17 +44,5 @@ public class Msisdns {
      */
     public Msisdns(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта
-     */
-    @Override
-    public String toString() {
-        return "Msisdns{" + "id=" + id +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
     }
 }

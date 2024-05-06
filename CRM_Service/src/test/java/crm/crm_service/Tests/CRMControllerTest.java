@@ -42,7 +42,6 @@ public class CRMControllerTest {
     @InjectMocks
     private CRMController crmController;
     private MockMvc mockMvc;
-
     private static final String USER_PASSWORD = "user";
     private static final String ADMIN_LOGIN = "admin";
     private static final String ADMIN_PASSWORD = "admin";

@@ -3,6 +3,7 @@ package hrs.hrs_service.HRSUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Класс, представляющий собой данные о звонке.
@@ -10,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class DataToPay {
     /**
      * Тип звонка.
@@ -43,19 +45,4 @@ public class DataToPay {
      * Количество минут по умолчанию.
      */
     private Long minutesByDefault;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "DataToPay{" + "servicedMsisdnNumber='" + servicedMsisdnNumber + '\'' +
-                ", callType='" + callType + '\'' +
-                ", callTimeStart=" + callTimeStart +
-                ", callTimeEnd=" + callTimeEnd +
-                ", rateId=" + rateId +
-                '}';
-    }
 }

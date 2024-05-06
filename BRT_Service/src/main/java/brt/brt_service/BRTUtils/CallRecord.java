@@ -3,6 +3,7 @@ package brt.brt_service.BRTUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 /**
  * Класс, представляющий собой данные о совершенном звонке.
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CallRecord {
     /**
      * Тип звонка.
@@ -39,22 +41,5 @@ public class CallRecord {
      * Количество оставшихся минут у абонента.
      */
     private Long minutesLeft;
-
-    /**
-     * Перегруженный метод toString().
-     *
-     * @return Строка объекта.
-     */
-    @Override
-    public String toString() {
-        return "CallRecord{" + "callType='" + callType + '\'' +
-                ", servicedMsisdnNumber='" + servicedMsisdnNumber + '\'' +
-                ", callTimeStart=" + callTimeStart +
-                ", callTimeEnd=" + callTimeEnd +
-                ", rateId=" + rateId +
-                ", isOtherMsisdnServiced=" + isOtherMsisdnServiced +
-                ", minutesLeft=" + minutesLeft +
-                '}';
-    }
 }
 

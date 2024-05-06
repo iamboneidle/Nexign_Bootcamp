@@ -11,22 +11,55 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 
+/**
+ * Класс, представляющий бота для хранения CDR файлов в Telegram.
+ */
 @Component
 public class CDRFileStorageBot extends TelegramLongPollingBot {
+    /**
+     * Конфигурационный класс для настроек Telegram Bot.
+     */
     @Autowired
     private BotConfig botConfig;
+    /**
+     * ID чата.
+     */
     private Long chatId = null;
 
+    /**
+     * Конструктор для CDRFileStorageBot.
+     *
+     * @param botConfig Конфигурация бота.
+     */
+    public CDRFileStorageBot(BotConfig botConfig) {
+        this.botConfig = botConfig;
+    }
+
+    /**
+     * Получает имя бота.
+     *
+     * @return Имя бота.
+     */
     @Override
     public String getBotUsername() {
         return botConfig.botName;
     }
 
+    /**
+     * Получает токен бота.
+     *
+     * @return Токен бота.
+     */
     @Override
     public String getBotToken() {
         return botConfig.getToken();
     }
 
+    /**
+     * Обработка входящего обновления.
+     *
+     * @param update Обновление.
+     */
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -35,15 +68,21 @@ public class CDRFileStorageBot extends TelegramLongPollingBot {
         }
     }
 
-    public CDRFileStorageBot(BotConfig botConfig) {
-        this.botConfig = botConfig;
-    }
-
+    /**
+     * Обработка команды "start".
+     *
+     * @param name Имя пользователя.
+     */
     private void startCommandReceived(String name) {
         String answer = "Привет, " + name + ", сейчас я начну отправлять сюда CDR файлы ʕ⁎̯͡⁎ʔ༄";
         sendMessage(answer);
     }
 
+    /**
+     * Отправка сообщения.
+     *
+     * @param textToSend Текст сообщения.
+     */
     public void sendMessage(String textToSend) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
@@ -55,6 +94,12 @@ public class CDRFileStorageBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Отправка документа.
+     *
+     * @param file     Файл для отправки.
+     * @param filename Имя файла.
+     */
     public void sendDocument(File file, String filename) {
         if (chatId != null) {
             SendDocument document = new SendDocument();
