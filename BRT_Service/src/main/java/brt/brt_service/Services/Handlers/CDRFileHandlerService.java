@@ -11,6 +11,7 @@ import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
 import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import brt.brt_service.Services.Utils.MsisdnsService;
+import brt.brt_service.TGBot.CDRFileStorageBot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -19,6 +20,7 @@ import okhttp3.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -69,6 +71,8 @@ public class CDRFileHandlerService {
      */
     @Autowired
     private RequestExecutor requestExecutor;
+    @Autowired
+    private CDRFileStorageBot cdrFileStorageBot;
     /**
      * Настоящий месяц (сервис запускается 01.01.2024).
      */
@@ -129,10 +133,10 @@ public class CDRFileHandlerService {
         List<String> msisdnsPhoneNumbers = msisdnsList.stream().map(Msisdns::getNumber).toList();
         for (String call : calls) {
             String[] data = call.split(",");
+            String callType = data[0];
             String calledMsisdn = data[1];
             Optional<MsisdnToMinutesLeft> optionalMsisdn = msisdnToMinutesLeftRepository.findById(calledMsisdn);
             if (msisdnsPhoneNumbers.contains(calledMsisdn) && optionalMsisdn.isPresent()) {
-                String callType = data[0];
                 String contactedMsisdn = data[2];
                 long callTimeStart = Long.parseLong(data[3]);
                 long callTimeEnd = Long.parseLong(data[4]);
@@ -158,10 +162,21 @@ public class CDRFileHandlerService {
     }
 
     /**
-     * Метод, сохраняющий CDR файлы.
+     * Метод, отправляющий CDR файлы в телеграм бота.
      *
+     * @param file  Файл.
      * @param fileName Имя файла.
-     * @param calls звонки в файле.
+     */
+    private void senCDRFileToTG(File file, String fileName) {
+        cdrFileStorageBot.sendDocument(file, fileName);
+    }
+
+    /**
+     * Метод, сохраняющий файлы в папку и отправляющий в телеграм бота, если ему написать
+     * в начале.
+     *
+     * @param fileName Название файла.
+     * @param calls Массив звонков.
      */
     private void saveCDRFile(String fileName, String[] calls) {
         Path filePath = Paths.get(ROOT_PATH + "/" + fileName + ".txt");
@@ -179,6 +194,7 @@ public class CDRFileHandlerService {
                     outputStream.flush();
                 }
             }
+            senCDRFileToTG(file.toFile(), fileName);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
