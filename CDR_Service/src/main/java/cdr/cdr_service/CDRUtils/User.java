@@ -79,9 +79,17 @@ public class User implements Runnable {
                 }
                 if (Math.random() <= USER_MAKES_CALL_TODAY_PROBABILITY) {
                     String curDate = daemonThread.getCurrentDate();
-                    transactionMaker(phoneNumbersList, transactionObjectsForDay, curDate);
+                    transactionMaker(transactionObjectsForDay, curDate);
                     concurrentQueue.enqueue(transactionObjectsForDay);
                     transactionObjectsForDay.clear();
+                }
+                else {
+                   if (Math.random() <= USER_MAKES_CALL_TODAY_PROBABILITY) {
+                       String curDate = daemonThread.getCurrentDate();
+                       transactionMakerForNotServiced(transactionObjectsForDay, curDate);
+                       concurrentQueue.enqueue(transactionObjectsForDay);
+                       transactionObjectsForDay.clear();
+                   }
                 }
             }
         }
@@ -92,22 +100,35 @@ public class User implements Runnable {
      * которому звоним, если номер этого абонента является обслуживаемым, то генерируем транзакцию для него тоже, если нет, то просто
      * генерируем транзакцию для звонившего.
      *
-     * @param phoneNumbersList Список обслуживаемых номеров.
      * @param transactionObjectsForDay Список транзакций на день.
      * @param curDate Сегодняшняя дата.
      */
-    private void transactionMaker(List<String> phoneNumbersList, List<TransactionObject> transactionObjectsForDay, String curDate) {
+    private void transactionMaker(List<TransactionObject> transactionObjectsForDay, String curDate) {
         Long[] callTimeGap = UserCallsTransactionsInfoGenerator.generateCallTimeGap(curDate);
         if (callTimeGap != null) {
             String contactedPhoneNumber = UserCallsTransactionsInfoGenerator.generateContactedMsisdn(msisdnsList, phoneNumber);
-            if (phoneNumbersList.contains(contactedPhoneNumber)) {
                 String callTypeForContacting = UserCallsTransactionsInfoGenerator.generateCallType();
                 String callTypeForContacted = callTypeForContacting.equals("01") ? "02" : "01";
                 transactionAdder(transactionObjectsForDay, callTypeForContacting, phoneNumber, contactedPhoneNumber, callTimeGap);
                 transactionAdder(transactionObjectsForDay, callTypeForContacted, contactedPhoneNumber, phoneNumber, callTimeGap);
-            } else {
-                transactionAdder(transactionObjectsForDay, UserCallsTransactionsInfoGenerator.generateCallType(), phoneNumber, contactedPhoneNumber, callTimeGap);
-            }
+        }
+    }
+
+    /**
+     * Метод, генерирующий транзакции для необслуживаемых абонентов.
+     *
+     * @param transactionObjectsForDay Список транзакций на день.
+     * @param curDate Сегодняшняя дата.
+     */
+    private void transactionMakerForNotServiced(List<TransactionObject> transactionObjectsForDay, String curDate) {
+        Long[] callTimeGap = UserCallsTransactionsInfoGenerator.generateCallTimeGap(curDate);
+        if (callTimeGap != null) {
+            String contactedPhoneNumber = UserCallsTransactionsInfoGenerator.generateContactedMsisdn(msisdnsList, phoneNumber);
+            String calledMsisdn = UserCallsTransactionsInfoGenerator.generateNotServicedMsisdn();
+            String callTypeForContacting = UserCallsTransactionsInfoGenerator.generateCallType();
+            String callTypeForContacted = callTypeForContacting.equals("01") ? "02" : "01";
+            transactionAdder(transactionObjectsForDay, callTypeForContacting, calledMsisdn, contactedPhoneNumber, callTimeGap);
+            transactionAdder(transactionObjectsForDay, callTypeForContacted, contactedPhoneNumber, calledMsisdn, callTimeGap);
         }
     }
 

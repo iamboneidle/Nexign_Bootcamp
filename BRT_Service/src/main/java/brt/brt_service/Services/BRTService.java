@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+/**
+ * Сервис BRT.
+ */
 @Service
 public class BRTService {
     /**
@@ -19,10 +22,12 @@ public class BRTService {
      */
     @Autowired
     private CallReceiptHandlerService callReceiptHandlerService;
+
     /**
      * Метод, который передает с контроллера CDR файл на обработку в CallRecordsHandlerService.
      *
      * @param callDataRecord Содержание CDR файла.
+     * @param fileName       Имя CDR файла.
      */
     public void handleCDRFile(String callDataRecord, String fileName) {
         callRecordsHandlerService.makeCallRecords(callDataRecord, fileName);

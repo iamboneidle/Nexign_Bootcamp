@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Сервис Msisdns.
+ */
 @Service
 public class MsisdnsService {
     /**

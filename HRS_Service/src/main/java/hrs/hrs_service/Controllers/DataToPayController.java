@@ -37,7 +37,7 @@ public class DataToPayController {
      */
     @PostMapping("/post-data-to-pay")
     public ResponseEntity<String> catchDataToPay(@RequestBody DataToPay dataToPay) {
-        if (dataToPay != null) {
+        if (dataToPay.getServicedMsisdnNumber() != null) {
             Thread thread = new Thread(new Calculator(hrsService, dataToPay));
             thread.start();
             LOGGER.log(Level.INFO, "OK: info for " + dataToPay.getServicedMsisdnNumber() + " was accepted");

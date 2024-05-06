@@ -42,8 +42,8 @@ public class RequestExecutor {
     /**
      * Метод, отправляющий запрос с заголовочными полями.
      *
-     * @param url URL-адрес, на который отправляется запрос.
-     * @param body Тело запроса.
+     * @param url      URL-адрес, на который отправляется запрос.
+     * @param body     Тело запроса.
      * @param username Имя пользователя.
      * @param password Пароль пользователя.
      */
@@ -59,7 +59,7 @@ public class RequestExecutor {
     /**
      * Метод, отправляющий запрос без заголовков.
      *
-     * @param url URL-адреса, на который отправляется запрос.
+     * @param url  URL-адреса, на который отправляется запрос.
      * @param body Тело запроса.
      */
     public void execute(String url, RequestBody body) {

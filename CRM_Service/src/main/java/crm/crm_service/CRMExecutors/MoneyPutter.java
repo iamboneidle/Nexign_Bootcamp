@@ -6,6 +6,7 @@ import crm.crm_service.CRMUtils.DataToPutMoney;
 import crm.crm_service.Services.CRMService;
 import crm.crm_service.Services.DataToPutMoneySenderService;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,10 @@ public class MoneyPutter implements Runnable {
      * Объект ObjectMapper для преобразования объекта в Json.
      */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Округляет число до двух знаков после запятой.
+     */
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
     /**
      * Минимум средств, сколько абонент может положить себе на счет.
      */
@@ -56,7 +61,7 @@ public class MoneyPutter implements Runnable {
         Map<String, Long> mapNumberToRateId = crmService.getMapNumberToRateId();
         List<String> msisdns = new ArrayList<>(mapNumberToRateId.keySet());
         for (String msisdn : msisdns) {
-            float moneyToPut = (float) (Math.random() * MONEY_TO_PUT_BOTTOM_BORDER + MONEY_TO_PUT_TOP_BORDER);
+            float moneyToPut = Float.parseFloat(decimalFormat.format(Math.random() * MONEY_TO_PUT_BOTTOM_BORDER + MONEY_TO_PUT_TOP_BORDER));
             DataToPutMoney dataToPutMoney = new DataToPutMoney(msisdn, moneyToPut);
             try {
                 String json = objectMapper.writeValueAsString(dataToPutMoney);

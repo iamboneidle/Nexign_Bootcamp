@@ -163,6 +163,13 @@ public class ConcurrentQueue {
                     break;
                 }
             }
+            transactions.add(new Transactions(
+                    null,
+                    transactionObject.getCallType(),
+                    transactionObject.getServicedMsisdnPhoneNumber(),
+                    transactionObject.getCallStartTime(),
+                    transactionObject.getCallEndTime()
+            ));
         }
         transactionsRepository.saveAll(transactions);
     }
@@ -185,6 +192,7 @@ public class ConcurrentQueue {
             String fileContent = content.toString();
             String json = objectMapper.writeValueAsString(new CDRFileToKafka(fileName, fileContent));
             kafkaProducer.sendMessage(json);
+            file.delete();
             LOGGER.log(Level.INFO, "OK: sent " + fileName + " to Kafka");
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 @Component
 public class KafkaConsumer {
     /**
-     *
+     * Сервис BRT.
      */
     @Autowired
     private BRTService brtService;

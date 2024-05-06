@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Сервис, который отправляет данные во все инстанции при запуске.
+ */
 @Service
 public class InitialDataPusherService {
     /**
@@ -49,6 +52,9 @@ public class InitialDataPusherService {
      * URL-адрес контроллера CRM, который при запуске ждет информацию по абонентам и их тарифам.
      */
     private static final String POST_TARIFFS_TO_CRM_URL = "http://localhost:2004/admin/post-tariffs";
+    /**
+     * URL-адрес контроллера HRS, который при запуске ждет информацию о тарифах для Redis.
+     */
     private static final String POST_RATES_TO_HRS_REDIS = "http://localhost:2003/post-rate-data";
     /**
      * Имя админа в сервисе CRM.
@@ -58,6 +64,10 @@ public class InitialDataPusherService {
      * Пароль админа в сервисе CRM.
      */
     private static final String ADMIN_PASSWORD = "admin";
+
+    /**
+     * Метод, вызывающий при запуске сервиса и вызывающий другие метода для занесения нужных данных.
+     */
     @PostConstruct
     public void sendDataToCRM() {
         startInfoPusherToPostgresService.pushToPostgres();

@@ -37,10 +37,11 @@ public class CallReceiptHandlerService {
         if (callReceipt.getMinutesToWriteOff() != null) {
             MsisdnToMinutesLeft msisdnToMinutesLeft = msisdnToMinutesLeftRepository.findById(callReceipt.getServicedMsisdnNumber()).orElse(null);
             if (msisdnToMinutesLeft != null) {
-                long newMinutes = msisdnToMinutesLeft.getMinutesLeft() - callReceipt.getMinutesToWriteOff();
-                msisdnToMinutesLeft.setMinutesLeft(Math.max(newMinutes, 0L)
-                );
-                msisdnToMinutesLeftRepository.save(msisdnToMinutesLeft);
+                if (msisdnToMinutesLeft.getMinutesLeft() != null) {
+                    long newMinutes = msisdnToMinutesLeft.getMinutesLeft() - callReceipt.getMinutesToWriteOff();
+                    msisdnToMinutesLeft.setMinutesLeft(Math.max(newMinutes, 0L));
+                    msisdnToMinutesLeftRepository.save(msisdnToMinutesLeft);
+                }
             }
         }
     }

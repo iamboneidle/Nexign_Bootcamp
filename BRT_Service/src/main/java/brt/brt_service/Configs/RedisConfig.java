@@ -26,11 +26,23 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @EnableCaching
 public class RedisConfig {
+    /**
+     * Хост Redis.
+     */
     @Value("${spring.data.redis.host}")
     private String redisHost;
+    /**
+     * Порт Redis.
+     */
     @Value("${spring.data.redis.port}")
     private int redisPort;
 
+    /**
+     * Создает и настраивает шаблон RedisTemplate для работы с кешем Redis.
+     *
+     * @param redisConnectionFactory фабрика подключения к Redis
+     * @return настроенный RedisTemplate
+     */
     @Bean
     public RedisTemplate<String, MsisdnToMinutesLeft> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, MsisdnToMinutesLeft> template = new RedisTemplate<>();
@@ -40,11 +52,23 @@ public class RedisConfig {
         return template;
     }
 
+    /**
+     * Создает операции для работы с множествами в Redis.
+     *
+     * @param redisTemplate шаблон RedisTemplate
+     * @return операции для работы с множествами
+     */
     @Bean
     public SetOperations<String, MsisdnToMinutesLeft> setOperations(RedisTemplate<String, MsisdnToMinutesLeft> redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
+    /**
+     * Создает менеджер кеша для управления кешем Redis.
+     *
+     * @param factory фабрика подключения к Redis
+     * @return менеджер кеша Redis
+     */
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
@@ -57,6 +81,11 @@ public class RedisConfig {
                 .build();
     }
 
+    /**
+     * Создает фабрику подключения к Redis с указанным хостом и портом.
+     *
+     * @return фабрика подключения к Redis
+     */
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisHost, redisPort);

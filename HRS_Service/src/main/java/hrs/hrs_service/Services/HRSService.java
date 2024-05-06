@@ -60,6 +60,10 @@ public class HRSService {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
     }
+
+    /**
+     * Метод очищающий Redis при запуске сервиса.
+     */
     @PostConstruct
     private void clearRedis() {
         ratesRepository.deleteAll();

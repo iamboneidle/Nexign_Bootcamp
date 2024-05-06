@@ -1,8 +1,8 @@
 package brt.brt_service.BRTUtils;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 /**
  * Класс, представляющий собой данные о совершенном звонке.
@@ -47,15 +47,14 @@ public class CallRecord {
      */
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CallRecord{");
-        sb.append("callType='").append(callType).append('\'');
-        sb.append(", servicedMsisdnNumber='").append(servicedMsisdnNumber).append('\'');
-        sb.append(", callTimeStart=").append(callTimeStart);
-        sb.append(", callTimeEnd=").append(callTimeEnd);
-        sb.append(", rateId=").append(rateId);
-        sb.append(", isOtherMsisdnServiced=").append(isOtherMsisdnServiced);
-        sb.append(", minutesLeft=").append(minutesLeft);
-        sb.append('}');
-        return sb.toString();
+        return "CallRecord{" + "callType='" + callType + '\'' +
+                ", servicedMsisdnNumber='" + servicedMsisdnNumber + '\'' +
+                ", callTimeStart=" + callTimeStart +
+                ", callTimeEnd=" + callTimeEnd +
+                ", rateId=" + rateId +
+                ", isOtherMsisdnServiced=" + isOtherMsisdnServiced +
+                ", minutesLeft=" + minutesLeft +
+                '}';
     }
 }
+

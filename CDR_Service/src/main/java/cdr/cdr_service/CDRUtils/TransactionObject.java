@@ -39,17 +39,16 @@ public class TransactionObject {
     /**
      * Перегруженный метод toString().
      *
-     * @return Строка объекта.
+     * @return Строка объекта с разделителем ",".
      */
     @Override
     public String toString() {
         StringJoiner result = new StringJoiner(",");
-        result
+        return result
                 .add(callType)
                 .add(servicedMsisdnPhoneNumber)
                 .add(contactedMsisdnPhoneNumber)
                 .add(Long.toString(callStartTime))
-                .add(Long.toString(callEndTime));
-        return result.toString();
+                .add(Long.toString(callEndTime)).toString();
     }
 }

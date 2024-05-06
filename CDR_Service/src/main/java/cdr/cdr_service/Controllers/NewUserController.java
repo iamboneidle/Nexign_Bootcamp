@@ -1,11 +1,11 @@
 package cdr.cdr_service.Controllers;
 
 import cdr.cdr_service.CDRUtils.DataToAddNewUserToCDR;
-import cdr.cdr_service.DAO.Models.Msisdns;
-import cdr.cdr_service.DAO.Repository.MsisdnsRepository;
 import cdr.cdr_service.Services.CDRService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,14 +37,14 @@ public class NewUserController {
      * @return ResponseEntity с сообщением.
      */
     @NotNull
-    @PostMapping("post-new-user")
+    @PostMapping("/post-new-user")
     private ResponseEntity<String> addNewUser(@RequestBody DataToAddNewUserToCDR dataToAddNewUserToCDR) {
-        if (dataToAddNewUserToCDR != null) {
+        if (ObjectUtils.allNotNull(dataToAddNewUserToCDR.getMsisdn())) {
             cdrService.addNewMsisdn(dataToAddNewUserToCDR);
             LOGGER.log(Level.INFO, "OK: added new user " + dataToAddNewUserToCDR.getMsisdn());
             return ResponseEntity.ok().body("CDR added user " + dataToAddNewUserToCDR.getMsisdn());
         }
         LOGGER.log(Level.SEVERE, "got empty data, can't add new user");
-        return ResponseEntity.badRequest().body("CDR got empty data, can't add new user");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CDR got empty data, can't add new user");
     }
 }

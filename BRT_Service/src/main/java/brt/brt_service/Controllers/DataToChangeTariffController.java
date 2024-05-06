@@ -8,7 +8,9 @@ import brt.brt_service.Postgres.DAO.Repository.RatesRepository;
 import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
 import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +51,7 @@ public class DataToChangeTariffController {
     @PostMapping("/change-tariff")
     @Transactional
     public ResponseEntity<String> catchData(@RequestBody DataToChangeTariff dataToChangeTariff) {
-        if (dataToChangeTariff != null) {
+        if (ObjectUtils.allNotNull(dataToChangeTariff.getTariffId(), dataToChangeTariff.getMsisdn())) {
             Msisdns msisdnsByNumber = msisdnsRepository.findMsisdnsByNumber(dataToChangeTariff.getMsisdn());
             Rates rate = ratesRepository.findRatesById(dataToChangeTariff.getTariffId());
             msisdnsByNumber.setRates(rate);
@@ -63,6 +65,6 @@ public class DataToChangeTariffController {
             return ResponseEntity.ok("BRT accepted new tariff info '" + dataToChangeTariff.getTariffId() + "' for " + dataToChangeTariff.getMsisdn() + " successfully");
         }
         LOGGER.log(Level.INFO, "ERROR: got empty data, can't change tariff");
-        return ResponseEntity.badRequest().body("BRT got empty info from CRM about changing tariffs");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("BRT got empty info from CRM about changing tariffs");
     }
 }
