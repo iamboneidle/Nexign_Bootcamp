@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -88,27 +89,32 @@ public class CDRFileHandlerService {
     /**
      * URL-адрес для отправки флажка о смене тарифа на CRM.
      */
-    private static final String CHANGE_TARIFF_URL = "http://localhost:2004/admin/change-tariff-monthly";
+    @Value("${crm.service.url.change-tariff}")
+    private String changeTariffUrl;
     /**
      * URL-адрес для отправки флажка о пополнении баланса на счетах всех абонентов на CRM.
      */
-    private static final String PUT_MONEY_URL = "http://localhost:2004/admin/put-money-monthly";
+    @Value("${crm.service.url.put-money}")
+    private String putMoneyUrl;
     /**
      * URL-адрес для отправки данных по звонку на HRS.
      */
-    private static final String POST_DATA_TO_PAY_URL = "http://localhost:2003/post-data-to-pay";
+    @Value("${hrs.service.post-data-to-pay}")
+    private String postDataToPayUrl;
     /**
      * Имя пользователя админа в CRM.
      */
-    private static final String ADMIN_USERNAME = "admin";
+    @Value("${crm.admin.username}")
+    private String adminUsername;
     /**
      * Пароль админа в CRM.
      */
-    private static final String ADMIN_PASSWORD = "admin";
+    @Value("${crm.admin.password}")
+    private String adminPassword;
     /**
      * Путь, к папке, в которую каждый новый файл записывается.
      */
-    private final Path ROOT_PATH = Paths.get("BRT_Service/src/main/resources/CDR_Files").toAbsolutePath();
+    private final Path ROOT_PATH = Paths.get(System.getProperty("user.dir") + "CDR_Files").toAbsolutePath();
     /**
      * Логгер, выводящий уведомления.
      */
@@ -270,7 +276,7 @@ public class CDRFileHandlerService {
         String json = "new month " + curMonth + "." + curYear + " has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
-        requestExecutor.executeWithHeaders(PUT_MONEY_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
+        requestExecutor.executeWithHeaders(putMoneyUrl, body, adminUsername, adminPassword);
     }
 
     /**
@@ -280,7 +286,7 @@ public class CDRFileHandlerService {
         String json = "new month " + curMonth + "." + curYear + " has come";
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
-        requestExecutor.executeWithHeaders(CHANGE_TARIFF_URL, body, ADMIN_USERNAME, ADMIN_PASSWORD);
+        requestExecutor.executeWithHeaders(changeTariffUrl, body, adminUsername, adminPassword);
     }
 
     /**
@@ -293,7 +299,7 @@ public class CDRFileHandlerService {
             String json = objectMapper.writeValueAsString(callRecord);
             RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
-            requestExecutor.execute(POST_DATA_TO_PAY_URL, body);
+            requestExecutor.execute(postDataToPayUrl, body);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

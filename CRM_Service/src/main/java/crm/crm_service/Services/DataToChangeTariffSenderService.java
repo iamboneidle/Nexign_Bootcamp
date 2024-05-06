@@ -3,6 +3,7 @@ package crm.crm_service.Services;
 import crm.crm_service.CRMExecutors.RequestExecutor;
 import jakarta.annotation.PostConstruct;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -15,7 +16,8 @@ public class DataToChangeTariffSenderService {
     /**
      * URL-адрес контроллера в BRT для смены тарифа.
      */
-    private static final String CHANGE_TARIFF_URL = "http://localhost:2002/change-tariff";
+    @Value("${brt.service.url.change-tariff}")
+    private String changeTariffUrl;
     /**
      * Класс, который отправляет запросы.
      */
@@ -43,6 +45,6 @@ public class DataToChangeTariffSenderService {
      * @param json Строка с данными о смене тарифа.
      */
     public void sendDataToChangeTariff(String json) {
-        requestExecutor.execute(json, CHANGE_TARIFF_URL, client);
+        requestExecutor.execute(json, changeTariffUrl, client);
     }
 }

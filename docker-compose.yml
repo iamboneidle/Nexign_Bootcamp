@@ -1,0 +1,168 @@
+version: '3.8'
+services:
+  CDRService:
+    image: cdr_service
+    build: 
+      context: ./CDR_Service
+      dockerfile: Dockerfile
+    ports:
+      - "2001:2001"
+    depends_on:
+      - BRTService
+      - CDRDataBase
+      - Kafka
+    environment:
+      - CDR_DB_URL=jdbc:postgresql://CDRDataBase:5432/CDR_DataBase
+      - CDR_DB_USERNAME=iamboneidle
+      - CDR_DB_PASSWORD=Nexign
+      - KAFKA_URL=Kafka:19092
+      - KAFKA_CONSUMER_GROUP_ID=my-group
+      - CDR_SERVER_PORT=2001
+  CDRDataBase:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=iamboneidle
+      - POSTGRES_PASSWORD=Nexign
+      - POSTGRES_DB=CDR_DataBase
+    ports: 
+    - "1001:5432"
+    depends_on:
+      - CRMDataBase
+    restart: unless-stopped
+  CRMService:
+    image: crm_service
+    build: 
+      context: ./CRM_Service
+      dockerfile: Dockerfile
+    ports:
+      - "2004:2004"
+    depends_on:
+      - HRSService
+      - CRMDataBase
+    environment: 
+      - CRM_DB_URL=jdbc:postgresql://CRMDataBase:5432/CRM_DataBase
+      - CRM_DB_USERNAME=iamboneidle
+      - CRM_DB_PASSWORD=Nexign
+      - CRM_SERVER_PORT=2004
+      - POST_TO_CDR_URL=http://CDRService:2001/post-new-user
+      - POST_TO_BRT_URL=http://BRTService:2002/post-new-user
+      - PUT_MONEY_URL=http://BRTService:2002/put-money-on-accounts
+      - CHANGE_TARIFF_URL=http://BRTService:2002/change-tariff
+      - FRONTEND_CORS_URL=http://localhost:3000
+  CRMDataBase:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=iamboneidle
+      - POSTGRES_PASSWORD=Nexign
+      - POSTGRES_DB=CRM_DataBase
+    ports:
+      - "1003:5432"
+    depends_on:
+      - BRTDataBase
+    restart: unless-stopped
+  HRSService:
+    image: hrs_service
+    build: 
+      context: ./HRS_Service
+      dockerfile: Dockerfile
+    ports:
+      - "2003:2003"
+    depends_on:
+      - Kafka
+      - HRSRedis
+      - BRTDataBase
+    environment:
+      - HRS_DB_URL=jdbc:postgresql://BRTDataBase:5432/BRT_DataBase
+      - HRS_DB_USERNAME=iamboneidle
+      - HRS_DB_PASSWORD=Nexign
+      - HRS_SERVER_PORT=2003
+      - HRS_REDIS_PORT=6379
+      - HRS_REDIS_HOST=HRSRedis
+      - POST_CALL_RECEIPT_URL=http://BRTService:2002/post-call-receipt
+  BRTService:
+    image: brt_service
+    build: 
+      context: ./BRT_Service
+      dockerfile: Dockerfile
+    ports:
+      - "2002:2002"
+    depends_on:
+      - CRMService
+      - HRSService
+      - BRTDataBase
+      - BRTRedis
+    environment:
+      - BRT_DB_URL=jdbc:postgresql://BRTDataBase:5432/BRT_DataBase
+      - BRT_DB_USERNAME=iamboneidle
+      - BRT_DB_PASSWORD=Nexign
+      - BRT_SERVER_PORT=2002
+      - BRT_REDIS_PORT=6379
+      - BRT_REDIS_HOST=BRTRedis
+      - KAFKA_URL=Kafka:19092
+      - CHANGE_TARIFF_URL=http://CRMService:2004/admin/change-tariff-monthly
+      - PUT_MONEY_URL=http://CRMService:2004/admin/put-money-monthly
+      - POST_DATA_TO_PAY_URL=http://HRSService:2003/post-data-to-pay
+      - POST_TARIFFS_TO_CRM_URL=http://CRMService:2004/admin/post-tariffs
+      - POST_RATES_TO_HRS_REDIS=http://HRSService:2003/post-rate-data
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin
+  BRTDataBase:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=iamboneidle
+      - POSTGRES_PASSWORD=Nexign
+      - POSTGRES_DB=BRT_DataBase
+    ports:
+      - "1002:5432"
+    restart: unless-stopped
+  BRTRedis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - "3001:6379"
+  HRSRedis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - "3002:6379"
+  Zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.2
+    hostname: Zookeeper
+    container_name: Zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: Zookeeper:2888:3888
+
+  Kafka:
+    image: confluentinc/cp-kafka:7.3.2
+    hostname: Kafka
+    container_name: Kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9999:9999"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://Kafka:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "Zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    depends_on:
+      - Zookeeper
+  Frontend:
+    image: nexign_frontend
+    build: ./nexign-frontend
+    ports:
+      - "3000:3000"

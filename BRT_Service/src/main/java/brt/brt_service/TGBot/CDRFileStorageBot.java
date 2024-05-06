@@ -1,6 +1,7 @@
 package brt.brt_service.TGBot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -17,23 +18,19 @@ import java.io.File;
 @Component
 public class CDRFileStorageBot extends TelegramLongPollingBot {
     /**
-     * Конфигурационный класс для настроек Telegram Bot.
+     * Имя Telegram бота.
      */
-    @Autowired
-    private BotConfig botConfig;
+    @Value("${spring.bot.name}")
+    private String botName;
+    /**
+     * Имя Telegram бота.
+     */
+    @Value("${spring.bot.token}")
+    private String token;
     /**
      * ID чата.
      */
     private Long chatId = null;
-
-    /**
-     * Конструктор для CDRFileStorageBot.
-     *
-     * @param botConfig Конфигурация бота.
-     */
-    public CDRFileStorageBot(BotConfig botConfig) {
-        this.botConfig = botConfig;
-    }
 
     /**
      * Получает имя бота.
@@ -42,7 +39,7 @@ public class CDRFileStorageBot extends TelegramLongPollingBot {
      */
     @Override
     public String getBotUsername() {
-        return botConfig.botName;
+        return botName;
     }
 
     /**
@@ -52,7 +49,7 @@ public class CDRFileStorageBot extends TelegramLongPollingBot {
      */
     @Override
     public String getBotToken() {
-        return botConfig.getToken();
+        return token;
     }
 
     /**

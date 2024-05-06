@@ -11,6 +11,7 @@ import jakarta.annotation.PostConstruct;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -53,11 +54,13 @@ public class NewUserAdderService {
     /**
      * URL-адрес контроллера в CDR, ожидающего данные о добавлении нового пользователя.
      */
-    private static final String POST_TO_CDR_URL = "http://localhost:2001/post-new-user";
+    @Value("${cdr.service.url.post-new-user}")
+    private String postToCdrUrl;
     /**
      * URL-адрес контроллера в BRT, ожидающего данные о добавлении нового пользователя.
      */
-    private static final String POST_TO_BRT_URL = "http://localhost:2002/post-new-user";
+    @Value("${brt.service.url.post-new-user}")
+    private String postToBrtUrl;
 
     /**
      * Метод инициализирующий клиента на PostConstruct.
@@ -100,7 +103,7 @@ public class NewUserAdderService {
     private void addToBRT(DataToAddNewUser dataToAddNewUser) {
         try {
             String json = objectMapper.writeValueAsString(dataToAddNewUser);
-            requestExecutor.execute(json, POST_TO_BRT_URL, client);
+            requestExecutor.execute(json, postToBrtUrl, client);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -114,7 +117,7 @@ public class NewUserAdderService {
     private void addToCDR(DataToAddNewUserToCDR dataToAddNewUserToCDR) {
         try {
             String json = objectMapper.writeValueAsString(dataToAddNewUserToCDR);
-            requestExecutor.execute(json, POST_TO_CDR_URL, client);
+            requestExecutor.execute(json, postToCdrUrl, client);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

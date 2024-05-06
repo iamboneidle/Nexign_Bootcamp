@@ -2,6 +2,7 @@ package hrs.hrs_service.Services;
 
 import jakarta.annotation.PostConstruct;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,7 +19,8 @@ public class CallReceiptSenderService {
     /**
      * URL end-point'а в BRT, принимающего чеки.
      */
-    private static final String POST_CALL_RECEIPT_URL = "http://localhost:2002/post-call-receipt";
+    @Value("${brt.service.url.post-call-receipt}")
+    private String postCallReceiptUrl;
     /**
      * Логгер, выводящий уведомления.
      */
@@ -47,7 +49,7 @@ public class CallReceiptSenderService {
     public void sendCallReceipt(String json) {
         RequestBody requestBody = RequestBody.create(json, MediaType.parse("application/json"));
         Request request = new Request.Builder()
-                .url(POST_CALL_RECEIPT_URL)
+                .url(postCallReceiptUrl)
                 .post(requestBody)
                 .build();
 

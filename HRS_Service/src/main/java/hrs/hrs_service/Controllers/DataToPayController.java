@@ -21,7 +21,7 @@ public class DataToPayController {
      * HRSService, производящий расчет.
      */
     @Autowired
-    HRSService hrsService;
+    private HRSService hrsService;
     /**
      * Логгер, выводящий уведомления.
      */

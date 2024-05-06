@@ -55,7 +55,8 @@ public class ConcurrentQueue {
     /**
      * Путь, к папке, в которую каждый новый файл записывается, а затем из нее удаляется после отправки.
      */
-    private final Path ROOT_PATH = Paths.get("src/main/resources/CDRFiles").toAbsolutePath();
+//    private final Path ROOT_PATH = Paths.get("src/main/resources/CDRFiles").toAbsolutePath();
+    private final Path ROOT_PATH = Paths.get(System.getProperty("user.dir") + "CDR_Files").toAbsolutePath();
     /**
      * Логгер для вывода уведомлений в консоль.
      */

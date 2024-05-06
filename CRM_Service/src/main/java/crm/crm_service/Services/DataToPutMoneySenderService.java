@@ -2,7 +2,9 @@ package crm.crm_service.Services;
 
 import crm.crm_service.CRMExecutors.RequestExecutor;
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -19,7 +21,8 @@ public class DataToPutMoneySenderService {
     /**
      * URL-адрес контроллера BRT, принимающего данные о смене тарифа.
      */
-    private static final String PUT_MONEY_URL = "http://localhost:2002/put-money-on-accounts";
+    @Value("${brt.service.url.put-money}")
+    private String putMoneyUrl;
     /**
      * Класс, отправляющий запросы.
      */
@@ -43,6 +46,6 @@ public class DataToPutMoneySenderService {
      * @param json Строка с объектом для пополнения балансов на счетах абонентов.
      */
     public void sendDataToPutMoney(String json) {
-        requestExecutor.execute(json, PUT_MONEY_URL, client);
+        requestExecutor.execute(json, putMoneyUrl, client);
     }
 }
