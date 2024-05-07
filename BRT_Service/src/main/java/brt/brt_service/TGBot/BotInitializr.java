@@ -1,6 +1,5 @@
 package brt.brt_service.TGBot;
 
-import brt.brt_service.Controllers.CallReceiptController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

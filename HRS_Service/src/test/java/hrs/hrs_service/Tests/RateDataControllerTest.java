@@ -28,6 +28,7 @@ public class RateDataControllerTest {
     @InjectMocks
     private RateDataController rateDataController;
     private MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(rateDataController).build();

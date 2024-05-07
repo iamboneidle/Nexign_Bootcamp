@@ -5,11 +5,11 @@ import lombok.*;
 /**
  * Класс, представляющий собой данные для пополнения баланса счета абонента.
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DataToPutMoney {
     /**
      * Номер телефона абонента.
@@ -20,3 +20,4 @@ public class DataToPutMoney {
      */
     private Float money;
 }
+

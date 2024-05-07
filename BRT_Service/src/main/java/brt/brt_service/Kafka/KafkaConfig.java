@@ -11,13 +11,24 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Класс конфигурации Apache Kafka.
+ */
 @Configuration
 @EnableKafka
 public class KafkaConfig {
 
+    /**
+     * Сервер для подключения.
+     */
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    /**
+     * Конфигурация для настройки параметров Kafka консьюмера.
+     *
+     * @return ConsumerFactory.
+     */
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> props = new HashMap<>();

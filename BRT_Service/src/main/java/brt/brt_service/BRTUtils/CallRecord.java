@@ -2,8 +2,8 @@ package brt.brt_service.BRTUtils;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.AllArgsConstructor;
 import lombok.ToString;
+import lombok.AllArgsConstructor;
 
 /**
  * Класс, представляющий собой данные о совершенном звонке.

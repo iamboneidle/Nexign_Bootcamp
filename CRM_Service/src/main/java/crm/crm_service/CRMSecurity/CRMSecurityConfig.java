@@ -26,6 +26,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class CRMSecurityConfig {
+    /**
+     * URL-адрес frontend'а, с которого отправляются запросы.
+     */
     @Value("${frontend.cors.url}")
     private String frontendCorsUrl;
     /**
@@ -75,8 +78,13 @@ public class CRMSecurityConfig {
         return http.build();
     }
 
+    /**
+     * Бин конфигурации CORS.
+     *
+     * @return Конфигурация CORS.
+     */
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(frontendCorsUrl);
         configuration.addAllowedMethod("*");

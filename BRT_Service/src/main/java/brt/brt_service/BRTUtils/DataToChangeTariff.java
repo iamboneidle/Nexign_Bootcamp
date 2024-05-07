@@ -7,9 +7,9 @@ import lombok.*;
  */
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DataToChangeTariff {
     /**
      * Номе телефона абонента.
@@ -20,3 +20,4 @@ public class DataToChangeTariff {
      */
     private Long tariffId;
 }
+

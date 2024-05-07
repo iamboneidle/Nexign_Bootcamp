@@ -7,9 +7,9 @@ import lombok.*;
  */
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class DataToAddNewUser {
     /**
      * Номер нового абонента.
@@ -36,3 +36,5 @@ public class DataToAddNewUser {
      */
     private String patronymic;
 }
+
+

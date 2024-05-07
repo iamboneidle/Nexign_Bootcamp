@@ -1,17 +1,17 @@
 package brt.brt_service.BRTUtils;
 
-import jakarta.annotation.PostConstruct;
 import okhttp3.*;
+import jakarta.annotation.PostConstruct;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Класс, отправляющий запросы.

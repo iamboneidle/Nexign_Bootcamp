@@ -15,7 +15,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
     /**
-     * Список серверов Kafka для подключения.
+     * Сервер Kafka для подключения.
      */
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;

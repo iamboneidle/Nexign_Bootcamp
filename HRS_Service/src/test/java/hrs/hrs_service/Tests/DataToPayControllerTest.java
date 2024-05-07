@@ -28,6 +28,7 @@ public class DataToPayControllerTest {
     @InjectMocks
     private DataToPayController dataToPayController;
     private MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(dataToPayController).build();
