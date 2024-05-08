@@ -27,7 +27,7 @@ BabyBillingStructure.pdf.
    6. [PostConstruct](#PostConstruct)
    7. [Frontend](#Frontend)
 3. [Ссылки](#Ссылки)
-4. [Порядок запуска](#Порядок запуска)
+4. [Запуск](#Запуск)
 ___
 ___
 
@@ -259,10 +259,16 @@ ___
 <br>Данные, с которыми стартуют сервисы: info/DB starters/
 <br>Структура баз данных: info/DB structure/
 
-## <a>Порядок запуска</a>
+___
+___
+
+## <a>Запуск</a>
 <br> 1) Через docker compose: перейти в корневую папку проекта (NexignBootcamp/), в терминале написать
 команду: docker-compose up.
 <br> 2) Сначала запустить все базы данных (CDR_DataBase, BRT_DataBase, CRM_DataBase, BRT_Redis, HRS_Redis), 
 запустить Zookeeper и ApacheKafka, запустить HRS_Service, затем CRM_Service, затем BRT_Service, 
 затем CDR_Service, затем frontend. Порядок важен. Сервисы в application.properties содержат поля с 
 пересенными окружения, а node_modules отсутствуют в папке с frontend.
+
+___
+___
