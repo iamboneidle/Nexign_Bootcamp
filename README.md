@@ -240,24 +240,28 @@ ___
 
 ## <a>Ссылки</a>
 <br>[Swagger-UI](http://localhost:2004/swagger-ui/index.html). (Также можно перейти с frontend'а).
+<br>[DataBase-UI](https://localhost:5050/).
 <br>[Frontend](http://localhost:3000/).
 <br>[Структура проекта](info/ProjectStructure/BabyBilling.pdf).
 <br>[Данные, с которыми стартуют сервисы](info/DataBaseStarters).
 <br>[Структура баз данных](info/DataBaseStructure).
 <br>[Список портов](info/Ports.txt).
-
-<br>CDR_DataBase: localhost:1001, password: Nexign
+<br>PGadmin4 creds:
+<br>email: nexign@bootcamp.com
+<br>password: nexign
+<br>CDR_DataBase: password: Nexign, username: iamboneidle
 <p align="center">
- <img width="400" src="info/Images/CDR_DataBaseCreds.png" alt="qr"/>
+ <img width="400" src="info/Images/CDR_DataBase_Creds.png" alt="qr"/>
 </p>
-<br>BRT_DataBase: localhost:1002, password: Nexign
+<br>BRT_DataBase: password: Nexign, username: iamboneidle
 <p align="center">
- <img width="400" src="info/Images/BRT_DataBaseCreds.png" alt="qr"/>
+ <img width="400" src="info/Images/BRT_DataBase_Creds.png" alt="qr"/>
 </p>
-<br>CRM_DataBase: localhost:1003, password: Nexign
+<br>CRM_DataBase: password: Nexign, username: iamboneidle
 <p align="center">
- <img width="400" src="info/Images/CRM_DataBaseCreds.png" alt="qr"/>
+ <img width="400" src="info/Images/CRM_DataBase_Creds.png" alt="qr"/>
 </p>
+<br>Redis Insight Desktop Application
 <br>BRT_Redis: localhost:3001
 <p align="center">
  <img width="400" src="info/Images/BRT_RedisCreds.png" alt="qr"/>

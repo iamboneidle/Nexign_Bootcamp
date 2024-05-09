@@ -4,6 +4,7 @@
 |CDR_DataBase: 1001          |
 |BRT_DataBase: 1002          |
 |CRM_DataBase: 1003          |
+|DataBase-UI: 5050           |
 |____________________________|
 |Services                    |
 |____________________________|

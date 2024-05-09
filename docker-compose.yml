@@ -126,7 +126,7 @@ services:
     ports:
       - "3002:6379"
   Zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.2
+    image: confluentinc/cp-zookeeper:latest
     hostname: Zookeeper
     container_name: Zookeeper
     ports:
@@ -137,7 +137,7 @@ services:
       ZOOKEEPER_SERVERS: Zookeeper:2888:3888
 
   Kafka:
-    image: confluentinc/cp-kafka:7.3.2
+    image: confluentinc/cp-kafka:latest
     hostname: Kafka
     container_name: Kafka
     ports:
@@ -166,3 +166,12 @@ services:
     build: ./nexign-frontend
     ports:
       - "3000:3000"
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: nexign@bootcamp.com
+      PGADMIN_DEFAULT_PASSWORD: nexign
+    ports:
+      - "5050:80"
