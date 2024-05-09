@@ -1,10 +1,16 @@
 # Nexign Bootcamp Baby Billing project
 
+___
+___
+
 ##  <a>Введение</a>
 В этом проекте я разработал: структуры базы данных CDR_DataBase, структуру базы данных CRM_DataBase,
 подстроил под нужды проекта структуру базы данных BRT_DataBase, разработал архитектуру микросервисов,
 разработал архитектуру микросервисного приложения, написал тесты, frontend и сами микросервисы, 
 собрал все в docker-compose.yml, составил диаграммы.
+
+___
+___
 
 ## <a>Содержание</a>
 Сначала я расскажу о том, как проект работает, какие решения были 
@@ -22,7 +28,7 @@ BabyBillingStructure.pdf.
    2. [BRT_Service](#BRT_Service)
       1. [CallRecordsHandlerService](#CallRecordsHandlerService)
    3. [HRS_Service](#HRS_Service)
-   4. [BRT_Service part 2](#BRT_Service part 2)
+   4. [BRT_Service_part_2](#BRT_Service_part_2)
    5. [CRM_Service](#CRM_Service)
    6. [PostConstruct](#PostConstruct)
    7. [Frontend](#Frontend)
@@ -139,7 +145,7 @@ calculateByMonthlyRate(), оба этих метода берут информа
 После того как расчет произведен метод makeCalculation() возвращает в сервис HRSService объект CallReceipt, вызывается
 метод sendCallReceipt() класса CallReceiptSenderService, который отправляет json CallReceipt'а обратно в BRT_Service. ->
 
-### <a>BRT_Service part 2</a>
+### <a>BRT_Service_part_2</a>
 -> На этом моменте возвращаемся в BRT_Service, рассмотрим вторую часть его функционала. Запрос принимается на 
 end-point'е (/post-call-receipt). Тут вызывается метод handleCallReceipt() класса-сервиса BRTService, который 
 вызывает метод validateCallReceipt() сервиса CallReceiptHandlerService и передает туда объект CallReceipt. Этот метод
@@ -195,9 +201,10 @@ SUBSCRIBER.
 нужно для того, чтобы CRM_Service знал о том, какие тарифы у какого абонента, чтобы не менять 11 тариф на 11.
 
 ### <a>Frontend</a>
-Здесь я расскажу о том, как взаимодействовать с CRM_Service'ом с помощью написанного мною frontend'а. Он простенький, 
+[Frontend доступен тут.](http://localhost:3000/)
+<br>Здесь я расскажу о том, как взаимодействовать с CRM_Service'ом с помощью написанного мною frontend'а. Он простенький, 
 написан на JavaScript в связке с React, я особо не уделил ему времени, так как сделал просто для удобства, использовал
-ant design для все UI компонентов. Frontend доступен по адресу: http://localhost:3000/.
+ant design для все UI компонентов.
 <br> Далее покажу, как с ним взаимодействовать.
 <p>
  <img width="2880" src="info/Images/homePage.png" alt="qr"/>
@@ -228,12 +235,17 @@ ant design для все UI компонентов. Frontend доступен п
  <img width="2880" src="info/Images/changeTariffPage.png" alt="qr"/>
 </p>
 Страница смены тарифа.
-
 ___
 ___
 
 ## <a>Ссылки</a>
-<br>Swagger-UI http://localhost:2004/swagger-ui/index.html. Также можно перейти с frontend'а.
+<br>[Swagger-UI](http://localhost:2004/swagger-ui/index.html). (Также можно перейти с frontend'а).
+<br>[Frontend](http://localhost:3000/).
+<br>[Структура проекта](info/ProjectStructure/BabyBilling.pdf).
+<br>[Данные, с которыми стартуют сервисы](info/DataBaseStarters).
+<br>[Структура баз данных](info/DataBaseStructure).
+<br>[Список портов](info/Ports.txt).
+
 <br>CDR_DataBase: localhost:1001, password: Nexign
 <p align="center">
  <img width="400" src="info/Images/CDR_DataBaseCreds.png" alt="qr"/>
@@ -254,10 +266,6 @@ ___
 <p align="center">
  <img width="400" src="info/Images/HRS_RedisCreds.png" alt="qr"/>
 </p>
-<br>Frontend: http://localhost:3000/
-<br>Структура проекта: info/ProjectStructure/BabyBilling.pdf
-<br>Данные, с которыми стартуют сервисы: info/DB starters/
-<br>Структура баз данных: info/DB structure/
 
 ___
 ___
