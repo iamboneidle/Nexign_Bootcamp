@@ -175,3 +175,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: nexign
     ports:
       - "5050:80"
+  redis_insight:
+    image: redislabs/redisinsight:latest
+    restart: always
+    ports:
+      - "5540:5540"

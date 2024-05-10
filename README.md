@@ -242,8 +242,10 @@ ___
 
 ## <a>Ссылки</a>
 <br>[Swagger-UI](http://localhost:2004/swagger-ui/index.html). (Также можно перейти с frontend'а).
-<br>[DataBase-UI](https://localhost:5050/).
+<br>[DataBase-UI](http://localhost:5050/).
+<br>[Redis-UI](http://localhost:5540/).
 <br>[Frontend](http://localhost:3000/).
+<br>[Telegram Bot](https://t.me/CDRFilesbot).
 <br>[Структура проекта](info/ProjectStructure/BabyBilling.pdf).
 <br>[Данные, с которыми стартуют сервисы](info/DataBaseStarters).
 <br>[Структура баз данных](info/DataBaseStructure).
@@ -264,16 +266,16 @@ ___
 <p align="center">
  <img width="400" src="info/Images/CRM_DataBase_Creds.png" alt="qr"/>
 </p>
-<br>Redis Insight Desktop Application
-<br>BRT_Redis: localhost:3001
+<br>Redis Insight localhost:5540
+<br>BRT_Redis
 <p align="center">
  <img width="400" src="info/Images/BRT_RedisCreds.png" alt="qr"/>
 </p>
-<br>CRM_DataBase: localhost:3002
+<br>HRS_Redis
 <p align="center">
  <img width="400" src="info/Images/HRS_RedisCreds.png" alt="qr"/>
-<br>CDR-файлы сохраняются сюда, также отправляются в телеграм-бота.
 </p>
+<br>CDR-файлы сохраняются сюда, также отправляются в телеграм-бота.
 <p align="center">
  <img width="400" src="info/Images/CDRFilesSavePath.png" alt="qr"/>
 </p>
