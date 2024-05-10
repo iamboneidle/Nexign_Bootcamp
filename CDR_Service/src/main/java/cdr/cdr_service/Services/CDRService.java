@@ -55,7 +55,7 @@ public class CDRService {
     /**
      * Время до старта генерации звонков в секундах.
      */
-    private static final int TIME_BEFORE_START = 5;
+    private static final int TIME_BEFORE_START = 10;
 
     /**
      * Метод, который вызывается через TIME_BEFORE_START секунд, получает список пользователей из базы данных,

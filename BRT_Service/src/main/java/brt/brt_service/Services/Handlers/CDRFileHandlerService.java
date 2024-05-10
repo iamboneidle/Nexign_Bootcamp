@@ -114,7 +114,7 @@ public class CDRFileHandlerService {
     /**
      * Путь, к папке, в которую каждый новый файл записывается.
      */
-    private final Path ROOT_PATH = Paths.get(System.getProperty("user.dir") + "CDR_Files").toAbsolutePath();
+    private final Path ROOT_PATH = Paths.get(System.getProperty("user.dir") + "/CDR_Files").toAbsolutePath();
     /**
      * Логгер, выводящий уведомления.
      */
@@ -185,7 +185,7 @@ public class CDRFileHandlerService {
      * @param calls Массив звонков.
      */
     private void saveCDRFile(String fileName, String[] calls) {
-        Path filePath = Paths.get(ROOT_PATH + "/" + fileName + ".txt");
+        Path filePath = Paths.get(ROOT_PATH + "/" + fileName);
         try {
             if (!Files.exists(ROOT_PATH.toAbsolutePath())) {
                 Files.createDirectory(ROOT_PATH.toAbsolutePath());
