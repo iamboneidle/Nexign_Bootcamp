@@ -45,6 +45,6 @@ public class NewUserController {
             return ResponseEntity.ok().body("CDR added user " + dataToAddNewUserToCDR.getMsisdn());
         }
         LOGGER.log(Level.SEVERE, "got empty data, can't add new user");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CDR got empty data, can't add new user");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CDR got empty data, can't add new user");
     }
 }

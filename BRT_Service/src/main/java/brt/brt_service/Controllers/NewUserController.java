@@ -71,6 +71,6 @@ public class NewUserController {
             return ResponseEntity.ok().body("BRT added user " + dataToAddNewUser.getMsisdn());
         }
         LOGGER.log(Level.SEVERE, "got empty data, can't add new user");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("BRT got empty data, can't add new user");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BRT got empty data, can't add new user");
     }
 }

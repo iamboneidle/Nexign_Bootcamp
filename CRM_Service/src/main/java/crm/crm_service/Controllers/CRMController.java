@@ -20,6 +20,8 @@ import crm.crm_service.Services.DataToChangeTariffSenderService;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,7 +120,7 @@ public class CRMController {
             return ResponseEntity.ok().body("CRM will change tariffs");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty string, won't change tariffs");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM got empty string and will not change tariffs");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CRM got empty string and will not change tariffs");
     }
 
     /**
@@ -140,7 +142,7 @@ public class CRMController {
             return ResponseEntity.ok().body("CRM will put money");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty string, won't put money");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM got empty string and will not put money");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CRM got empty string and will not put money");
     }
 
     /**
@@ -154,19 +156,32 @@ public class CRMController {
     @Operation(summary = "This method is used by admin to change certain msisdn's tariff.")
     public ResponseEntity<String> changeTariff(@RequestBody DataToChangeTariff dataToChangeTariff, @RequestHeader("Authorization") String authorization) {
         if (ObjectUtils.allNotNull(dataToChangeTariff.getTariffId(), dataToChangeTariff.getMsisdn())) {
-            try {
-                dataToChangeTariffSenderService.sendDataToChangeTariff(objectMapper.writeValueAsString(dataToChangeTariff));
-                LOGGER.log(Level.INFO, "OK: Tariff for " + dataToChangeTariff.getMsisdn() +
-                        " was changed to " + dataToChangeTariff.getTariffId());
-                return ResponseEntity.ok("CRM: You changed tariff for " + dataToChangeTariff.getMsisdn() +
-                        " to " + dataToChangeTariff.getTariffId());
-            } catch (JsonProcessingException e) {
-                LOGGER.log(Level.SEVERE, "EXCEPTION: JsonProcessingException");
-                return ResponseEntity.internalServerError().body("CRM: JsonProcessingException");
+            Map<String, Long> mapNumberToRateId = crmService.getMapNumberToRateId();
+            if (mapNumberToRateId.containsKey(dataToChangeTariff.getMsisdn())) {
+                if (!Objects.equals(dataToChangeTariff.getTariffId(), mapNumberToRateId.get(dataToChangeTariff.getMsisdn()))) {
+                    try {
+                        dataToChangeTariffSenderService.sendDataToChangeTariff(objectMapper.writeValueAsString(dataToChangeTariff));
+                        LOGGER.log(Level.INFO, "OK: Tariff for " + dataToChangeTariff.getMsisdn() +
+                                " was changed to " + dataToChangeTariff.getTariffId());
+                        return ResponseEntity.ok("CRM: You changed tariff for " + dataToChangeTariff.getMsisdn() +
+                                " to " + dataToChangeTariff.getTariffId());
+                    } catch (JsonProcessingException e) {
+                        LOGGER.log(Level.SEVERE, "EXCEPTION: JsonProcessingException");
+                        return ResponseEntity.internalServerError().body("CRM: JsonProcessingException");
+                    }
+                }
+                LOGGER.log(Level.SEVERE, "ERROR: user " + dataToChangeTariff.getMsisdn() +
+                        " already has " + dataToChangeTariff.getTariffId() + " tariff");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("CRM: user " + dataToChangeTariff.getMsisdn() +
+                        " already has " + dataToChangeTariff.getTariffId() + " tariff");
             }
+            LOGGER.log(Level.SEVERE, "ERROR: user with this number: " + dataToChangeTariff.getMsisdn() +
+                    " doesn't exist");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CRM: user with this number: " + dataToChangeTariff.getMsisdn() +
+                    " doesn't exist");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data, can't change tariff");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM: empty data, can't change tariff");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CRM: empty data, can't change tariff");
     }
 
     /**
@@ -200,7 +215,7 @@ public class CRMController {
                     " already exists");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data, can't add new user");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM: empty data, can't save new user");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CRM: empty data, can't save new user");
     }
 
     /**
@@ -231,7 +246,7 @@ public class CRMController {
             }
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM got empty tariffs info");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CRM got empty tariffs info");
     }
 
     /**
@@ -262,7 +277,7 @@ public class CRMController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("CRM: NOT YOUR NUMBER");
         }
         LOGGER.log(Level.SEVERE, "ERROR: User put empty data");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CRM: data is empty");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CRM: data is empty");
     }
 
     /**

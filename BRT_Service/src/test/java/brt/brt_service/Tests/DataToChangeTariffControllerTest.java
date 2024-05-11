@@ -56,7 +56,7 @@ public class DataToChangeTariffControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 
     /**
@@ -75,6 +75,6 @@ public class DataToChangeTariffControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 }
