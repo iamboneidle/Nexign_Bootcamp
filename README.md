@@ -251,6 +251,9 @@ ___
 <br>[Структура баз данных](info/DataBaseStructure).
 <br>[Список портов](info/Ports.txt).
 <br>[Запросы к CRM_Service](info/RequestsToEndpoints).
+<br>Spring Security creds:
+<br>admin: login: admin, password: admin
+<br>user: login: номер телефона пользователя, password: user
 <br>pgAdmin4 creds:
 <br>email: nexign@bootcamp.com
 <br>password: nexign
