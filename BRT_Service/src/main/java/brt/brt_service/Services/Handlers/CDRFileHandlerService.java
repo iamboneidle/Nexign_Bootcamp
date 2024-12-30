@@ -72,6 +72,9 @@ public class CDRFileHandlerService {
      */
     @Autowired
     private RequestExecutor requestExecutor;
+    /**
+     * Бот для хранения CDR файлов.
+     */
     @Autowired
     private CDRFileStorageBot cdrFileStorageBot;
     /**
