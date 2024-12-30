@@ -47,6 +47,6 @@ public class NewUserControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 }

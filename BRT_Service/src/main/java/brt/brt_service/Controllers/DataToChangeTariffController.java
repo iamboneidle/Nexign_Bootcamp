@@ -65,6 +65,6 @@ public class DataToChangeTariffController {
             return ResponseEntity.ok("BRT accepted new tariff info '" + dataToChangeTariff.getTariffId() + "' for " + dataToChangeTariff.getMsisdn() + " successfully");
         }
         LOGGER.log(Level.INFO, "ERROR: got empty data, can't change tariff");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("BRT got empty info from CRM about changing tariffs");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BRT got empty info from CRM about changing tariffs");
     }
 }

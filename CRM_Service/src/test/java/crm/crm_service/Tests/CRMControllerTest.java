@@ -91,7 +91,7 @@ public class CRMControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 
     /**
@@ -126,7 +126,7 @@ public class CRMControllerTest {
                                 .content("{}")
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 
     //Тесты для end-point'ов пользователей.
@@ -185,7 +185,7 @@ public class CRMControllerTest {
                                 .header("Authorization", getBasicAuthenticationHeader("79210000000", USER_PASSWORD))
                                 .content(requestJson)
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 
     /**

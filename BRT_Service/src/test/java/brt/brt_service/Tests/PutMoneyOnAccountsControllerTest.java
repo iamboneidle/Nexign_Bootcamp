@@ -69,7 +69,7 @@ public class PutMoneyOnAccountsControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 
     /**
@@ -88,7 +88,7 @@ public class PutMoneyOnAccountsControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 
     /**
@@ -107,6 +107,6 @@ public class PutMoneyOnAccountsControllerTest {
                                 .content(requestJson)
 
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 }

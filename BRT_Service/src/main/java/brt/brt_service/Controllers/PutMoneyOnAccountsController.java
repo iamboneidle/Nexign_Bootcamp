@@ -45,6 +45,6 @@ public class PutMoneyOnAccountsController {
                     dataToPutMoney.getMsisdn() + " account");
         }
         LOGGER.log(Level.SEVERE, "ERROR: got empty data, can't put money");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("BRT got empty data, can't put money on accounts");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BRT got empty data, can't put money on accounts");
     }
 }
