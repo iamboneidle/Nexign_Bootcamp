@@ -11,7 +11,6 @@ import brt.brt_service.Postgres.DAO.Repository.MsisdnsRepository;
 import brt.brt_service.Redis.DAO.Models.MsisdnToMinutesLeft;
 import brt.brt_service.Redis.DAO.Repository.MsisdnToMinutesLeftRepository;
 import brt.brt_service.Services.Utils.MsisdnsService;
-import brt.brt_service.TGBot.CDRFileStorageBot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -72,11 +71,6 @@ public class CDRFileHandlerService {
      */
     @Autowired
     private RequestExecutor requestExecutor;
-    /**
-     * Бот для хранения CDR файлов.
-     */
-    @Autowired
-    private CDRFileStorageBot cdrFileStorageBot;
     /**
      * Настоящий месяц (сервис запускается 01.01.2024).
      */
@@ -171,16 +165,6 @@ public class CDRFileHandlerService {
     }
 
     /**
-     * Метод, отправляющий CDR файлы в телеграм бота.
-     *
-     * @param file  Файл.
-     * @param fileName Имя файла.
-     */
-    private void senCDRFileToTG(File file, String fileName) {
-        cdrFileStorageBot.sendDocument(file, fileName);
-    }
-
-    /**
      * Метод, сохраняющий файлы в папку и отправляющий в телеграм бота, если ему написать
      * в начале.
      *
@@ -203,7 +187,6 @@ public class CDRFileHandlerService {
                     outputStream.flush();
                 }
             }
-            senCDRFileToTG(file.toFile(), fileName);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "EXCEPTION: " + Arrays.toString(e.getStackTrace()));
         }
