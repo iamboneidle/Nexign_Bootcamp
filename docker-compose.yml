@@ -2,15 +2,13 @@ version: '3.8'
 services:
   CDRService:
     image: cdr_service
-    build: 
+    build:
       context: ./CDR_Service
       dockerfile: Dockerfile
     ports:
       - "2001:2001"
     depends_on:
       - BRTService
-      - CDRDataBase
-      - Kafka
     environment:
       - CDR_DB_URL=jdbc:postgresql://CDRDataBase:5432/CDR_DataBase
       - CDR_DB_USERNAME=iamboneidle
@@ -24,22 +22,19 @@ services:
       - POSTGRES_USER=iamboneidle
       - POSTGRES_PASSWORD=Nexign
       - POSTGRES_DB=CDR_DataBase
-    ports: 
-    - "1001:5432"
-    depends_on:
-      - CRMDataBase
+    ports:
+      - "1001:5432"
     restart: unless-stopped
   CRMService:
     image: crm_service
-    build: 
+    build:
       context: ./CRM_Service
       dockerfile: Dockerfile
     ports:
       - "2004:2004"
     depends_on:
       - HRSService
-      - CRMDataBase
-    environment: 
+    environment:
       - CRM_DB_URL=jdbc:postgresql://CRMDataBase:5432/CRM_DataBase
       - CRM_DB_USERNAME=iamboneidle
       - CRM_DB_PASSWORD=Nexign
@@ -62,7 +57,7 @@ services:
     restart: unless-stopped
   HRSService:
     image: hrs_service
-    build: 
+    build:
       context: ./HRS_Service
       dockerfile: Dockerfile
     ports:
@@ -70,7 +65,6 @@ services:
     depends_on:
       - Kafka
       - HRSRedis
-      - BRTDataBase
     environment:
       - HRS_DB_URL=jdbc:postgresql://BRTDataBase:5432/BRT_DataBase
       - HRS_DB_USERNAME=iamboneidle
@@ -81,16 +75,13 @@ services:
       - POST_CALL_RECEIPT_URL=http://BRTService:2002/post-call-receipt
   BRTService:
     image: brt_service
-    build: 
+    build:
       context: ./BRT_Service
       dockerfile: Dockerfile
     ports:
       - "2002:2002"
     depends_on:
       - CRMService
-      - HRSService
-      - BRTDataBase
-      - BRTRedis
     environment:
       - BRT_DB_URL=jdbc:postgresql://BRTDataBase:5432/BRT_DataBase
       - BRT_DB_USERNAME=iamboneidle
@@ -115,16 +106,22 @@ services:
     ports:
       - "1002:5432"
     restart: unless-stopped
+    depends_on:
+      - CDRDataBase
   BRTRedis:
     image: redis:latest
     restart: unless-stopped
     ports:
       - "3001:6379"
+    depends_on:
+      - CRMDataBase
   HRSRedis:
     image: redis:latest
     restart: unless-stopped
     ports:
       - "3002:6379"
+    depends_on:
+      - BRTRedis
   Zookeeper:
     image: confluentinc/cp-zookeeper:latest
     hostname: Zookeeper
@@ -166,6 +163,8 @@ services:
     build: ./nexign-frontend
     ports:
       - "3000:3000"
+    depends_on:
+      - CDRService
   pgadmin:
     container_name: pgadmin4_container
     image: dpage/pgadmin4:latest
